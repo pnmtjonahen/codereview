@@ -20,6 +20,10 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.ReferenceType;
+import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +63,20 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
                     .forEach(sv -> scopeStack.push(sv));
     }
 
+    public ScopeVariable map(final Parameter p) {
+        
+        final Type type = p.getType();
+        String paramType = type.toString();
+        if (type instanceof ReferenceType) {
+            ReferenceType refType = (ReferenceType) type;
+            if (refType.getType() instanceof ClassOrInterfaceType) {
+                ClassOrInterfaceType coiType = (ClassOrInterfaceType) refType.getType();
+                paramType = coiType.getName();
+            }
+        }
+        return new ScopeVariable(fqc.determineFqc(paramType), p.getId().getName());
+    }    
+    
     @Override
     public void visit(MethodDeclaration n, CallScopeType arg) {
 
@@ -70,7 +88,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
         final List<ScopeVariable> scopeVar = n.getParameters() == null ? new ArrayList<>()
                 : n.getParameters()
                 .stream()
-                .map(ScopeVariable::map)
+                .map(this::map)
                 .collect(Collectors.toList());
         final String marker = arg.getPackageName() 
                                 + "." + arg.getTypeName() 

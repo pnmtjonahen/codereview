@@ -22,7 +22,6 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 /**
@@ -64,37 +63,22 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
         }
         if (paramType == null) {
             // static method call ??
-            System.out.print("STATIC " + arg + "::" + param + "." + n.getName() + "(");
-            System.out.println(printNameExpr(n.getArgs()));
-            System.out.println(" )");
-            methods.add(new MethodCall(arg, param, n.getName() + "(" + printNameExpr(n.getArgs()) + ")"));
+            final ParameterVisitor parameterVisitor = new ParameterVisitor(scopeStack);
+            if (n.getArgs() != null) {
+                n.getArgs().forEach(p -> p.accept(parameterVisitor, ""));
+            }
+            methods.add(new MethodCall(arg, param, n.getName() + "(" + parameterVisitor.getParams() + ")"));
         } else {
-            System.out.print("CALL " + arg + "::" + paramType.getType() + "." + n.getName() + "(");
-            System.out.println(printNameExpr(n.getArgs()));
-            System.out.println(" )");
-            methods.add(new MethodCall(arg, paramType.getType(),n.getName() + "(" + printNameExpr(n.getArgs()) + ")"));
+            ParameterVisitor parameterVisitor = new ParameterVisitor(scopeStack);
+            if (n.getArgs() != null) {
+                n.getArgs().forEach(p -> p.accept(parameterVisitor, ""));
+            }
+            methods.add(new MethodCall(arg, paramType.getType(),n.getName() + "(" + parameterVisitor.getParams() + ")"));
         }
 
     }
     
-    private String printNameExpr(List<Expression> expList) {
-        if (expList == null) {
-            return "";
-        }
-        String params = "";
-        for (Expression expression : expList) {
-            if (expression instanceof NameExpr) {
-                NameExpr name = (NameExpr) expression;
-                if (!params.equals("")) {
-                    params += ", ";
-                }
-                params += findType(name.getName()).getType();
-
-            }
-        }
-        return params;
-    }    
-
+    
     @Override
     public void visit(VariableDeclarationExpr n, CallScopeType arg) {
         n.getVars().forEach(v -> scopeStack.push(new ScopeVariable(n.getType().toString(), v.getId().getName())));

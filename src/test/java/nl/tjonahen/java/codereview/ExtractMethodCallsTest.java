@@ -62,22 +62,103 @@ public class ExtractMethodCallsTest {
     public void testExtractWithParams() throws ParseException {
         
         final CompilationUnit cu = JavaParser.parse(getSource(""
+                                + "package nl.tjonahen.sample.test; "
+                                + "import nl.tjonahen.dummy.IBM; "
                                 + "public class Test { "
-                                + " public Test() {}"
+                                + " private int intValue;"
+                                + " public Test(IBM p) {"
+                                + "     intValue = p.calculate();"
+                                + "     run();"
+                                + " }"
                                 + " public String ibm(IBM p) { "
                                 + "     String var = null;"    
-                                + "     return p.process(p, var); "
+                                + "     return p.process(p, var, intValue); "
+                                + " }"
+                                + "}"));
+        
+        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        assertEquals(3, extract.size());
+        assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
+        assertEquals("calculate()", extract.get(0).getSignature());
+        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
+        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
+        assertEquals("Test", extract.get(0).getCallScopeType().getMethodName());
+
+        assertEquals("this", extract.get(1).getType());
+        assertEquals("run()", extract.get(1).getSignature());
+        assertEquals("nl.tjonahen.sample.test", extract.get(1).getCallScopeType().getPackageName());
+        assertEquals("Test", extract.get(1).getCallScopeType().getTypeName());
+        assertEquals("Test", extract.get(1).getCallScopeType().getMethodName());
+        
+        assertEquals("nl.tjonahen.dummy.IBM", extract.get(2).getType());
+        assertEquals("process(nl.tjonahen.dummy.IBM, String, int)", extract.get(2).getSignature());
+        assertEquals("nl.tjonahen.sample.test", extract.get(2).getCallScopeType().getPackageName());
+        assertEquals("Test", extract.get(2).getCallScopeType().getTypeName());
+        assertEquals("ibm", extract.get(2).getCallScopeType().getMethodName());
+        
+    }
+    
+    /**
+     * Test of extract method, of class ExtractMethodCalls.
+     */
+    @Test
+    public void testExtractWithLiterals() throws ParseException {
+        
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                                + "package nl.tjonahen.sample.test; "
+                                + "import nl.tjonahen.dummy.IBM; "
+                                + "public class Test { "
+                                + " public Test() {}"
+                                + " public void ibm(IBM p) { "
+                                + "     p.process(\"dummy\"); "
+                                + "     p.process(1); "
+                                + "     p.process(-1); "
+                                + "     p.process(0.1); "
+                                + "     p.process(-1L); "
+                                + "     p.process(1L); "
+                                + "     p.process(true); "
+                                + " }"
+                                + "}"));
+        
+        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        assertEquals(7, extract.size());
+        assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
+        assertEquals("process(String)", extract.get(0).getSignature());
+        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
+        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
+        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+        assertEquals("process(Integer)", extract.get(1).getSignature());
+        assertEquals("process(Integer)", extract.get(2).getSignature());
+        assertEquals("process(Double)", extract.get(3).getSignature());
+        assertEquals("process(Long)", extract.get(4).getSignature());
+        assertEquals("process(Long)", extract.get(5).getSignature());
+        assertEquals("process(Boolean)", extract.get(6).getSignature());
+    }
+    /**
+     * Test of extract method, of class ExtractMethodCalls.
+     */
+    @Test
+    public void testExtractWithStaticCall() throws ParseException {
+        
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                                + "package nl.tjonahen.sample.test; "
+                                + "import nl.tjonahen.dummy.IBM; "
+                                + "public class Test { "
+                                + " public Test() {}"
+                                + " public void ibm(IBM p) { "
+                                + "     String.format(\"%s\", \"dummy\"); "
                                 + " }"
                                 + "}"));
         
         final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(1, extract.size());
-        assertEquals("IBM", extract.get(0).getType());
-        assertEquals("process(IBM, String)", extract.get(0).getSignature());
-        assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
+        assertEquals("String", extract.get(0).getType());
+        assertEquals("format(String, String)", extract.get(0).getSignature());
+        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
     }
+    
     private InputStream getSource(String source) {
         return new ByteArrayInputStream(source.getBytes());
     }    

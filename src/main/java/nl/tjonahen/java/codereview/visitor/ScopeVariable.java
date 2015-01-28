@@ -43,17 +43,4 @@ public class ScopeVariable {
         return name;
     }
 
-    public static ScopeVariable map(final Parameter p) {
-        
-        final Type type = p.getType();
-        String paramType = type.toString();
-        if (type instanceof ReferenceType) {
-            ReferenceType refType = (ReferenceType) type;
-            if (refType.getType() instanceof ClassOrInterfaceType) {
-                ClassOrInterfaceType coiType = (ClassOrInterfaceType) refType.getType();
-                paramType = coiType.getName();
-            }
-        }
-        return new ScopeVariable(paramType, p.getId().getName());
-    }    
 }

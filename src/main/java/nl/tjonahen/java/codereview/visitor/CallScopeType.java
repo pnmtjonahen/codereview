@@ -52,9 +52,4 @@ public class CallScopeType {
         return methodName;
     }
 
-    @Override
-    public String toString() {
-        return "ScopeType{" + "packageName=" + packageName + ", typeName=" + typeName + ", methodName=" + methodName + '}';
-    }
-
 }
