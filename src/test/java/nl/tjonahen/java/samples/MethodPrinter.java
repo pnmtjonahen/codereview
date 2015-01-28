@@ -48,9 +48,9 @@ public class MethodPrinter {
 
         // visit and print the methods names
         final String packageName = (cu.getPackage() == null ? "" : cu.getPackage().getName().toString());
-        new TypeDeclarationVisitor().visit(cu, null);
+//        new TypeDeclarationVisitor().visit(cu, null);
         new ImportDeclarationVisitor().visit(cu, null);
-        new FieldDeclarationVisitor().visit(cu, null);
+//        new FieldDeclarationVisitor().visit(cu, null);
         cu.getTypes().stream().forEach((td) -> {
             td.accept(new MethodVisitor(), new ScopeType(packageName));
         });
@@ -123,27 +123,27 @@ public class MethodPrinter {
         
     }
     
-    private static class TypeDeclarationVisitor extends VoidVisitorAdapter<String> {
-
-
-        @Override
-        public void visit(ClassExpr n, String arg) {
-//            System.out.println("TYPENAME " + n.getType().toString());
-        }
-
-        @Override
-        public void visit(TypeDeclarationStmt n, String arg) {
-//            System.out.println("TYPEDECL " + n.getTypeDeclaration().getName());
-        }
-        
-        
-
-        @Override
-        public void visit(PackageDeclaration n, String arg) {
-//            System.out.println("CONTAIN " + n.getName());
-        }
-        
-    }
+//    private static class TypeDeclarationVisitor extends VoidVisitorAdapter<String> {
+//
+//
+//        @Override
+//        public void visit(ClassExpr n, String arg) {
+////            System.out.println("TYPENAME " + n.getType().toString());
+//        }
+//
+//        @Override
+//        public void visit(TypeDeclarationStmt n, String arg) {
+////            System.out.println("TYPEDECL " + n.getTypeDeclaration().getName());
+//        }
+//        
+//        
+//
+//        @Override
+//        public void visit(PackageDeclaration n, String arg) {
+////            System.out.println("CONTAIN " + n.getName());
+//        }
+//        
+//    }
 
     private static final Stack<ScopeVar> scopeStack = new Stack<>();
     private static Map<String, String> fqc = new HashMap<>();
@@ -182,19 +182,19 @@ public class MethodPrinter {
     }
     
 
-    private static class FieldDeclarationVisitor extends VoidVisitorAdapter<String> {
-
-        @Override
-        public void visit(final FieldDeclaration n, String arg) {
-            String vars = n.getVariables().stream().map(v -> v.getId().getName()).reduce("", (s, v) -> (s.equals("") ? "" : ",") + v);
-            List<ScopeVar> scopeVars = n.getVariables().stream().map(v -> new ScopeVar(n.getType().toString(), v.getId().getName())).collect(Collectors.toList());
-//            System.out.println("GLOBAL " + scopeVars.stream().map(v -> v.getType() + " " + v.getName()).reduce("", (s, v) -> s + v));
-
-            scopeVars.forEach(sv -> scopeStack.push(sv));
-
-        }
-
-    }
+//    private static class FieldDeclarationVisitor extends VoidVisitorAdapter<String> {
+//
+//        @Override
+//        public void visit(final FieldDeclaration n, String arg) {
+//            String vars = n.getVariables().stream().map(v -> v.getId().getName()).reduce("", (s, v) -> (s.equals("") ? "" : ",") + v);
+//            List<ScopeVar> scopeVars = n.getVariables().stream().map(v -> new ScopeVar(n.getType().toString(), v.getId().getName())).collect(Collectors.toList());
+////            System.out.println("GLOBAL " + scopeVars.stream().map(v -> v.getType() + " " + v.getName()).reduce("", (s, v) -> s + v));
+//
+//            scopeVars.forEach(sv -> scopeStack.push(sv));
+//
+//        }
+//
+//    }
 
     private static ScopeVar map(final Parameter p) {
         
@@ -219,6 +219,15 @@ public class MethodPrinter {
             
         }
 
+        @Override
+        public void visit(final FieldDeclaration n, ScopeType arg) {
+            String vars = n.getVariables().stream().map(v -> v.getId().getName()).reduce("", (s, v) -> (s.equals("") ? "" : ",") + v);
+            List<ScopeVar> scopeVars = n.getVariables().stream().map(v -> new ScopeVar(n.getType().toString(), v.getId().getName())).collect(Collectors.toList());
+//            System.out.println("GLOBAL " + scopeVars.stream().map(v -> v.getType() + " " + v.getName()).reduce("", (s, v) -> s + v));
+
+            scopeVars.forEach(sv -> scopeStack.push(sv));
+
+        }
         
         
 

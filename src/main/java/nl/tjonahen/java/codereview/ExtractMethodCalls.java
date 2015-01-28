@@ -16,31 +16,31 @@
  */
 package nl.tjonahen.java.codereview;
 
-import nl.tjonahen.java.codereview.visitor.PublicMethod;
 import com.github.javaparser.ast.CompilationUnit;
 import java.util.List;
+import nl.tjonahen.java.codereview.visitor.CallScopeType;
 import nl.tjonahen.java.codereview.visitor.ImportDeclarationVisitor;
-import nl.tjonahen.java.codereview.visitor.PublicMethodVisitor;
-import nl.tjonahen.java.codereview.visitor.ScopeType;
+import nl.tjonahen.java.codereview.visitor.MethodCall;
+import nl.tjonahen.java.codereview.visitor.MethodCallVisitor;
 
 /**
- * extract all public methods from the compilation unit
- * 
+ *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class ExtractPublicMethods {
-
-    public List<PublicMethod> extract(final CompilationUnit cu) {
+public class ExtractMethodCalls {
+    
+    public List<MethodCall> extract(final CompilationUnit cu) {
         final ImportDeclarationVisitor importDeclarationVisitor = new ImportDeclarationVisitor();
         importDeclarationVisitor.visit(cu, null);
         
-        final PublicMethodVisitor publicMethodVisitor = new PublicMethodVisitor(importDeclarationVisitor.getFqc());
+        final MethodCallVisitor methodCallVisitor = new MethodCallVisitor(importDeclarationVisitor.getFqc());
         final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
         cu.getTypes().stream().forEach((td) -> {
-            td.accept(publicMethodVisitor, new ScopeType(packageName, null));
+            td.accept(methodCallVisitor, new CallScopeType(packageName));
         });
         
-        return publicMethodVisitor.getMethods();
+        return methodCallVisitor.getMethods();
+       
     }
-
+    
 }

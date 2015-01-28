@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -54,7 +55,7 @@ public class ExtractPublicMethodsTest {
             in.close();
         }
         
-        final ArrayList<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
+        final List<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
         assertEquals(24, extract.size());
         
         extract.stream().forEach( p ->  System.out.println(p.getTypeName() + "::" + p.getSignature()));
@@ -85,7 +86,7 @@ public class ExtractPublicMethodsTest {
                                 +"  }"
                                 + "}"));
         
-        final ArrayList<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
+        final List<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
         assertEquals(4, extract.size());
         
         extract.stream().forEach( p ->  System.out.println(p.getTypeName() + "::" + p.getSignature()));
@@ -107,7 +108,7 @@ public class ExtractPublicMethodsTest {
                                 +"  }"
                                 + "}"));
         
-        final ArrayList<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
+        final List<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
         assertEquals(0, extract.size());
         
     }
@@ -127,7 +128,7 @@ public class ExtractPublicMethodsTest {
                                 + " }"
                                 + "}"));
         
-        final ArrayList<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
+        final List<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
         assertEquals(2, extract.size());
         assertEquals("String ibm(String)", extract.get(1).getSignature());
         
@@ -148,7 +149,7 @@ public class ExtractPublicMethodsTest {
                                 + " }"
                                 + "}"));
         
-        final ArrayList<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
+        final List<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String ibm(nl.tjonahen.sample.IBM)", extract.get(0).getSignature());
         
@@ -170,7 +171,7 @@ public class ExtractPublicMethodsTest {
                                 + " }"
                                 + "}"));
         
-        final ArrayList<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
+        final List<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("Boolean ibm(java.util.List)", extract.get(0).getSignature());
         
@@ -204,7 +205,7 @@ public class ExtractPublicMethodsTest {
                                 + "}"
         ));
         
-        final ArrayList<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
+        final List<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
         assertEquals(3, extract.size());
         assertEquals("Boolean ibm(java.util.List)", extract.get(0).getSignature());
         assertEquals("nl.tjonahen.sampleapp", extract.get(0).getPackageName());
