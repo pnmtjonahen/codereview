@@ -20,9 +20,7 @@ import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.CharLiteralExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
-import com.github.javaparser.ast.expr.IntegerLiteralMinValueExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.LongLiteralMinValueExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -75,19 +73,10 @@ public class ParameterVisitor extends VoidVisitorAdapter<String> {
                 .findFirst().orElse(""));
     }
 
-    @Override
-    public void visit(LongLiteralMinValueExpr n, String arg) {
-        params = add(params, "Long");
-    }
 
     @Override
     public void visit(LongLiteralExpr n, String arg) {
         params = add(params, "Long");
-    }
-
-    @Override
-    public void visit(IntegerLiteralMinValueExpr n, String arg) {
-        params = add(params, "Integer");
     }
 
     @Override

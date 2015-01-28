@@ -112,11 +112,11 @@ public class ExtractMethodCallsTest {
                                 + " public void ibm(IBM p) { "
                                 + "     p.process(\"dummy\"); "
                                 + "     p.process(1); "
-                                + "     p.process(-1); "
                                 + "     p.process(0.1); "
-                                + "     p.process(-1L); "
                                 + "     p.process(1L); "
                                 + "     p.process(true); "
+                                + "     p.process('a'); "
+                                + "     p.process(null); "
                                 + " }"
                                 + "}"));
         
@@ -128,11 +128,11 @@ public class ExtractMethodCallsTest {
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
         assertEquals("process(Integer)", extract.get(1).getSignature());
-        assertEquals("process(Integer)", extract.get(2).getSignature());
-        assertEquals("process(Double)", extract.get(3).getSignature());
-        assertEquals("process(Long)", extract.get(4).getSignature());
-        assertEquals("process(Long)", extract.get(5).getSignature());
-        assertEquals("process(Boolean)", extract.get(6).getSignature());
+        assertEquals("process(Double)", extract.get(2).getSignature());
+        assertEquals("process(Long)", extract.get(3).getSignature());
+        assertEquals("process(Boolean)", extract.get(4).getSignature());
+        assertEquals("process(Char)", extract.get(5).getSignature());
+        assertEquals("process(Object)", extract.get(6).getSignature());
     }
     /**
      * Test of extract method, of class ExtractMethodCalls.
