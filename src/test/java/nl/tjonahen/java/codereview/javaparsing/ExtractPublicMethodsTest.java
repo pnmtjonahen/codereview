@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.tjonahen.java.codereview;
+package nl.tjonahen.java.codereview.javaparsing;
 
-import nl.tjonahen.java.codereview.visitor.PublicMethod;
+import nl.tjonahen.java.codereview.javaparsing.visitor.ExtractPublicMethods;
+import nl.tjonahen.java.codereview.javaparsing.visitor.PublicMethod;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
@@ -25,7 +26,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -216,6 +216,31 @@ public class ExtractPublicMethodsTest {
         assertEquals("Boolean ibm(java.util.List)", extract.get(2).getSignature());
         assertEquals("nl.tjonahen.sampleapp", extract.get(2).getPackageName());
         assertEquals("TestTwo", extract.get(2).getTypeName());
+        
+    }
+    /**
+     * Test of extract method, of class ExtractPublicMethods.
+     */
+    @Test
+    public void testExtractLambda() throws ParseException  {
+        // creates an input stream for the file to be parsed
+
+
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                                + "public class Test { "
+                                + " public Test() {}"
+                                + " public String ibm(String p) { "
+                                + " ExtractPublicMethods extractPublicMethods = new ExtractPublicMethods();"
+                                + " extractPublicMethods.extract(cu)"
+                                + "             .stream()"
+                                + "             .map(p -> \"ENTRYPOINT \" + p.getPackageName()+\".\"+p.getTypeName()+\"::\"+p.getSignature())"
+                                + "             .forEach(System.out::println);"
+                                + " }"
+                                + "}"));
+        
+        final List<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
+        assertEquals(2, extract.size());
+        assertEquals("String ibm(String)", extract.get(1).getSignature());
         
     }
     

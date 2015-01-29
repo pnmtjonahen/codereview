@@ -14,36 +14,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.tjonahen.java.codereview.visitor;
+package nl.tjonahen.java.codereview.javaparsing.visitor;
 
 /**
- * A public method of a type.
- * 
+ *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class PublicMethod {
+public class CallScopeType {
+
     private final String packageName;
     private final String typeName;
-    private final String signature;
+    private final String methodName;
 
-    public PublicMethod(final String packageName, final String typeName, final String signature) {
+    public CallScopeType(final String packageName, final String typeName, final String methodName) {
         this.packageName = packageName;
         this.typeName = typeName;
-        this.signature = signature;
+        this.methodName = methodName;
     }
 
+    public CallScopeType(final String packageName) {
+        this(packageName, "", "");
+    }
 
-    public String getSignature() {
-        return signature;
+    public CallScopeType(final String packageName, final String typeName) {
+        this(packageName, typeName, "");
+    }
+
+    public String getPackageName() {
+        return packageName;
     }
 
     public String getTypeName() {
         return typeName;
     }
 
-    public String getPackageName() {
-        return packageName;
+    public String getMethodName() {
+        return methodName;
     }
-    
-    
+
 }

@@ -1,4 +1,4 @@
-package nl.tjonahen.java.samples;
+package nl.tjonahen.java.codereview.javaparsing.samples;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;

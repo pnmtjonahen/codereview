@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.tjonahen.java.codereview.visitor;
+package nl.tjonahen.java.codereview.javaparsing.visitor;
 
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.expr.NameExpr;

@@ -14,33 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.tjonahen.java.codereview.visitor;
-
-import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.ReferenceType;
-import com.github.javaparser.ast.type.Type;
+package nl.tjonahen.java.codereview.javaparsing.visitor;
 
 /**
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class ScopeVariable {
+public class ScopeType {
+    private final String packageName;
+    private final String typeName;
 
-    private final String type;
-    private final String name;
-
-    public ScopeVariable(final String type, final String name) {
-        this.type = type;
-        this.name = name;
+    public ScopeType(String packageName, String typeName) {
+        this.packageName = packageName;
+        this.typeName = typeName;
     }
 
-    public String getType() {
-        return type;
+    public String getPackageName() {
+        return packageName;
     }
 
-    public String getName() {
-        return name;
+    public String getTypeName() {
+        return typeName;
     }
 
+    
 }

@@ -14,15 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.tjonahen.java.codereview;
+package nl.tjonahen.java.codereview.javaparsing;
 
+import nl.tjonahen.java.codereview.javaparsing.visitor.ExtractMethodCalls;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import nl.tjonahen.java.codereview.visitor.MethodCall;
+import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCall;
+import nl.tjonahen.java.codereview.javaparsing.visitor.PublicMethod;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -33,6 +38,23 @@ import org.junit.Test;
 public class ExtractMethodCallsTest {
     
 
+    @Test
+    public void testExtractTest() throws FileNotFoundException, ParseException, IOException {
+        FileInputStream in = new FileInputStream("src/test/resources/test.java");
+
+        CompilationUnit cu;
+        try {
+            // parse the file
+            cu = JavaParser.parse(in);
+        } finally {
+            in.close();
+        }
+        
+        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        assertEquals(53, extract.size());
+        
+
+    }
     /**
      * Test of extract method, of class ExtractMethodCalls.
      */
