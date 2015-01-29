@@ -14,33 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.tjonahen.java.codereview.javaparsing.visitor;
+package nl.tjonahen.java.codereview.javaparsing;
 
 import com.github.javaparser.ast.CompilationUnit;
 import java.util.List;
-import nl.tjonahen.java.codereview.javaparsing.visitor.CallScopeType;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ImportDeclarationVisitor;
-import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCall;
-import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCallVisitor;
+import nl.tjonahen.java.codereview.javaparsing.visitor.PublicMethod;
+import nl.tjonahen.java.codereview.javaparsing.visitor.PublicMethodVisitor;
+import nl.tjonahen.java.codereview.javaparsing.visitor.ScopeType;
 
 /**
- *
+ * extract all public methods from the compilation unit
+ * 
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class ExtractMethodCalls {
-    
-    public List<MethodCall> extract(final CompilationUnit cu) {
+public class ExtractPublicMethods {
+
+    public List<PublicMethod> extract(final CompilationUnit cu) {
         final ImportDeclarationVisitor importDeclarationVisitor = new ImportDeclarationVisitor();
         importDeclarationVisitor.visit(cu, null);
         
-        final MethodCallVisitor methodCallVisitor = new MethodCallVisitor(importDeclarationVisitor.getFqc());
+        final PublicMethodVisitor publicMethodVisitor = new PublicMethodVisitor(importDeclarationVisitor.getFqc());
         final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
         cu.getTypes().stream().forEach((td) -> {
-            td.accept(methodCallVisitor, new CallScopeType(packageName));
+            td.accept(publicMethodVisitor, new ScopeType(packageName, null));
         });
         
-        return methodCallVisitor.getMethods();
-       
+        return publicMethodVisitor.getMethods();
     }
-    
+
 }

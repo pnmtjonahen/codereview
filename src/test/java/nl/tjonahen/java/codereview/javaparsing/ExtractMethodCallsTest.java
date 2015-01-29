@@ -16,7 +16,6 @@
  */
 package nl.tjonahen.java.codereview.javaparsing;
 
-import nl.tjonahen.java.codereview.javaparsing.visitor.ExtractMethodCalls;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;

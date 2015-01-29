@@ -16,8 +16,8 @@
  */
 package nl.tjonahen.java.codereview;
 
-import nl.tjonahen.java.codereview.javaparsing.visitor.ExtractPublicMethods;
-import nl.tjonahen.java.codereview.javaparsing.visitor.ExtractMethodCalls;
+import nl.tjonahen.java.codereview.javaparsing.ExtractPublicMethods;
+import nl.tjonahen.java.codereview.javaparsing.ExtractMethodCalls;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
-import java.util.regex.Pattern;
 import nl.tjonahen.java.codereview.files.Find;
 
 
@@ -37,7 +36,6 @@ import nl.tjonahen.java.codereview.files.Find;
 public class Main {
     
     private static final int WORKING_FOLDER_IDX = 0;
-    private static final int FIND_PATTERN_IDX = 1;
     
     public static void main(String... aArgs) throws FileNotFoundException, ParseException {
         final Find find = new Find(new File(aArgs[WORKING_FOLDER_IDX]));

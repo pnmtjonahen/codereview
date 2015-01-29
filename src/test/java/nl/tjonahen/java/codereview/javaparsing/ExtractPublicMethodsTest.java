@@ -16,7 +16,6 @@
  */
 package nl.tjonahen.java.codereview.javaparsing;
 
-import nl.tjonahen.java.codereview.javaparsing.visitor.ExtractPublicMethods;
 import nl.tjonahen.java.codereview.javaparsing.visitor.PublicMethod;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;

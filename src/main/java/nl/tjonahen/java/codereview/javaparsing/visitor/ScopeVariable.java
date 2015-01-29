@@ -16,11 +16,6 @@
  */
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
-import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.ReferenceType;
-import com.github.javaparser.ast.type.Type;
-
 /**
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
