@@ -29,7 +29,7 @@ public class FindTest {
 
     @Test
     public void testFindTestJavaFiles() throws FileNotFoundException {
-        Find f = new Find(new File("./src/test/java/nl/tjonahen/java/codereview/files"));
+        Find f = new Find(new File("./src/test/resources"));
         
         assertEquals(1, f.find().size());
         
