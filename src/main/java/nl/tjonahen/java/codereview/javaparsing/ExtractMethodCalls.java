@@ -28,19 +28,22 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCallVisitor;
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class ExtractMethodCalls {
-    
+
     public List<MethodCall> extract(final CompilationUnit cu) {
         final ImportDeclarationVisitor importDeclarationVisitor = new ImportDeclarationVisitor();
         importDeclarationVisitor.visit(cu, null);
-        
+
         final MethodCallVisitor methodCallVisitor = new MethodCallVisitor(importDeclarationVisitor.getFqc());
         final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
-        cu.getTypes().stream().forEach((td) -> {
-            td.accept(methodCallVisitor, new CallScopeType(packageName));
-        });
-        
+        if (cu.getTypes() != null) {
+            cu.getTypes().stream().forEach((td) -> {
+                td.accept(methodCallVisitor, new CallScopeType(packageName));
+            });
+        } else {
+            System.out.println("*** ERROR no type");
+        }
         return methodCallVisitor.getMethods();
-       
+
     }
-    
+
 }

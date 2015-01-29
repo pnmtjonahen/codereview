@@ -82,6 +82,7 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
     @Override
     public void visit(VariableDeclarationExpr n, CallScopeType arg) {
         n.getVars().forEach(v -> scopeStack.push(new ScopeVariable(n.getType().toString(), v.getId().getName())));
+        super.visit(n, arg);
     }
 
 }

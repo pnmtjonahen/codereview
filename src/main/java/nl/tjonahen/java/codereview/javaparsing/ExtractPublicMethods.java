@@ -25,7 +25,7 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.ScopeType;
 
 /**
  * extract all public methods from the compilation unit
- * 
+ *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class ExtractPublicMethods {
@@ -33,13 +33,16 @@ public class ExtractPublicMethods {
     public List<PublicMethod> extract(final CompilationUnit cu) {
         final ImportDeclarationVisitor importDeclarationVisitor = new ImportDeclarationVisitor();
         importDeclarationVisitor.visit(cu, null);
-        
+
         final PublicMethodVisitor publicMethodVisitor = new PublicMethodVisitor(importDeclarationVisitor.getFqc());
         final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
-        cu.getTypes().stream().forEach((td) -> {
-            td.accept(publicMethodVisitor, new ScopeType(packageName, null));
-        });
-        
+        if (cu.getTypes() != null) {
+            cu.getTypes().stream().forEach((td) -> {
+                td.accept(publicMethodVisitor, new ScopeType(packageName, null));
+            });
+        } else {
+            System.out.println("*** ERROR no type");
+        }
         return publicMethodVisitor.getMethods();
     }
 

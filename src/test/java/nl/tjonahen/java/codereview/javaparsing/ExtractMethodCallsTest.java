@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCall;
-import nl.tjonahen.java.codereview.javaparsing.visitor.PublicMethod;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -50,7 +49,7 @@ public class ExtractMethodCallsTest {
         }
         
         final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
-        assertEquals(53, extract.size());
+        assertEquals(77, extract.size());
         
 
     }
@@ -58,7 +57,7 @@ public class ExtractMethodCallsTest {
      * Test of extract method, of class ExtractMethodCalls.
      */
     @Test
-    public void testExtract() throws ParseException {
+    public void testExtractSimple() throws ParseException {
         
         final CompilationUnit cu = JavaParser.parse(getSource(""
                                 + "public class Test { "
@@ -71,6 +70,49 @@ public class ExtractMethodCallsTest {
         final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
+        assertEquals("toUpperCase()", extract.get(0).getSignature());
+        assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
+        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
+        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+    }
+    /**
+     * Test of extract method, of class ExtractMethodCalls.
+     */
+    @Test
+    public void testExtractPublicCallAssignment() throws ParseException {
+        
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                                + "public class Test { "
+                                + " public Test() {}"
+                                + " public void ibm(String p) { "
+                                + "     String value = p.toUpperCase(); "
+                                + " }"
+                                + "}"));
+        
+        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        assertEquals(1, extract.size());
+        assertEquals("String", extract.get(0).getType());
+        assertEquals("toUpperCase()", extract.get(0).getSignature());
+        assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
+        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
+        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+    }
+
+    @Test
+    public void testExtractWithGenerics() throws ParseException {
+        
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                                + "import java.util.List;"
+                                + "public class Test { "
+                                + " public Test() {}"
+                                + " public List<String> ibm(List<String> p) { "
+                                + "     return p.toUpperCase(); "
+                                + " }"
+                                + "}"));
+        
+        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        assertEquals(1, extract.size());
+        assertEquals("java.util.List", extract.get(0).getType());
         assertEquals("toUpperCase()", extract.get(0).getSignature());
         assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());

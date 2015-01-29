@@ -61,7 +61,7 @@ public class PublicMethodVisitor extends VoidVisitorAdapter<ScopeType> {
             return;
         }
         final String params = params(n.getParameters());
-        final String signature = "" + fqc.determineFqc(n.getType().toString()) + " " + n.getName() + "(" + params + ")";
+        final String signature = "" + determineTypeName(n.getType()) + " " + n.getName() + "(" + params + ")";
 
         methods.add(new PublicMethod(type.getPackageName(), type.getTypeName(), signature));
 
@@ -88,6 +88,10 @@ public class PublicMethodVisitor extends VoidVisitorAdapter<ScopeType> {
     private String map(final Parameter p) {
 
         final Type type = p.getType();
+        return determineTypeName(type);
+    }
+
+    private String determineTypeName(final Type type) {
         String paramType = type.toString();
         if (type instanceof ReferenceType) {
             ReferenceType refType = (ReferenceType) type;
