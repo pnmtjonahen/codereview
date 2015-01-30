@@ -47,6 +47,19 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
     public MethodCallVisitor(final FQCMap fqc) {
         this.fqc = fqc;
     }
+    private ScopeVariable map(final Parameter p) {
+        
+        final Type type = p.getType();
+        String paramType = type.toString();
+        if (type instanceof ReferenceType) {
+            ReferenceType refType = (ReferenceType) type;
+            if (refType.getType() instanceof ClassOrInterfaceType) {
+                ClassOrInterfaceType coiType = (ClassOrInterfaceType) refType.getType();
+                paramType = coiType.getName();
+            }
+        }
+        return new ScopeVariable(fqc.determineFqc(paramType), p.getId().getName());
+    }    
 
     @Override
     public void visit(ClassOrInterfaceDeclaration n, CallScopeType arg) {
@@ -62,20 +75,6 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
                 .collect(Collectors.toList())
                     .forEach(sv -> scopeStack.push(sv));
     }
-
-    public ScopeVariable map(final Parameter p) {
-        
-        final Type type = p.getType();
-        String paramType = type.toString();
-        if (type instanceof ReferenceType) {
-            ReferenceType refType = (ReferenceType) type;
-            if (refType.getType() instanceof ClassOrInterfaceType) {
-                ClassOrInterfaceType coiType = (ClassOrInterfaceType) refType.getType();
-                paramType = coiType.getName();
-            }
-        }
-        return new ScopeVariable(fqc.determineFqc(paramType), p.getId().getName());
-    }    
     
     @Override
     public void visit(MethodDeclaration n, CallScopeType arg) {
@@ -105,11 +104,13 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
         methodBodyVisitor
                     .visit(n, new CallScopeType(arg.getPackageName(), arg.getTypeName(), n.getName()));
 
+        
         methods.addAll(methodBodyVisitor.getMethods());
         ScopeVariable el = scopeStack.pop();
         while (!el.getType().equals(marker)) {
             el = scopeStack.pop();
         }
+        
     }
 
     @Override

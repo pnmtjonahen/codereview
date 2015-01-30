@@ -21,19 +21,24 @@ import com.github.javaparser.ast.expr.CharLiteralExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import java.util.ArrayList;
 import java.util.Stack;
 
 /**
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class ParameterVisitor extends VoidVisitorAdapter<String> {
+public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     private final Stack<ScopeVariable> scopeStack;
+    private final ArrayList<MethodCall> methods = new ArrayList<>();
+
 
     private String params = "";
 
@@ -41,6 +46,11 @@ public class ParameterVisitor extends VoidVisitorAdapter<String> {
         this.scopeStack = scopeStack;
     }
 
+    public ArrayList<MethodCall> getMethods() {
+        return methods;
+    }
+
+    
     
     public String getParams() {
         return params;
@@ -55,17 +65,17 @@ public class ParameterVisitor extends VoidVisitorAdapter<String> {
     }
 
     @Override
-    public void visit(StringLiteralExpr n, String arg) {
+    public void visit(StringLiteralExpr n, CallScopeType arg) {
         params = add(params, "String");
     }
 
     @Override
-    public void visit(NullLiteralExpr n, String arg) {
+    public void visit(NullLiteralExpr n, CallScopeType arg) {
         params = add(params, "Object");
     }
 
     @Override
-    public void visit(NameExpr n, String arg) {
+    public void visit(NameExpr n, CallScopeType arg) {
         params = add(params, scopeStack
                 .stream()
                 .filter(v -> v.getName().equals(n.getName()))
@@ -75,28 +85,45 @@ public class ParameterVisitor extends VoidVisitorAdapter<String> {
 
 
     @Override
-    public void visit(LongLiteralExpr n, String arg) {
+    public void visit(LongLiteralExpr n, CallScopeType arg) {
         params = add(params, "Long");
     }
 
     @Override
-    public void visit(IntegerLiteralExpr n, String arg) {
+    public void visit(IntegerLiteralExpr n, CallScopeType arg) {
         params = add(params, "Integer");
     }
 
     @Override
-    public void visit(DoubleLiteralExpr n, String arg) {
+    public void visit(DoubleLiteralExpr n, CallScopeType arg) {
         params = add(params, "Double");
     }
 
     @Override
-    public void visit(CharLiteralExpr n, String arg) {
+    public void visit(CharLiteralExpr n, CallScopeType arg) {
         params = add(params, "Char");
     }
 
     @Override
-    public void visit(BooleanLiteralExpr n, String arg) {
+    public void visit(BooleanLiteralExpr n, CallScopeType arg) {
         params = add(params, "Boolean");
     }
+
+    @Override
+    public void visit(ObjectCreationExpr n, CallScopeType arg) {
+        params = add(params, n.getType().getName());
+    }
+
+    @Override
+    public void visit(MethodCallExpr n, CallScopeType arg) {
+        MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(scopeStack);
+        
+//        n.accept(methodBodyVisitor, arg);
+        methodBodyVisitor.visit(n, arg);
+        
+        methods.addAll(methodBodyVisitor.getMethods());
+    }
+    
+    
 
 }

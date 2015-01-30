@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.util.List;
 import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCall;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 /**
@@ -49,7 +50,7 @@ public class ExtractMethodCallsTest {
         }
         
         final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
-        assertEquals(77, extract.size());
+        assertEquals(104, extract.size());
         
 
     }
@@ -222,6 +223,92 @@ public class ExtractMethodCallsTest {
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
     }
     
+    @Test
+    public void testExtractWithNested() throws ParseException {
+        
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                                + "package nl.tjonahen.sample.test; "
+                                + "import nl.tjonahen.dummy.IBM; "
+                                + "import nl.tjonahen.dummy.Header; "
+                                + "import java.text.SimpleDateFormat;"
+                                + "import java.util.Date;"                
+                                + "public class Test { "
+                                + " public Test() {}"
+                                + " public void ibm(IBM p) { "
+                                + "     Header header = new Header();"
+                                + "     SimpleDateFormat sdf = new SimpleDateFormat();"
+                                + "     String servicePrefix = \"prefix\";"
+                                + "     header.setMessageId(new StringBuffer(servicePrefix).append(sdf.format(new Date())).toString());"
+                                + " }"
+                                + "}"));
+        
+        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        assertEquals(4, extract.size());
+        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
+        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
+        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+
+        assertEquals("SimpleDateFormat", extract.get(0).getType());
+        assertEquals("format(Date)", extract.get(0).getSignature());
+
+        assertEquals("StringBuffer", extract.get(1).getType());
+        assertEquals("append()", extract.get(1).getSignature());
+
+        assertNull(extract.get(2).getType());
+        assertEquals("toString()", extract.get(2).getSignature());
+
+        assertEquals("Header", extract.get(3).getType());
+        assertEquals("setMessageId()", extract.get(3).getSignature());
+    }
+    
+    
+    @Test
+    public void testExtractTrainWreck() throws ParseException {
+        
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                                + "package nl.tjonahen.sample.test; "
+                                + "import nl.tjonahen.dummy.IBM; "
+                                + "import nl.tjonahen.dummy.Header; " +
+                                "import java.util.ArrayList;" +
+                                "import java.util.List;" +
+                                "" +
+                                "import nl.rabobank.gict.mcv.business.module.common.BusinessModule;" +
+                                "import nl.rabobank.gict.mcv.business.module.common.ProcessManager;" +
+                                "import nl.rabobank.gict.mcv.business.module.common.ValidationResult;" +
+                                "import nl.rabobank.gict.mcv.presentation.menustate.service.MenuService;" +
+                                "import nl.rabobank.gict.mcv.presentation.menustate.state.PageState;" +
+                                "import nl.rabobank.gict.mcv.presentation.menustate.view.ProcessType;" +
+                                "import nl.rabobank.gict.mcv.presentation.menustate.view.ViewName;" +
+                                ""       
+                                + "import java.util.Date;"                
+                                + "public class Test { "
+                                + " public Test() {}" +
+                                    "    public List<PageState> determineMenuState() {" +
+                                    "        final List<PageState> menuList = new ArrayList<PageState>();" +
+                                    "        boolean accessible = true;" +
+                                    "        for (final BusinessModule businessModule: processManager.getBusinessModulesForCurrentProcess()) {" +
+                                    "        	boolean validated = isValid(businessModule);" +
+                                    "            final PageState step =" +
+                                    "                new PageState.Builder(new ViewName(businessModule.getRenderParam()))" +
+                                    "            		.setVisible(true)" +
+                                    "                    .setAccessible(accessible)" +
+                                    "                    .setVisited(validated)" +
+                                    "                    .setValidated(validated)" +
+                                    "                    .build();" +
+                                    "            if (!validated) {" +
+                                    "            	accessible = false;" +
+                                    "            }" +
+                                    "            menuList.add(step);" +
+                                    "        }" +
+                                    "" +
+                                    "        return menuList;" +
+                                    "    }" +
+                                    ""
+                                + "}"));
+        
+        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        assertEquals(8, extract.size());
+    }
     private InputStream getSource(String source) {
         return new ByteArrayInputStream(source.getBytes());
     }    

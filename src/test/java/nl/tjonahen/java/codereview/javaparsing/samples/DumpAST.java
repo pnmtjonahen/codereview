@@ -3,7 +3,6 @@ package nl.tjonahen.java.codereview.javaparsing.samples;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 /**
@@ -23,14 +22,72 @@ public class DumpAST {
 //        } finally {
 //            in.close();
 //        }
-         final CompilationUnit cu = JavaParser.parse(getSource(""
+//         final CompilationUnit cu = JavaParser.parse(getSource(""
+//                                + "public class Test { "
+//                                + " public Test() {}"
+//                                + " public void ibm(String p) { "
+//                                + "     String value = p.toUpperCase(); "
+//                                + " }"
+//                                + "}"));
+         
+//       final CompilationUnit cu = JavaParser.parse(getSource(""
+//                                + "package nl.tjonahen.sample.test; "
+//                                + "import nl.tjonahen.dummy.IBM; "
+//                                + "import nl.tjonahen.dummy.Header; "
+//                                + "import java.text.SimpleDateFormat;"
+//                                + "import java.util.Date;"                
+//                                + "public class Test { "
+//                                + " public Test() {}"
+//                                + " public void ibm(IBM p) { "
+//                                + "     int size = 1024;"
+//                                + "     Header header = new Header();"
+//                                + "     SimpleDateFormat sdf = new SimpleDateFormat();"
+//                                + "     String servicePrefix = \"prefix\";"
+//                                + "     header.setMessageId(new StringBuffer(servicePrefix).append(sdf.format(new Date())).toString());"
+//                                + " }"
+//                                + "}"));         
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                                + "package nl.tjonahen.sample.test; "
+                                + "import nl.tjonahen.dummy.IBM; "
+                                + "import nl.tjonahen.dummy.Header; " +
+                                "import java.util.ArrayList;" +
+                                "import java.util.List;" +
+                                "" +
+                                "import nl.rabobank.gict.mcv.business.module.common.BusinessModule;" +
+                                "import nl.rabobank.gict.mcv.business.module.common.ProcessManager;" +
+                                "import nl.rabobank.gict.mcv.business.module.common.ValidationResult;" +
+                                "import nl.rabobank.gict.mcv.presentation.menustate.service.MenuService;" +
+                                "import nl.rabobank.gict.mcv.presentation.menustate.state.PageState;" +
+                                "import nl.rabobank.gict.mcv.presentation.menustate.view.ProcessType;" +
+                                "import nl.rabobank.gict.mcv.presentation.menustate.view.ViewName;" +
+                                ""       
+                                + "import java.util.Date;"                
                                 + "public class Test { "
-                                + " public Test() {}"
-                                + " public void ibm(String p) { "
-                                + "     String value = p.toUpperCase(); "
-                                + " }"
+                                + " public Test() {}" +
+                                    "    public List<PageState> determineMenuState() {" +
+                                    "        final List<PageState> menuList = new ArrayList<PageState>();" +
+                                    "        boolean accessible = true;" +
+                                    "        for (final BusinessModule businessModule: processManager.getBusinessModulesForCurrentProcess()) {" +
+                                    "        	boolean validated = isValid(businessModule);" +
+                                    "            final PageState step =" +
+                                    "                new PageState.Builder(new ViewName(businessModule.getRenderParam()))" +
+                                    "            		.setVisible(true)" +
+                                    "                    .setAccessible(accessible)" +
+                                    "                    .setVisited(validated)" +
+                                    "                    .setValidated(validated)" +
+                                    "                    .build();" +
+                                    "            if (!validated) {" +
+                                    "            	accessible = false;" +
+                                    "            }" +
+                                    "            menuList.add(step);" +
+                                    "        }" +
+                                    "" +
+                                    "        return menuList;" +
+                                    "    }" +
+                                    ""
                                 + "}"));
-       final DumpASTVisitor dumpASTVisitor = new DumpASTVisitor();
+
+        final DumpASTVisitor dumpASTVisitor = new DumpASTVisitor();
         dumpASTVisitor.visit(cu, null);
         System.out.println(dumpASTVisitor.getSource());
     }

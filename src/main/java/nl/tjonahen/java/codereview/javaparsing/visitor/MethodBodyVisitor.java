@@ -18,7 +18,6 @@ package nl.tjonahen.java.codereview.javaparsing.visitor;
 
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import java.util.Stack;
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
+
     private final ArrayList<MethodCall> methods = new ArrayList<>();
 
     private final Stack<ScopeVariable> scopeStack;
@@ -40,8 +40,7 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
     public ArrayList<MethodCall> getMethods() {
         return methods;
     }
-    
-    
+
     private ScopeVariable findType(String name) {
         return scopeStack.stream().filter(v -> v.getName().equals(name)).findFirst().orElse(null);
     }
@@ -52,33 +51,33 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
         String param = "this";
         ScopeVariable paramType = null;
         if (scope != null) {
-            if (scope instanceof NameExpr) {
-                NameExpr name = (NameExpr) scope;
-                param = name.getName();
-                paramType = findType(name.getName());
-            }
-        } else {
-            // global var ?
-
+            final ScopeTypeVisitor scopeTypeVisitor = new ScopeTypeVisitor(scopeStack);
+            
+            scope.accept(scopeTypeVisitor, arg);
+            methods.addAll(scopeTypeVisitor.getMethods());
+            param = scopeTypeVisitor.getName();
+            paramType = findType(param);
+            
         }
         if (paramType == null) {
             // static method call ??
             final ParameterVisitor parameterVisitor = new ParameterVisitor(scopeStack);
             if (n.getArgs() != null) {
-                n.getArgs().forEach(p -> p.accept(parameterVisitor, ""));
+                n.getArgs().forEach(p -> p.accept(parameterVisitor, arg));
+                methods.addAll(parameterVisitor.getMethods());
             }
             methods.add(new MethodCall(arg, param, n.getName() + "(" + parameterVisitor.getParams() + ")"));
         } else {
             ParameterVisitor parameterVisitor = new ParameterVisitor(scopeStack);
             if (n.getArgs() != null) {
-                n.getArgs().forEach(p -> p.accept(parameterVisitor, ""));
+                n.getArgs().forEach(p -> p.accept(parameterVisitor, arg));
+                methods.addAll(parameterVisitor.getMethods());
             }
-            methods.add(new MethodCall(arg, paramType.getType(),n.getName() + "(" + parameterVisitor.getParams() + ")"));
+            methods.add(new MethodCall(arg, paramType.getType(), n.getName() + "(" + parameterVisitor.getParams() + ")"));
         }
 
     }
-    
-    
+
     @Override
     public void visit(VariableDeclarationExpr n, CallScopeType arg) {
         n.getVars().forEach(v -> scopeStack.push(new ScopeVariable(n.getType().toString(), v.getId().getName())));
