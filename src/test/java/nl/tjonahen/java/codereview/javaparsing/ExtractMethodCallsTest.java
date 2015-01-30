@@ -71,7 +71,7 @@ public class ExtractMethodCallsTest {
         final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
-        assertEquals("toUpperCase()", extract.get(0).getSignature());
+        assertEquals("toUpperCase", extract.get(0).getName());
         assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
@@ -93,7 +93,7 @@ public class ExtractMethodCallsTest {
         final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
-        assertEquals("toUpperCase()", extract.get(0).getSignature());
+        assertEquals("toUpperCase", extract.get(0).getName());
         assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
@@ -114,7 +114,7 @@ public class ExtractMethodCallsTest {
         final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
-        assertEquals("toUpperCase()", extract.get(0).getSignature());
+        assertEquals("toUpperCase", extract.get(0).getName());
         assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
@@ -143,19 +143,24 @@ public class ExtractMethodCallsTest {
         final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(3, extract.size());
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
-        assertEquals("calculate()", extract.get(0).getSignature());
+        assertEquals("calculate", extract.get(0).getName());
         assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("Test", extract.get(0).getCallScopeType().getMethodName());
 
         assertEquals("this", extract.get(1).getType());
-        assertEquals("run()", extract.get(1).getSignature());
+        assertEquals("run", extract.get(1).getName());
         assertEquals("nl.tjonahen.sample.test", extract.get(1).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(1).getCallScopeType().getTypeName());
         assertEquals("Test", extract.get(1).getCallScopeType().getMethodName());
         
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(2).getType());
-        assertEquals("process(nl.tjonahen.dummy.IBM, String, int)", extract.get(2).getSignature());
+        assertEquals("process", extract.get(2).getName());
+        assertEquals(3, extract.get(2).getParams().size());
+        assertEquals("nl.tjonahen.dummy.IBM", extract.get(2).getParams().get(0));
+        assertEquals("String", extract.get(2).getParams().get(1));
+        assertEquals("int", extract.get(2).getParams().get(2));
+        
         assertEquals("nl.tjonahen.sample.test", extract.get(2).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(2).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(2).getCallScopeType().getMethodName());
@@ -187,16 +192,23 @@ public class ExtractMethodCallsTest {
         final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(7, extract.size());
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
-        assertEquals("process(String)", extract.get(0).getSignature());
+        assertEquals("process", extract.get(0).getName());
+        assertEquals("String", extract.get(0).getParams().get(0));
         assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
-        assertEquals("process(Integer)", extract.get(1).getSignature());
-        assertEquals("process(Double)", extract.get(2).getSignature());
-        assertEquals("process(Long)", extract.get(3).getSignature());
-        assertEquals("process(Boolean)", extract.get(4).getSignature());
-        assertEquals("process(Char)", extract.get(5).getSignature());
-        assertEquals("process(Object)", extract.get(6).getSignature());
+        assertEquals("process", extract.get(1).getName());
+        assertEquals("Integer", extract.get(1).getParams().get(0));
+        assertEquals("process", extract.get(2).getName());
+        assertEquals("Double", extract.get(2).getParams().get(0));
+        assertEquals("process", extract.get(3).getName());
+        assertEquals("Long", extract.get(3).getParams().get(0));
+        assertEquals("process", extract.get(4).getName());
+        assertEquals("Boolean", extract.get(4).getParams().get(0));
+        assertEquals("process", extract.get(5).getName());
+        assertEquals("Char", extract.get(5).getParams().get(0));
+        assertEquals("process", extract.get(6).getName());
+        assertEquals("Object", extract.get(6).getParams().get(0));
     }
     /**
      * Test of extract method, of class ExtractMethodCalls.
@@ -217,7 +229,9 @@ public class ExtractMethodCallsTest {
         final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
-        assertEquals("format(String, String)", extract.get(0).getSignature());
+        assertEquals("format", extract.get(0).getName());
+        assertEquals("String", extract.get(0).getParams().get(0));
+        assertEquals("String", extract.get(0).getParams().get(1));
         assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
@@ -249,16 +263,17 @@ public class ExtractMethodCallsTest {
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
 
         assertEquals("SimpleDateFormat", extract.get(0).getType());
-        assertEquals("format(Date)", extract.get(0).getSignature());
+        assertEquals("format", extract.get(0).getName());
+        assertEquals("Date", extract.get(0).getParams().get(0));
 
         assertEquals("StringBuffer", extract.get(1).getType());
-        assertEquals("append()", extract.get(1).getSignature());
+        assertEquals("append", extract.get(1).getName());
 
         assertNull(extract.get(2).getType());
-        assertEquals("toString()", extract.get(2).getSignature());
+        assertEquals("toString", extract.get(2).getName());
 
         assertEquals("Header", extract.get(3).getType());
-        assertEquals("setMessageId()", extract.get(3).getSignature());
+        assertEquals("setMessageId", extract.get(3).getName());
     }
     
     

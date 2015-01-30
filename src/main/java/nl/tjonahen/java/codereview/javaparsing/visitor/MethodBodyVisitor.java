@@ -66,14 +66,14 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
                 n.getArgs().forEach(p -> p.accept(parameterVisitor, arg));
                 methods.addAll(parameterVisitor.getMethods());
             }
-            methods.add(new MethodCall(arg, param, n.getName() + "(" + parameterVisitor.getParams() + ")"));
+            methods.add(new MethodCall(arg, param, n.getName(), parameterVisitor.getParams()));
         } else {
             ParameterVisitor parameterVisitor = new ParameterVisitor(scopeStack);
             if (n.getArgs() != null) {
                 n.getArgs().forEach(p -> p.accept(parameterVisitor, arg));
                 methods.addAll(parameterVisitor.getMethods());
             }
-            methods.add(new MethodCall(arg, paramType.getType(), n.getName() + "(" + parameterVisitor.getParams() + ")"));
+            methods.add(new MethodCall(arg, paramType.getType(), n.getName(), parameterVisitor.getParams()));
         }
 
     }

@@ -28,6 +28,7 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -40,10 +41,11 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
     private final ArrayList<MethodCall> methods = new ArrayList<>();
 
 
-    private String params = "";
+    private final List<String> params;
 
     public ParameterVisitor(Stack<ScopeVariable> scopeStack) {
         this.scopeStack = scopeStack;
+        this.params = new ArrayList<>();
     }
 
     public ArrayList<MethodCall> getMethods() {
@@ -52,31 +54,27 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     
     
-    public String getParams() {
+    public List<String> getParams() {
         return params;
     }
 
-    private String add(String params, String type) {
-        if (!params.equals("")) {
-            return params + ", " + type;
-        }
-        return type;
-
+    private void add(String type) {
+        params.add(type);
     }
 
     @Override
     public void visit(StringLiteralExpr n, CallScopeType arg) {
-        params = add(params, "String");
+        add("String");
     }
 
     @Override
     public void visit(NullLiteralExpr n, CallScopeType arg) {
-        params = add(params, "Object");
+        add("Object");
     }
 
     @Override
     public void visit(NameExpr n, CallScopeType arg) {
-        params = add(params, scopeStack
+        add(scopeStack
                 .stream()
                 .filter(v -> v.getName().equals(n.getName()))
                 .map(v -> v.getType())
@@ -86,39 +84,38 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     @Override
     public void visit(LongLiteralExpr n, CallScopeType arg) {
-        params = add(params, "Long");
+        add("Long");
     }
 
     @Override
     public void visit(IntegerLiteralExpr n, CallScopeType arg) {
-        params = add(params, "Integer");
+        add("Integer");
     }
 
     @Override
     public void visit(DoubleLiteralExpr n, CallScopeType arg) {
-        params = add(params, "Double");
+        add("Double");
     }
 
     @Override
     public void visit(CharLiteralExpr n, CallScopeType arg) {
-        params = add(params, "Char");
+        add("Char");
     }
 
     @Override
     public void visit(BooleanLiteralExpr n, CallScopeType arg) {
-        params = add(params, "Boolean");
+        add("Boolean");
     }
 
     @Override
     public void visit(ObjectCreationExpr n, CallScopeType arg) {
-        params = add(params, n.getType().getName());
+        add(n.getType().getName());
     }
 
     @Override
     public void visit(MethodCallExpr n, CallScopeType arg) {
         MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(scopeStack);
         
-//        n.accept(methodBodyVisitor, arg);
         methodBodyVisitor.visit(n, arg);
         
         methods.addAll(methodBodyVisitor.getMethods());

@@ -16,19 +16,25 @@
  */
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
+import java.util.List;
+
 /**
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class MethodCall {
-    private CallScopeType callScopeType;
-    private String type;
-    private String signature;
+    private final CallScopeType callScopeType;
+    private final String type;
+    private final String name;
+    private final List<String> params;
 
-    public MethodCall(CallScopeType callScopeType, String type, String signature) {
+    public MethodCall(final CallScopeType callScopeType, final String type, 
+            final String name, final List<String> params) 
+    {
         this.callScopeType = callScopeType;
         this.type = type;
-        this.signature = signature;
+        this.name = name;
+        this.params = params;
     }
 
     public CallScopeType getCallScopeType() {
@@ -39,9 +45,11 @@ public class MethodCall {
         return type;
     }
 
-    public String getSignature() {
-        return signature;
+    public String getName() {
+        return name;
     }
-    
-    
+
+    public List<String> getParams() {
+        return params;
+    }
 }

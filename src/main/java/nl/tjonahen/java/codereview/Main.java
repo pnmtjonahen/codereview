@@ -55,10 +55,14 @@ public class Main {
             ExtractMethodCalls extractMethodCalls = new  ExtractMethodCalls();
             extractMethodCalls.extract(cu)
                     .stream()
-                    .map(c -> "EXITPOINT " + c.getType()+"::"+c.getSignature())
+                    .map(c -> "EXITPOINT " + c.getType()+"::"+c.getName() + "(" + printParams(c.getParams()) + ")")
                     .forEach(System.out::println);
             
             
         }
+    }
+    
+    private static String printParams(List<String> params) {
+        return params.stream().reduce("", (p, s) -> p + (p.equals("") ? "" : ",") + s );
     }
 }
