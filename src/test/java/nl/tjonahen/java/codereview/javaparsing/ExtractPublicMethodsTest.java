@@ -264,6 +264,28 @@ public class ExtractPublicMethodsTest {
         assertEquals("String ibm(String)", extract.get(1).getSignature());
         
     }
+    /**
+     * Test of extract method, of class ExtractPublicMethods.
+     */
+    @Test
+    public void testExtractWithStaticImport() throws ParseException  {
+        // creates an input stream for the file to be parsed
+
+
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                                + "import static java.util.List.isEmpty;"
+                                + "import nl.tjonahen.sample.IBM;"
+                                + "public class Test { "
+                                + " public List<IBM> ibm(final List<IBM> p) { "
+                                + "     return isEmpty(); "
+                                + " }"
+                                + "}"));
+        
+        final List<PublicMethod> extract = new ExtractPublicMethods().extract(cu);
+        assertEquals(1, extract.size());
+        assertEquals("java.util.List ibm(java.util.List)", extract.get(0).getSignature());
+        
+    }
     
     private InputStream getSource(String source) {
         return new ByteArrayInputStream(source.getBytes());

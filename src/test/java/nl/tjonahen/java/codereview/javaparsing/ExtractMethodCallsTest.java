@@ -28,6 +28,7 @@ import java.util.List;
 import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -324,6 +325,30 @@ public class ExtractMethodCallsTest {
         final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(8, extract.size());
     }
+    
+    @Test
+    public void testExtractWithStaticImport() throws ParseException  {
+        // creates an input stream for the file to be parsed
+
+
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                                + "import static java.util.List.isEmpty;"
+                                + "import nl.tjonahen.sample.IBM;"
+                                + "public class Test { "
+                                + " public List<IBM> ibm(final List<IBM> p) { "
+                                + "     return isEmpty(); "
+                                + " }"
+                                + "}"));
+        
+        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        assertEquals(1, extract.size());
+        assertEquals("java.util.List", extract.get(0).getType());
+        assertEquals("isEmpty", extract.get(0).getName());
+        assertTrue(extract.get(0).getParams().isEmpty());
+
+        
+    }
+    
     private InputStream getSource(String source) {
         return new ByteArrayInputStream(source.getBytes());
     }    

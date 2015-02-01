@@ -99,7 +99,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
         scopeVar.forEach(v -> {
             scopeStack.push(v);
         });
-        final MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(scopeStack);
+        final MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
 
         methodBodyVisitor
                     .visit(n, new CallScopeType(arg.getPackageName(), arg.getTypeName(), n.getName()));
@@ -112,6 +112,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
         }
         
     }
+
 
     @Override
     public void visit(ConstructorDeclaration n, CallScopeType arg) {
@@ -131,7 +132,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
         scopeVar.forEach(v -> {
             scopeStack.push(v);
         });
-        final MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(scopeStack);
+        final MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
 
         methodBodyVisitor
                 .visit(n, new CallScopeType(arg.getPackageName(), arg.getTypeName(), n.getName()));

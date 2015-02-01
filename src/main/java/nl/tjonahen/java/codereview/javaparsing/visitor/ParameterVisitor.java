@@ -38,13 +38,15 @@ import java.util.Stack;
 public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     private final Stack<ScopeVariable> scopeStack;
+    private final FQCMap fqc;
     private final ArrayList<MethodCall> methods = new ArrayList<>();
 
 
     private final List<String> params;
 
-    public ParameterVisitor(Stack<ScopeVariable> scopeStack) {
+    public ParameterVisitor(final FQCMap fqc, final Stack<ScopeVariable> scopeStack) {
         this.scopeStack = scopeStack;
+        this.fqc = fqc;
         this.params = new ArrayList<>();
     }
 
@@ -114,7 +116,7 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     @Override
     public void visit(MethodCallExpr n, CallScopeType arg) {
-        MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(scopeStack);
+        MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
         
         methodBodyVisitor.visit(n, arg);
         

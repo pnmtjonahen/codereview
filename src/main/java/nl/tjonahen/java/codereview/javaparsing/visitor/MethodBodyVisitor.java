@@ -30,11 +30,12 @@ import java.util.Stack;
 public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     private final ArrayList<MethodCall> methods = new ArrayList<>();
-
+    private final FQCMap fqc;
     private final Stack<ScopeVariable> scopeStack;
 
-    public MethodBodyVisitor(Stack<ScopeVariable> scopeStack) {
+    public MethodBodyVisitor(final FQCMap fqc, final Stack<ScopeVariable> scopeStack) {
         this.scopeStack = scopeStack;
+        this.fqc = fqc;
     }
 
     public ArrayList<MethodCall> getMethods() {
@@ -42,38 +43,44 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
     }
 
     private ScopeVariable findType(String name) {
-        return scopeStack.stream().filter(v -> v.getName().equals(name)).findFirst().orElse(null);
+        return scopeStack.stream().filter(v -> v.getName().equals(name)).findFirst().orElse(new ScopeVariable(null, null));
     }
 
     @Override
     public void visit(MethodCallExpr n, CallScopeType arg) {
         final Expression scope = n.getScope();
         String param = "this";
-        ScopeVariable paramType = null;
+        String paramType = null;
         if (scope != null) {
-            final ScopeTypeVisitor scopeTypeVisitor = new ScopeTypeVisitor(scopeStack);
+            final ScopeTypeVisitor scopeTypeVisitor = new ScopeTypeVisitor(fqc, scopeStack);
             
             scope.accept(scopeTypeVisitor, arg);
             methods.addAll(scopeTypeVisitor.getMethods());
             param = scopeTypeVisitor.getName();
-            paramType = findType(param);
+            paramType = findType(scopeTypeVisitor.getName()).getType();
             
+        } else {
+            // possible static import of method
+            paramType = fqc.determineFqc(n.getName());
+            if (paramType.equals(n.getName())) {
+                paramType = "this";
+            }
         }
         if (paramType == null) {
             // static method call ??
-            final ParameterVisitor parameterVisitor = new ParameterVisitor(scopeStack);
+            final ParameterVisitor parameterVisitor = new ParameterVisitor(fqc, scopeStack);
             if (n.getArgs() != null) {
                 n.getArgs().forEach(p -> p.accept(parameterVisitor, arg));
                 methods.addAll(parameterVisitor.getMethods());
             }
             methods.add(new MethodCall(arg, param, n.getName(), parameterVisitor.getParams()));
         } else {
-            ParameterVisitor parameterVisitor = new ParameterVisitor(scopeStack);
+            ParameterVisitor parameterVisitor = new ParameterVisitor(fqc, scopeStack);
             if (n.getArgs() != null) {
                 n.getArgs().forEach(p -> p.accept(parameterVisitor, arg));
                 methods.addAll(parameterVisitor.getMethods());
             }
-            methods.add(new MethodCall(arg, paramType.getType(), n.getName(), parameterVisitor.getParams()));
+            methods.add(new MethodCall(arg, paramType, n.getName(), parameterVisitor.getParams()));
         }
 
     }

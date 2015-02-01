@@ -42,8 +42,18 @@ public class ImportDeclarationVisitor extends VoidVisitorAdapter<List<String>> {
         final ArrayList<String> arrayList = new ArrayList<>();
         n.getName().accept(this, arrayList);
         String importStmt = arrayList.stream().reduce("", (s, v) -> s + v);
-
-        fqc.put(arrayList.get(arrayList.size() - 1), importStmt);
+        if (n.isStatic()) {
+// static method is last             
+            final String method = arrayList.get(arrayList.size() - 1);
+            final String type = importStmt.substring(0, importStmt.lastIndexOf("."));
+            fqc.put(method, type);
+//        } else if (n.isAsterisk()) {
+//            //
+        } else {
+            final String type = arrayList.get(arrayList.size() - 1);
+            fqc.put(type, importStmt);
+        }
+                
     }
 
     @Override

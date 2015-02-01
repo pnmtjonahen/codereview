@@ -30,11 +30,13 @@ import java.util.Stack;
 public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
     
     private final Stack<ScopeVariable> scopeStack;
+    private final FQCMap fqc;
     private final ArrayList<MethodCall> methods = new ArrayList<>();    
     private String name;
 
-    public ScopeTypeVisitor(Stack<ScopeVariable> scopeStack) {
+    public ScopeTypeVisitor(final FQCMap fqc, final Stack<ScopeVariable> scopeStack) {
         this.scopeStack = scopeStack;
+        this.fqc = fqc;
     }
 
     public ArrayList<MethodCall> getMethods() {
@@ -61,7 +63,7 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     @Override
     public void visit(MethodCallExpr n, CallScopeType arg) {
-        MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(scopeStack);
+        MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
         
 //        n.accept(methodBodyVisitor, arg);
         methodBodyVisitor.visit(n, arg);
