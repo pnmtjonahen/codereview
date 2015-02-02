@@ -16,40 +16,34 @@
  */
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
-import java.util.List;
-
 /**
- *
+ * A public method of a type.
+ * 
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class MethodCall {
-    private final CallScopeType callScopeType;
-    private final String type;
-    private final String name;
-    private final List<String> params;
+public class EntryPoint {
+    private final String packageName;
+    private final String typeName;
+    private final String signature;
 
-    public MethodCall(final CallScopeType callScopeType, final String type, 
-            final String name, final List<String> params) 
-    {
-        this.callScopeType = callScopeType;
-        this.type = type;
-        this.name = name;
-        this.params = params;
+    public EntryPoint(final String packageName, final String typeName, final String signature) {
+        this.packageName = packageName;
+        this.typeName = typeName;
+        this.signature = signature;
     }
 
-    public CallScopeType getCallScopeType() {
-        return callScopeType;
+
+    public String getSignature() {
+        return signature;
     }
 
-    public String getType() {
-        return type;
+    public String getTypeName() {
+        return typeName;
     }
 
-    public String getName() {
-        return name;
+    public String getPackageName() {
+        return packageName;
     }
-
-    public List<String> getParams() {
-        return params;
-    }
+    
+    
 }

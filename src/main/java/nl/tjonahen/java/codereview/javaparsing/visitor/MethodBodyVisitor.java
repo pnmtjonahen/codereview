@@ -29,7 +29,7 @@ import java.util.Stack;
  */
 public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
 
-    private final ArrayList<MethodCall> methods = new ArrayList<>();
+    private final ArrayList<ExitPoint> methods = new ArrayList<>();
     private final FQCMap fqc;
     private final Stack<ScopeVariable> scopeStack;
 
@@ -38,7 +38,7 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
         this.fqc = fqc;
     }
 
-    public ArrayList<MethodCall> getMethods() {
+    public ArrayList<ExitPoint> getMethods() {
         return methods;
     }
 
@@ -73,14 +73,14 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
                 n.getArgs().forEach(p -> p.accept(parameterVisitor, arg));
                 methods.addAll(parameterVisitor.getMethods());
             }
-            methods.add(new MethodCall(arg, param, n.getName(), parameterVisitor.getParams()));
+            methods.add(new ExitPoint(arg, param, n.getName(), parameterVisitor.getParams()));
         } else {
             ParameterVisitor parameterVisitor = new ParameterVisitor(fqc, scopeStack);
             if (n.getArgs() != null) {
                 n.getArgs().forEach(p -> p.accept(parameterVisitor, arg));
                 methods.addAll(parameterVisitor.getMethods());
             }
-            methods.add(new MethodCall(arg, paramType, n.getName(), parameterVisitor.getParams()));
+            methods.add(new ExitPoint(arg, paramType, n.getName(), parameterVisitor.getParams()));
         }
 
     }

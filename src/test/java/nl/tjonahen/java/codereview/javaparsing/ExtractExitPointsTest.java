@@ -25,7 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCall;
+import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -35,7 +35,7 @@ import org.junit.Test;
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class ExtractMethodCallsTest {
+public class ExtractExitPointsTest {
     
 
     @Test
@@ -50,7 +50,7 @@ public class ExtractMethodCallsTest {
             in.close();
         }
         
-        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(104, extract.size());
         
 
@@ -69,7 +69,7 @@ public class ExtractMethodCallsTest {
                                 + " }"
                                 + "}"));
         
-        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
         assertEquals("toUpperCase", extract.get(0).getName());
@@ -91,7 +91,7 @@ public class ExtractMethodCallsTest {
                                 + " }"
                                 + "}"));
         
-        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
         assertEquals("toUpperCase", extract.get(0).getName());
@@ -112,7 +112,7 @@ public class ExtractMethodCallsTest {
                                 + " }"
                                 + "}"));
         
-        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
         assertEquals("toUpperCase", extract.get(0).getName());
@@ -141,7 +141,7 @@ public class ExtractMethodCallsTest {
                                 + " }"
                                 + "}"));
         
-        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(3, extract.size());
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
         assertEquals("calculate", extract.get(0).getName());
@@ -190,7 +190,7 @@ public class ExtractMethodCallsTest {
                                 + " }"
                                 + "}"));
         
-        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(7, extract.size());
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
         assertEquals("process", extract.get(0).getName());
@@ -227,7 +227,7 @@ public class ExtractMethodCallsTest {
                                 + " }"
                                 + "}"));
         
-        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
         assertEquals("format", extract.get(0).getName());
@@ -257,7 +257,7 @@ public class ExtractMethodCallsTest {
                                 + " }"
                                 + "}"));
         
-        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(4, extract.size());
         assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
@@ -322,7 +322,7 @@ public class ExtractMethodCallsTest {
                                     ""
                                 + "}"));
         
-        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(8, extract.size());
     }
     
@@ -340,7 +340,7 @@ public class ExtractMethodCallsTest {
                                 + " }"
                                 + "}"));
         
-        final List<MethodCall> extract = new ExtractMethodCalls().extract(cu);
+        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
         assertEquals("isEmpty", extract.get(0).getName());

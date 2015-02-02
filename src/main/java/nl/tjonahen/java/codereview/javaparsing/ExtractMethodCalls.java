@@ -20,7 +20,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import java.util.List;
 import nl.tjonahen.java.codereview.javaparsing.visitor.CallScopeType;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ImportDeclarationVisitor;
-import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCall;
+import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCallVisitor;
 
 /**
@@ -29,7 +29,7 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCallVisitor;
  */
 public class ExtractMethodCalls {
 
-    public List<MethodCall> extract(final CompilationUnit cu) {
+    public List<ExitPoint> extract(final CompilationUnit cu) {
         final ImportDeclarationVisitor importDeclarationVisitor = new ImportDeclarationVisitor();
         importDeclarationVisitor.visit(cu, null);
 

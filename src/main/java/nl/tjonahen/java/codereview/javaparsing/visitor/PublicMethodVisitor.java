@@ -36,10 +36,10 @@ import java.util.List;
  */
 public class PublicMethodVisitor extends VoidVisitorAdapter<ScopeType> {
 
-    private final ArrayList<PublicMethod> methods = new ArrayList<>();
+    private final ArrayList<EntryPoint> methods = new ArrayList<>();
     private final FQCMap fqc;
 
-    public ArrayList<PublicMethod> getMethods() {
+    public ArrayList<EntryPoint> getMethods() {
         return methods;
     }
 
@@ -63,7 +63,7 @@ public class PublicMethodVisitor extends VoidVisitorAdapter<ScopeType> {
         final String params = params(n.getParameters());
         final String signature = "" + determineTypeName(n.getType()) + " " + n.getName() + "(" + params + ")";
 
-        methods.add(new PublicMethod(type.getPackageName(), type.getTypeName(), signature));
+        methods.add(new EntryPoint(type.getPackageName(), type.getTypeName(), signature));
 
     }
 
@@ -81,7 +81,7 @@ public class PublicMethodVisitor extends VoidVisitorAdapter<ScopeType> {
         final String params = params(n.getParameters());
         final String signature = "" + n.getName() + "(" + params + ")";
 
-        methods.add(new PublicMethod(type.getPackageName(), type.getTypeName(), signature));
+        methods.add(new EntryPoint(type.getPackageName(), type.getTypeName(), signature));
 
     }
 

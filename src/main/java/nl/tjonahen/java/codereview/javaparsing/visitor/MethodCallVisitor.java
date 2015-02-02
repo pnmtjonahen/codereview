@@ -36,11 +36,11 @@ import java.util.stream.Collectors;
  */
 public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
 
-    private final ArrayList<MethodCall> methods = new ArrayList<>();
+    private final ArrayList<ExitPoint> methods = new ArrayList<>();
     private final FQCMap fqc;
     private final Stack<ScopeVariable> scopeStack = new Stack<>();
 
-    public ArrayList<MethodCall> getMethods() {
+    public ArrayList<ExitPoint> getMethods() {
         return methods;
     }
 

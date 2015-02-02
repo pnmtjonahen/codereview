@@ -31,7 +31,7 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
     
     private final Stack<ScopeVariable> scopeStack;
     private final FQCMap fqc;
-    private final ArrayList<MethodCall> methods = new ArrayList<>();    
+    private final ArrayList<ExitPoint> methods = new ArrayList<>();    
     private String name;
 
     public ScopeTypeVisitor(final FQCMap fqc, final Stack<ScopeVariable> scopeStack) {
@@ -39,7 +39,7 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
         this.fqc = fqc;
     }
 
-    public ArrayList<MethodCall> getMethods() {
+    public ArrayList<ExitPoint> getMethods() {
         return methods;
     }
 

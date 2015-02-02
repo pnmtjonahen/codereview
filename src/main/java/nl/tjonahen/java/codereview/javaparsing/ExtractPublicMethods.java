@@ -19,7 +19,7 @@ package nl.tjonahen.java.codereview.javaparsing;
 import com.github.javaparser.ast.CompilationUnit;
 import java.util.List;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ImportDeclarationVisitor;
-import nl.tjonahen.java.codereview.javaparsing.visitor.PublicMethod;
+import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.PublicMethodVisitor;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ScopeType;
 
@@ -30,7 +30,7 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.ScopeType;
  */
 public class ExtractPublicMethods {
 
-    public List<PublicMethod> extract(final CompilationUnit cu) {
+    public List<EntryPoint> extract(final CompilationUnit cu) {
         final ImportDeclarationVisitor importDeclarationVisitor = new ImportDeclarationVisitor();
         importDeclarationVisitor.visit(cu, null);
 
