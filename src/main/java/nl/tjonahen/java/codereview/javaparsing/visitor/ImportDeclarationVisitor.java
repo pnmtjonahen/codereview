@@ -47,6 +47,9 @@ public class ImportDeclarationVisitor extends VoidVisitorAdapter<List<String>> {
             final String method = arrayList.get(arrayList.size() - 1);
             final String type = importStmt.substring(0, importStmt.lastIndexOf("."));
             fqc.put(method, type);
+            final String baseType = arrayList.get(arrayList.size() - 3);
+            fqc.put(baseType, type);
+            
 //        } else if (n.isAsterisk()) {
 //            //
         } else {

@@ -18,32 +18,32 @@ package nl.tjonahen.java.codereview.javaparsing;
 
 import com.github.javaparser.ast.CompilationUnit;
 import java.util.List;
-import nl.tjonahen.java.codereview.javaparsing.visitor.CallScopeType;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ImportDeclarationVisitor;
-import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
-import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCallVisitor;
+import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
+import nl.tjonahen.java.codereview.javaparsing.visitor.DeclaringMethodVisitor;
+import nl.tjonahen.java.codereview.javaparsing.visitor.ScopeType;
 
 /**
+ * extract all public methods from the compilation unit
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class ExtractMethodCalls {
+public class ExtractEntryPoints {
 
-    public List<ExitPoint> extract(final CompilationUnit cu) {
+    public List<EntryPoint> extract(final CompilationUnit cu) {
         final ImportDeclarationVisitor importDeclarationVisitor = new ImportDeclarationVisitor();
         importDeclarationVisitor.visit(cu, null);
 
-        final MethodCallVisitor methodCallVisitor = new MethodCallVisitor(importDeclarationVisitor.getFqc());
+        final DeclaringMethodVisitor publicMethodVisitor = new DeclaringMethodVisitor(importDeclarationVisitor.getFqc());
         final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
         if (cu.getTypes() != null) {
             cu.getTypes().stream().forEach((td) -> {
-                td.accept(methodCallVisitor, new CallScopeType(packageName));
+                td.accept(publicMethodVisitor, new ScopeType(packageName, null));
             });
         } else {
             System.out.println("*** ERROR no type");
         }
-        return methodCallVisitor.getMethods();
-
+        return publicMethodVisitor.getMethods();
     }
 
 }

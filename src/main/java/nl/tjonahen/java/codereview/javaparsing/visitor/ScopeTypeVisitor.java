@@ -19,6 +19,7 @@ package nl.tjonahen.java.codereview.javaparsing.visitor;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.SuperExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -28,10 +29,10 @@ import java.util.Stack;
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
-    
+
     private final Stack<ScopeVariable> scopeStack;
     private final FQCMap fqc;
-    private final ArrayList<ExitPoint> methods = new ArrayList<>();    
+    private final ArrayList<ExitPoint> methods = new ArrayList<>();
     private String name;
 
     public ScopeTypeVisitor(final FQCMap fqc, final Stack<ScopeVariable> scopeStack) {
@@ -43,14 +44,10 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
         return methods;
     }
 
-    
-    
     public String getName() {
         return name;
     }
-    
-    
-    
+
     @Override
     public void visit(ObjectCreationExpr n, CallScopeType arg) {
         name = n.getType().getName();
@@ -64,11 +61,17 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
     @Override
     public void visit(MethodCallExpr n, CallScopeType arg) {
         MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
-        
+
 //        n.accept(methodBodyVisitor, arg);
         methodBodyVisitor.visit(n, arg);
-        
-        methods.addAll(methodBodyVisitor.getMethods());    }
-    
+
+        methods.addAll(methodBodyVisitor.getMethods());
+    }
+
+    @Override
+    public void visit(SuperExpr n, CallScopeType arg) {
+        name = "super";
+    }
+
     
 }

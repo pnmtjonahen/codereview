@@ -34,7 +34,7 @@ import java.util.List;
  * 
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class PublicMethodVisitor extends VoidVisitorAdapter<ScopeType> {
+public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
 
     private final ArrayList<EntryPoint> methods = new ArrayList<>();
     private final FQCMap fqc;
@@ -43,7 +43,7 @@ public class PublicMethodVisitor extends VoidVisitorAdapter<ScopeType> {
         return methods;
     }
 
-    public PublicMethodVisitor(final FQCMap fqc) {
+    public DeclaringMethodVisitor(final FQCMap fqc) {
         this.fqc = fqc;
     }
     
@@ -57,13 +57,12 @@ public class PublicMethodVisitor extends VoidVisitorAdapter<ScopeType> {
 
     @Override
     public void visit(MethodDeclaration n, ScopeType type) {
-        if (isNotPublic(n.getModifiers())) {
-            return;
-        }
+        boolean internal = isNotPublic(n.getModifiers());
+        
         final String params = params(n.getParameters());
         final String signature = "" + determineTypeName(n.getType()) + " " + n.getName() + "(" + params + ")";
 
-        methods.add(new EntryPoint(type.getPackageName(), type.getTypeName(), signature));
+        methods.add(new EntryPoint(internal, type.getPackageName(), type.getTypeName(), signature));
 
     }
 
@@ -75,13 +74,12 @@ public class PublicMethodVisitor extends VoidVisitorAdapter<ScopeType> {
 
     @Override
     public void visit(ConstructorDeclaration n, ScopeType type) {
-        if (isNotPublic(n.getModifiers())) {
-            return;
-        }
+        final boolean internal = isNotPublic(n.getModifiers());
+        
         final String params = params(n.getParameters());
         final String signature = "" + n.getName() + "(" + params + ")";
 
-        methods.add(new EntryPoint(type.getPackageName(), type.getTypeName(), signature));
+        methods.add(new EntryPoint(internal, type.getPackageName(), type.getTypeName(), signature));
 
     }
 

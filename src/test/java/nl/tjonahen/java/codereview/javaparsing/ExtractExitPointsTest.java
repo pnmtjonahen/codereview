@@ -36,7 +36,6 @@ import org.junit.Test;
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class ExtractExitPointsTest {
-    
 
     @Test
     public void testExtractTest() throws FileNotFoundException, ParseException, IOException {
@@ -49,27 +48,27 @@ public class ExtractExitPointsTest {
         } finally {
             in.close();
         }
-        
-        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(104, extract.size());
-        
 
     }
+
     /**
      * Test of extract method, of class ExtractMethodCalls.
      */
     @Test
     public void testExtractSimple() throws ParseException {
-        
+
         final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "public class Test { "
-                                + " public Test() {}"
-                                + " public String ibm(String p) { "
-                                + "     return p.toUpperCase(); "
-                                + " }"
-                                + "}"));
-        
-        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
+                + "public class Test { "
+                + " public Test() {}"
+                + " public String ibm(String p) { "
+                + "     return p.toUpperCase(); "
+                + " }"
+                + "}"));
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
         assertEquals("toUpperCase", extract.get(0).getName());
@@ -77,21 +76,22 @@ public class ExtractExitPointsTest {
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
     }
+
     /**
      * Test of extract method, of class ExtractMethodCalls.
      */
     @Test
     public void testExtractPublicCallAssignment() throws ParseException {
-        
+
         final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "public class Test { "
-                                + " public Test() {}"
-                                + " public void ibm(String p) { "
-                                + "     String value = p.toUpperCase(); "
-                                + " }"
-                                + "}"));
-        
-        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
+                + "public class Test { "
+                + " public Test() {}"
+                + " public void ibm(String p) { "
+                + "     String value = p.toUpperCase(); "
+                + " }"
+                + "}"));
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
         assertEquals("toUpperCase", extract.get(0).getName());
@@ -102,17 +102,17 @@ public class ExtractExitPointsTest {
 
     @Test
     public void testExtractWithGenerics() throws ParseException {
-        
+
         final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "import java.util.List;"
-                                + "public class Test { "
-                                + " public Test() {}"
-                                + " public List<String> ibm(List<String> p) { "
-                                + "     return p.toUpperCase(); "
-                                + " }"
-                                + "}"));
-        
-        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
+                + "import java.util.List;"
+                + "public class Test { "
+                + " public Test() {}"
+                + " public List<String> ibm(List<String> p) { "
+                + "     return p.toUpperCase(); "
+                + " }"
+                + "}"));
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
         assertEquals("toUpperCase", extract.get(0).getName());
@@ -120,28 +120,29 @@ public class ExtractExitPointsTest {
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
     }
+
     /**
      * Test of extract method, of class ExtractMethodCalls.
      */
     @Test
     public void testExtractWithParams() throws ParseException {
-        
+
         final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "package nl.tjonahen.sample.test; "
-                                + "import nl.tjonahen.dummy.IBM; "
-                                + "public class Test { "
-                                + " private int intValue;"
-                                + " public Test(IBM p) {"
-                                + "     intValue = p.calculate();"
-                                + "     run();"
-                                + " }"
-                                + " public String ibm(IBM p) { "
-                                + "     String var = null;"    
-                                + "     return p.process(p, var, intValue); "
-                                + " }"
-                                + "}"));
-        
-        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
+                + "package nl.tjonahen.sample.test; "
+                + "import nl.tjonahen.dummy.IBM; "
+                + "public class Test { "
+                + " private int intValue;"
+                + " public Test(IBM p) {"
+                + "     intValue = p.calculate();"
+                + "     run();"
+                + " }"
+                + " public String ibm(IBM p) { "
+                + "     String var = null;"
+                + "     return p.process(p, var, intValue); "
+                + " }"
+                + "}"));
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(3, extract.size());
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
         assertEquals("calculate", extract.get(0).getName());
@@ -149,48 +150,48 @@ public class ExtractExitPointsTest {
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("Test", extract.get(0).getCallScopeType().getMethodName());
 
-        assertEquals("this", extract.get(1).getType());
+        assertEquals("", extract.get(1).getType());
         assertEquals("run", extract.get(1).getName());
         assertEquals("nl.tjonahen.sample.test", extract.get(1).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(1).getCallScopeType().getTypeName());
         assertEquals("Test", extract.get(1).getCallScopeType().getMethodName());
-        
+
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(2).getType());
         assertEquals("process", extract.get(2).getName());
         assertEquals(3, extract.get(2).getParams().size());
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(2).getParams().get(0));
         assertEquals("String", extract.get(2).getParams().get(1));
         assertEquals("int", extract.get(2).getParams().get(2));
-        
+
         assertEquals("nl.tjonahen.sample.test", extract.get(2).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(2).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(2).getCallScopeType().getMethodName());
-        
+
     }
-    
+
     /**
      * Test of extract method, of class ExtractMethodCalls.
      */
     @Test
     public void testExtractWithLiterals() throws ParseException {
-        
+
         final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "package nl.tjonahen.sample.test; "
-                                + "import nl.tjonahen.dummy.IBM; "
-                                + "public class Test { "
-                                + " public Test() {}"
-                                + " public void ibm(IBM p) { "
-                                + "     p.process(\"dummy\"); "
-                                + "     p.process(1); "
-                                + "     p.process(0.1); "
-                                + "     p.process(1L); "
-                                + "     p.process(true); "
-                                + "     p.process('a'); "
-                                + "     p.process(null); "
-                                + " }"
-                                + "}"));
-        
-        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
+                + "package nl.tjonahen.sample.test; "
+                + "import nl.tjonahen.dummy.IBM; "
+                + "public class Test { "
+                + " public Test() {}"
+                + " public void ibm(IBM p) { "
+                + "     p.process(\"dummy\"); "
+                + "     p.process(1); "
+                + "     p.process(0.1); "
+                + "     p.process(1L); "
+                + "     p.process(true); "
+                + "     p.process('a'); "
+                + "     p.process(null); "
+                + " }"
+                + "}"));
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(7, extract.size());
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
         assertEquals("process", extract.get(0).getName());
@@ -211,23 +212,24 @@ public class ExtractExitPointsTest {
         assertEquals("process", extract.get(6).getName());
         assertEquals("Object", extract.get(6).getParams().get(0));
     }
+
     /**
      * Test of extract method, of class ExtractMethodCalls.
      */
     @Test
     public void testExtractWithStaticCall() throws ParseException {
-        
+
         final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "package nl.tjonahen.sample.test; "
-                                + "import nl.tjonahen.dummy.IBM; "
-                                + "public class Test { "
-                                + " public Test() {}"
-                                + " public void ibm(IBM p) { "
-                                + "     String.format(\"%s\", \"dummy\"); "
-                                + " }"
-                                + "}"));
-        
-        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
+                + "package nl.tjonahen.sample.test; "
+                + "import nl.tjonahen.dummy.IBM; "
+                + "public class Test { "
+                + " public Test() {}"
+                + " public void ibm(IBM p) { "
+                + "     String.format(\"%s\", \"dummy\"); "
+                + " }"
+                + "}"));
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
         assertEquals("format", extract.get(0).getName());
@@ -237,33 +239,33 @@ public class ExtractExitPointsTest {
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
     }
-    
+
     @Test
     public void testExtractWithNested() throws ParseException {
-        
+
         final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "package nl.tjonahen.sample.test; "
-                                + "import nl.tjonahen.dummy.IBM; "
-                                + "import nl.tjonahen.dummy.Header; "
-                                + "import java.text.SimpleDateFormat;"
-                                + "import java.util.Date;"                
-                                + "public class Test { "
-                                + " public Test() {}"
-                                + " public void ibm(IBM p) { "
-                                + "     Header header = new Header();"
-                                + "     SimpleDateFormat sdf = new SimpleDateFormat();"
-                                + "     String servicePrefix = \"prefix\";"
-                                + "     header.setMessageId(new StringBuffer(servicePrefix).append(sdf.format(new Date())).toString());"
-                                + " }"
-                                + "}"));
-        
-        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
+                + "package nl.tjonahen.sample.test; "
+                + "import nl.tjonahen.dummy.IBM; "
+                + "import nl.tjonahen.dummy.Header; "
+                + "import java.text.SimpleDateFormat;"
+                + "import java.util.Date;"
+                + "public class Test { "
+                + " public Test() {}"
+                + " public void ibm(IBM p) { "
+                + "     Header header = new Header();"
+                + "     SimpleDateFormat sdf = new SimpleDateFormat();"
+                + "     String servicePrefix = \"prefix\";"
+                + "     header.setMessageId(new StringBuffer(servicePrefix).append(sdf.format(new Date())).toString());"
+                + " }"
+                + "}"));
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(4, extract.size());
         assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
 
-        assertEquals("SimpleDateFormat", extract.get(0).getType());
+        assertEquals("java.text.SimpleDateFormat", extract.get(0).getType());
         assertEquals("format", extract.get(0).getName());
         assertEquals("Date", extract.get(0).getParams().get(0));
 
@@ -273,83 +275,145 @@ public class ExtractExitPointsTest {
         assertNull(extract.get(2).getType());
         assertEquals("toString", extract.get(2).getName());
 
-        assertEquals("Header", extract.get(3).getType());
+        assertEquals("nl.tjonahen.dummy.Header", extract.get(3).getType());
         assertEquals("setMessageId", extract.get(3).getName());
     }
-    
-    
+
     @Test
     public void testExtractTrainWreck() throws ParseException {
-        
+
         final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "package nl.tjonahen.sample.test; "
-                                + "import nl.tjonahen.dummy.IBM; "
-                                + "import nl.tjonahen.dummy.Header; " +
-                                "import java.util.ArrayList;" +
-                                "import java.util.List;" +
-                                "" +
-                                "import nl.rabobank.gict.mcv.business.module.common.BusinessModule;" +
-                                "import nl.rabobank.gict.mcv.business.module.common.ProcessManager;" +
-                                "import nl.rabobank.gict.mcv.business.module.common.ValidationResult;" +
-                                "import nl.rabobank.gict.mcv.presentation.menustate.service.MenuService;" +
-                                "import nl.rabobank.gict.mcv.presentation.menustate.state.PageState;" +
-                                "import nl.rabobank.gict.mcv.presentation.menustate.view.ProcessType;" +
-                                "import nl.rabobank.gict.mcv.presentation.menustate.view.ViewName;" +
-                                ""       
-                                + "import java.util.Date;"                
-                                + "public class Test { "
-                                + " public Test() {}" +
-                                    "    public List<PageState> determineMenuState() {" +
-                                    "        final List<PageState> menuList = new ArrayList<PageState>();" +
-                                    "        boolean accessible = true;" +
-                                    "        for (final BusinessModule businessModule: processManager.getBusinessModulesForCurrentProcess()) {" +
-                                    "        	boolean validated = isValid(businessModule);" +
-                                    "            final PageState step =" +
-                                    "                new PageState.Builder(new ViewName(businessModule.getRenderParam()))" +
-                                    "            		.setVisible(true)" +
-                                    "                    .setAccessible(accessible)" +
-                                    "                    .setVisited(validated)" +
-                                    "                    .setValidated(validated)" +
-                                    "                    .build();" +
-                                    "            if (!validated) {" +
-                                    "            	accessible = false;" +
-                                    "            }" +
-                                    "            menuList.add(step);" +
-                                    "        }" +
-                                    "" +
-                                    "        return menuList;" +
-                                    "    }" +
-                                    ""
-                                + "}"));
-        
-        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
+                + "package nl.tjonahen.sample.test; "
+                + "import nl.tjonahen.dummy.IBM; "
+                + "import nl.tjonahen.dummy.Header; "
+                + "import java.util.ArrayList;"
+                + "import java.util.List;"
+                + ""
+                + "import nl.rabobank.gict.mcv.business.module.common.BusinessModule;"
+                + "import nl.rabobank.gict.mcv.business.module.common.ProcessManager;"
+                + "import nl.rabobank.gict.mcv.business.module.common.ValidationResult;"
+                + "import nl.rabobank.gict.mcv.presentation.menustate.service.MenuService;"
+                + "import nl.rabobank.gict.mcv.presentation.menustate.state.PageState;"
+                + "import nl.rabobank.gict.mcv.presentation.menustate.view.ProcessType;"
+                + "import nl.rabobank.gict.mcv.presentation.menustate.view.ViewName;"
+                + ""
+                + "import java.util.Date;"
+                + "public class Test { "
+                + " public Test() {}"
+                + "    public List<PageState> determineMenuState() {"
+                + "        final List<PageState> menuList = new ArrayList<PageState>();"
+                + "        boolean accessible = true;"
+                + "        for (final BusinessModule businessModule: processManager.getBusinessModulesForCurrentProcess()) {"
+                + "        	boolean validated = isValid(businessModule);"
+                + "            final PageState step ="
+                + "                new PageState.Builder(new ViewName(businessModule.getRenderParam()))"
+                + "            		.setVisible(true)"
+                + "                    .setAccessible(accessible)"
+                + "                    .setVisited(validated)"
+                + "                    .setValidated(validated)"
+                + "                    .build();"
+                + "            if (!validated) {"
+                + "            	accessible = false;"
+                + "            }"
+                + "            menuList.add(step);"
+                + "        }"
+                + ""
+                + "        return menuList;"
+                + "    }"
+                + ""
+                + "}"));
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(8, extract.size());
     }
-    
+
     @Test
-    public void testExtractWithStaticImport() throws ParseException  {
+    public void testExtractWithStaticImport() throws ParseException {
         // creates an input stream for the file to be parsed
 
-
         final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "import static java.util.List.isEmpty;"
-                                + "import nl.tjonahen.sample.IBM;"
-                                + "public class Test { "
-                                + " public List<IBM> ibm(final List<IBM> p) { "
-                                + "     return isEmpty(); "
-                                + " }"
-                                + "}"));
-        
-        final List<ExitPoint> extract = new ExtractMethodCalls().extract(cu);
+                + "import static java.util.List.isEmpty;"
+                + "import nl.tjonahen.sample.IBM;"
+                + "public class Test { "
+                + " public List<IBM> ibm(final List<IBM> p) { "
+                + "     return isEmpty(); "
+                + " }"
+                + "}"));
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
         assertEquals("isEmpty", extract.get(0).getName());
         assertTrue(extract.get(0).getParams().isEmpty());
 
+    }
+
+    @Test
+    public void testInlineDeclaredVar() throws ParseException {
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                + "package nl.tjonahen.dummy;"
+                + "import nl.tjonahen.dummy.CreditCardArrangement;"
+                + "import nl.tjonahen.dummy.CreditCard;"
+                + "import nl.tjonahen.dummy.FundingInfo;"
+                + "import nl.tjonahen.dummy.Arrangement;"
+                + "import nl.tjonahen.dummy.Identifier;"
+                + "import nl.tjonahen.dummy.ContainerOrderServiceClient;"
+                + "import nl.tjonahen.dummy.FundingInfoServiceClient;"
+                + "import nl.tjonahen.dummy.PaymentAccountArrangementServiceClient;"
+                + "import nl.tjonahen.dummy.RetrieveArrangementDetailsCreditCardServiceClient;"
+                + ""
+                + "import java.util.ArrayList;"
+                + "import java.util.List;"
+                + ""
+                + "public class Test { "
+                + "    private List<Arrangement> getCreditCardArrangementsOfCurrentAccount(String currentAgreementNumber,"
+                + "                                                                        List<Arrangement> paymentAccountArrangementList)"
+                + "    {"
+                + "        List<Arrangement> creditCardArrangements = new ArrayList<Arrangement>();"
+                + ""
+                + "        for (Arrangement arrangement : paymentAccountArrangementList) {"
+                + "            if (thisIsTheSameArrangement(arrangement, currentAgreementNumber)) {"
+                + "                for (Arrangement subArrangement : arrangement.getSubArrangements()) {"
+                + "                    if (isCreditCardArrangement(subArrangement)) {"
+                + "                        creditCardArrangements.add(subArrangement);"
+                + "                    }"
+                + "                }"
+                + "            }"
+                + "        }"
+                + "        return creditCardArrangements;"
+                + "    }"
+                + "}"));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        assertEquals(4, extract.size());
+        assertEquals("", extract.get(0).getType());
+        assertEquals("thisIsTheSameArrangement", extract.get(0).getName());
+        assertEquals("nl.tjonahen.dummy.Arrangement", extract.get(0).getParams().get(0));
+    }
+
+    @Test
+    public void testExtendsImplements() throws ParseException {
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                + "package nl.tjonahen.dummy;"
+                + ""
+                + "public class Test extends AbstractTest { "
+                + " public Test(String code) {"
+                + "     this(code);" 
+                + " }"
+                + " public List<IBM> ibm(final List<IBM> p) { "
+                + "     return super.ibm(p);"
+                + " }"
+                + "}"));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        assertEquals(1, extract.size());
+        assertEquals("super",extract.get(0).getType());
+        assertEquals("ibm", extract.get(0).getName());
+        assertEquals("List", extract.get(0).getParams().get(0));
+        
+        
         
     }
-    
+            
     private InputStream getSource(String source) {
         return new ByteArrayInputStream(source.getBytes());
-    }    
+    }
 }

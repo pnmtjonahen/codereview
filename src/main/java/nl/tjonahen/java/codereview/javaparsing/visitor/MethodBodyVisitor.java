@@ -49,7 +49,7 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
     @Override
     public void visit(MethodCallExpr n, CallScopeType arg) {
         final Expression scope = n.getScope();
-        String param = "this";
+        String param = "";
         String paramType = null;
         if (scope != null) {
             final ScopeTypeVisitor scopeTypeVisitor = new ScopeTypeVisitor(fqc, scopeStack);
@@ -63,7 +63,7 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
             // possible static import of method
             paramType = fqc.determineFqc(n.getName());
             if (paramType.equals(n.getName())) {
-                paramType = "this";
+                paramType = "";
             }
         }
         if (paramType == null) {
@@ -87,7 +87,7 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     @Override
     public void visit(VariableDeclarationExpr n, CallScopeType arg) {
-        n.getVars().forEach(v -> scopeStack.push(new ScopeVariable(n.getType().toString(), v.getId().getName())));
+        n.getVars().forEach(v -> scopeStack.push(new ScopeVariable(fqc.determineFqc(n.getType().toString()), v.getId().getName())));
         super.visit(n, arg);
     }
 

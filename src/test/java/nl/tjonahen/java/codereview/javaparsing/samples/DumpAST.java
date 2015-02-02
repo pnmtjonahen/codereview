@@ -13,7 +13,7 @@ import java.io.InputStream;
 public class DumpAST {
 
     public static void main(String[] args) throws Exception {
-        CompilationUnit cu = getTrainWreck();
+        CompilationUnit cu = getInlineDeclare();
         final DumpASTVisitor dumpASTVisitor = new DumpASTVisitor();
         dumpASTVisitor.visit(cu, null);
         System.out.println(dumpASTVisitor.getSource());
@@ -107,7 +107,28 @@ public class DumpAST {
                 + " }"
                 + "}"));
     }
+    private static CompilationUnit getInlineDeclare() throws ParseException {
 
+        return JavaParser.parse(getSource(""+
+                "public class Test { "+
+"    private List<Arrangement> getCreditCardArrangementsOfCurrentAccount(String currentAgreementNumber,\n" +
+"                                                                        List<Arrangement> paymentAccountArrangementList)\n" +
+"    {\n" +
+"        List<Arrangement> creditCardArrangements = new ArrayList<Arrangement>();\n" +
+"\n" +
+"        for (Arrangement arrangement : paymentAccountArrangementList) {\n" +
+"            if (thisIsTheSameArrangement(arrangement, currentAgreementNumber)) {\n" +
+"                for (Arrangement subArrangement : arrangement.getSubArrangements()) {\n" +
+"                    if (isCreditCardArrangement(subArrangement)) {\n" +
+"                        creditCardArrangements.add(subArrangement);\n" +
+"                    }\n" +
+"                }\n" +
+"            }\n" +
+"        }\n" +
+"        return creditCardArrangements;\n" +
+"    }"    
+                + "}"));
+    }
     private static InputStream getSource(String source) {
         return new ByteArrayInputStream(source.getBytes());
     }

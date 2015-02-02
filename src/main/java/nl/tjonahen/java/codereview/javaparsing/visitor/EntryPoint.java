@@ -22,11 +22,13 @@ package nl.tjonahen.java.codereview.javaparsing.visitor;
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class EntryPoint {
+    private final boolean internal;
     private final String packageName;
     private final String typeName;
     private final String signature;
 
-    public EntryPoint(final String packageName, final String typeName, final String signature) {
+    public EntryPoint(final boolean internal, final String packageName, final String typeName, final String signature) {
+        this.internal = internal;
         this.packageName = packageName;
         this.typeName = typeName;
         this.signature = signature;
@@ -43,6 +45,10 @@ public class EntryPoint {
 
     public String getPackageName() {
         return packageName;
+    }
+
+    public boolean isInternal() {
+        return internal;
     }
     
     

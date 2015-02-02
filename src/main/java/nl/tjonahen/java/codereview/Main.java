@@ -16,8 +16,8 @@
  */
 package nl.tjonahen.java.codereview;
 
-import nl.tjonahen.java.codereview.javaparsing.ExtractPublicMethods;
-import nl.tjonahen.java.codereview.javaparsing.ExtractMethodCalls;
+import nl.tjonahen.java.codereview.javaparsing.ExtractEntryPoints;
+import nl.tjonahen.java.codereview.javaparsing.ExtractExitPoints;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
@@ -46,13 +46,13 @@ public class Main {
             System.out.println("Processing " + file.getAbsolutePath());
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
             
-            ExtractPublicMethods extractPublicMethods = new ExtractPublicMethods();
+            ExtractEntryPoints extractPublicMethods = new ExtractEntryPoints();
             extractPublicMethods.extract(cu)
                         .stream()
                         .map(p -> "ENTRYPOINT " + p.getPackageName()+"."+p.getTypeName()+"::"+p.getSignature())
                         .forEach(System.out::println);
                         
-            ExtractMethodCalls extractMethodCalls = new  ExtractMethodCalls();
+            ExtractExitPoints extractMethodCalls = new  ExtractExitPoints();
             extractMethodCalls.extract(cu)
                     .stream()
                     .map(c -> "EXITPOINT " + c.getType()+"::"+c.getName() + "(" + printParams(c.getParams()) + ")")
