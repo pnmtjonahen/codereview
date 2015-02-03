@@ -21,8 +21,6 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
@@ -60,7 +58,7 @@ public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
         boolean internal = isNotPublic(n.getModifiers());
         
         final String params = params(n.getParameters());
-        final String signature = "" + determineTypeName(n.getType()) + " " + n.getName() + "(" + params + ")";
+        final String signature = "" + fqc.determineFqc(n.getType()) + " " + n.getName() + "(" + params + ")";
 
         methods.add(new EntryPoint(internal, type.getPackageName(), type.getTypeName(), signature));
 
@@ -84,22 +82,11 @@ public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
     }
 
     private String map(final Parameter p) {
-
         final Type type = p.getType();
-        return determineTypeName(type);
+        return fqc.determineFqc(type);
     }
 
-    private String determineTypeName(final Type type) {
-        String paramType = type.toString();
-        if (type instanceof ReferenceType) {
-            ReferenceType refType = (ReferenceType) type;
-            if (refType.getType() instanceof ClassOrInterfaceType) {
-                ClassOrInterfaceType coiType = (ClassOrInterfaceType) refType.getType();
-                paramType = coiType.getName();
-            }
-        }
-        return fqc.determineFqc(paramType);
-    }
+
 
     private String params(final List<Parameter> params) {
         return params == null ? "" : params.stream().map(this::map)
