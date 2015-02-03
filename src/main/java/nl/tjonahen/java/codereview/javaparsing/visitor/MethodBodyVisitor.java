@@ -57,8 +57,11 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
             scope.accept(scopeTypeVisitor, arg);
             methods.addAll(scopeTypeVisitor.getMethods());
             param = scopeTypeVisitor.getName();
-            paramType = findType(scopeTypeVisitor.getName()).getType();
-            
+            if (param == null && scopeTypeVisitor.getType() != null) {
+                paramType = scopeTypeVisitor.getType();
+            } else {
+                paramType = findType(param).getType();
+            }
         } else {
             // possible static import of method
             paramType = fqc.determineFqc(n.getName());

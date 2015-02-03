@@ -20,6 +20,7 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SuperExpr;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -34,6 +35,7 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
     private final FQCMap fqc;
     private final ArrayList<ExitPoint> methods = new ArrayList<>();
     private String name;
+    private String type;
 
     public ScopeTypeVisitor(final FQCMap fqc, final Stack<ScopeVariable> scopeStack) {
         this.scopeStack = scopeStack;
@@ -48,14 +50,26 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
         return name;
     }
 
+    public String getType() {
+        return type;
+    }
+    
+
     @Override
     public void visit(ObjectCreationExpr n, CallScopeType arg) {
-        name = n.getType().getName();
+        if (n.getType().getScope() != null && n.getType().getScope() instanceof ClassOrInterfaceType) {
+            // nested type
+            final ClassOrInterfaceType parentType = (ClassOrInterfaceType) n.getType().getScope();
+            type = fqc.determineFqc(parentType.getName()) + "." + n.getType().getName();
+            
+        } else {
+            type = fqc.determineFqc(n.getType().getName());
+        }
     }
 
     @Override
     public void visit(NameExpr n, CallScopeType arg) {
-        name = n.getName();
+        name = fqc.determineFqc(n.getName());
     }
 
     @Override

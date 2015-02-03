@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.util.List;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -293,42 +294,35 @@ public class ExtractExitPointsTest {
                 + "import java.util.ArrayList;"
                 + "import java.util.List;"
                 + ""
-                + "import nl.rabobank.gict.mcv.business.module.common.BusinessModule;"
-                + "import nl.rabobank.gict.mcv.business.module.common.ProcessManager;"
-                + "import nl.rabobank.gict.mcv.business.module.common.ValidationResult;"
-                + "import nl.rabobank.gict.mcv.presentation.menustate.service.MenuService;"
-                + "import nl.rabobank.gict.mcv.presentation.menustate.state.PageState;"
-                + "import nl.rabobank.gict.mcv.presentation.menustate.view.ProcessType;"
-                + "import nl.rabobank.gict.mcv.presentation.menustate.view.ViewName;"
+                + "import nl.tjonahen.dummy.view.Step;"
+                + "import nl.tjonahen.dummy.view.View;"
                 + ""
                 + "import java.util.Date;"
                 + "public class Test { "
                 + " public Test() {}"
-                + "    public List<PageState> determineMenuState() {"
-                + "        final List<PageState> menuList = new ArrayList<PageState>();"
-                + "        boolean accessible = true;"
-                + "        for (final BusinessModule businessModule: processManager.getBusinessModulesForCurrentProcess()) {"
-                + "        	boolean validated = isValid(businessModule);"
-                + "            final PageState step ="
-                + "                new PageState.Builder(new ViewName(businessModule.getRenderParam()))"
+                + "    public Step determineMenuState(boolean accessible, boolean validated) {"
+                + "            final Step step ="
+                + "                new Step.Builder(new View(\"firstView\"))"
                 + "            		.setVisible(true)"
                 + "                    .setAccessible(accessible)"
                 + "                    .setVisited(validated)"
                 + "                    .setValidated(validated)"
                 + "                    .build();"
-                + "            if (!validated) {"
-                + "            	accessible = false;"
-                + "            }"
-                + "            menuList.add(step);"
-                + "        }"
-                + ""
-                + "        return menuList;"
+                + "            new Step().calculate();"
                 + "    }"
                 + ""
                 + "}"));
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
-        assertEquals(8, extract.size());
+        assertEquals(6, extract.size());
+        assertEquals("nl.tjonahen.dummy.view.Step.Builder", extract.get(0).getType());
+        assertEquals("setVisible", extract.get(0).getName());
+        assertFalse(extract.get(0).getParams().isEmpty());
+
+        assertEquals("nl.tjonahen.dummy.view.Step", extract.get(5).getType());
+        assertEquals("calculate", extract.get(5).getName());
+        assertTrue(extract.get(5).getParams().isEmpty());
+
     }
 
     @Test
