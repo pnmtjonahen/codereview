@@ -26,6 +26,7 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,6 +122,11 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
         methodBodyVisitor.visit(n, arg);
         
         methods.addAll(methodBodyVisitor.getMethods());
+    }
+
+    @Override
+    public void visit(ThisExpr n, CallScopeType arg) {
+        add(arg.getPackageName() + "." + arg.getTypeName());
     }
     
     

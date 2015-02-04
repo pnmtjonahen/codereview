@@ -40,8 +40,6 @@ public class ExtractEntryPoints {
             cu.getTypes().stream().forEach((td) -> {
                 td.accept(publicMethodVisitor, new ScopeType(packageName, null));
             });
-        } else {
-            System.out.println("*** ERROR no type");
         }
         return publicMethodVisitor.getMethods();
     }

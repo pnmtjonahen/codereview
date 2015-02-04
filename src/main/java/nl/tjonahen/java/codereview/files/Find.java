@@ -88,8 +88,5 @@ public final class Find {
         if (!aDirectory.isDirectory()) {
             throw new IllegalArgumentException("Is not a directory: " + aDirectory);
         }
-        if (!aDirectory.canRead()) {
-            throw new IllegalArgumentException("Directory cannot be read: " + aDirectory);
-        }
     }
 }

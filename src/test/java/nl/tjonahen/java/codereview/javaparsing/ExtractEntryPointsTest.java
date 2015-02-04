@@ -60,7 +60,7 @@ public class ExtractEntryPointsTest {
         assertEquals(1, extract.stream().filter(p -> p.isInternal()).count());
         assertEquals(24, extract.stream().filter(p -> !p.isInternal()).count());
         
-        extract.stream().forEach( p ->  System.out.println(p.getTypeName() + "::" + p.getSignature()));
+        extract.stream().forEach( p ->  System.out.println(p.getType() + "::" + p.getName()));
         
     }
 
@@ -91,7 +91,7 @@ public class ExtractEntryPointsTest {
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(4, extract.size());
         
-        extract.stream().forEach( p ->  System.out.println(p.getTypeName() + "::" + p.getSignature()));
+        extract.stream().forEach( p ->  System.out.println(p.getType() + "::" + p.getName()));
         
     }
     /**
@@ -136,7 +136,9 @@ public class ExtractEntryPointsTest {
         
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(2, extract.size());
-        assertEquals("String ibm(String)", extract.get(1).getSignature());
+        assertEquals("String", extract.get(1).getReturnType());
+        assertEquals("ibm", extract.get(1).getName());
+        assertEquals("String", extract.get(1).getParams().get(0));
         
     }
     /**
@@ -157,7 +159,9 @@ public class ExtractEntryPointsTest {
         
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(1, extract.size());
-        assertEquals("String ibm(nl.tjonahen.sample.IBM)", extract.get(0).getSignature());
+        assertEquals("String", extract.get(0).getReturnType());
+        assertEquals("ibm", extract.get(0).getName());
+        assertEquals("nl.tjonahen.sample.IBM", extract.get(0).getParams().get(0));
         
     }
     /**
@@ -179,7 +183,9 @@ public class ExtractEntryPointsTest {
         
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(1, extract.size());
-        assertEquals("Boolean ibm(java.util.List)", extract.get(0).getSignature());
+        assertEquals("Boolean", extract.get(0).getReturnType());
+        assertEquals("ibm", extract.get(0).getName());
+        assertEquals("java.util.List", extract.get(0).getParams().get(0));
         
     }
     /**
@@ -201,7 +207,9 @@ public class ExtractEntryPointsTest {
         
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(1, extract.size());
-        assertEquals("java.util.List ibm(java.util.List)", extract.get(0).getSignature());
+        assertEquals("java.util.List", extract.get(0).getReturnType());
+        assertEquals("ibm", extract.get(0).getName());
+        assertEquals("java.util.List", extract.get(0).getParams().get(0));
         
     }
     /**
@@ -235,15 +243,15 @@ public class ExtractEntryPointsTest {
         
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(3, extract.size());
-        assertEquals("Boolean ibm(java.util.List)", extract.get(0).getSignature());
+        assertEquals("ibm", extract.get(0).getName());
         assertEquals("nl.tjonahen.sampleapp", extract.get(0).getPackageName());
-        assertEquals("Test", extract.get(0).getTypeName());
-        assertEquals("Boolean ibm(java.util.List)", extract.get(1).getSignature());
+        assertEquals("Test", extract.get(0).getType());
+        assertEquals("ibm", extract.get(1).getName());
         assertEquals("nl.tjonahen.sampleapp.Test", extract.get(1).getPackageName());
-        assertEquals("TestNested", extract.get(1).getTypeName());
-        assertEquals("Boolean ibm(java.util.List)", extract.get(2).getSignature());
+        assertEquals("TestNested", extract.get(1).getType());
+        assertEquals("ibm", extract.get(2).getName());
         assertEquals("nl.tjonahen.sampleapp", extract.get(2).getPackageName());
-        assertEquals("TestTwo", extract.get(2).getTypeName());
+        assertEquals("TestTwo", extract.get(2).getType());
         
     }
     /**
@@ -268,7 +276,10 @@ public class ExtractEntryPointsTest {
         
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(2, extract.size());
-        assertEquals("String ibm(String)", extract.get(1).getSignature());
+        assertEquals("String", extract.get(1).getReturnType());
+        assertEquals("ibm", extract.get(1).getName());
+        assertEquals("String", extract.get(1).getParams().get(0));
+        
         
     }
     /**
@@ -290,7 +301,9 @@ public class ExtractEntryPointsTest {
         
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(1, extract.size());
-        assertEquals("java.util.List ibm(java.util.List)", extract.get(0).getSignature());
+        assertEquals("java.util.List", extract.get(0).getReturnType());
+        assertEquals("ibm", extract.get(0).getName());
+        assertEquals("java.util.List", extract.get(0).getParams().get(0));
         
     }
     

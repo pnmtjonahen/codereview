@@ -448,7 +448,7 @@ public class ExtractExitPointsTest {
                 + "public class Test { "
                 + " public Test() {}"
                 + " public void ibm(IBM p) { "
-                + "     this.format(\"%s\", \"dummy\"); "
+                + "     this.format(\"%s\", this); "
                 + " }"
                 + "}"));
 
@@ -457,7 +457,7 @@ public class ExtractExitPointsTest {
         assertEquals("this", extract.get(0).getType());
         assertEquals("format", extract.get(0).getName());
         assertEquals("String", extract.get(0).getParams().get(0));
-        assertEquals("String", extract.get(0).getParams().get(1));
+        assertEquals("nl.tjonahen.sample.test.Test", extract.get(0).getParams().get(1));
         assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());

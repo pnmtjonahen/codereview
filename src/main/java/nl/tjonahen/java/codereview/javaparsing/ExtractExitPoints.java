@@ -39,8 +39,6 @@ public class ExtractExitPoints {
             cu.getTypes().stream().forEach((td) -> {
                 td.accept(methodCallVisitor, new CallScopeType(packageName));
             });
-        } else {
-            System.out.println("*** ERROR no type");
         }
         return methodCallVisitor.getMethods();
 

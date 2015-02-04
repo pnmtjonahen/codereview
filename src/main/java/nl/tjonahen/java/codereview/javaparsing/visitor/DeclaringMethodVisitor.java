@@ -25,6 +25,7 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -57,10 +58,10 @@ public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
     public void visit(MethodDeclaration n, ScopeType type) {
         boolean internal = isNotPublic(n.getModifiers());
         
-        final String params = params(n.getParameters());
-        final String signature = "" + fqc.determineFqc(n.getType()) + " " + n.getName() + "(" + params + ")";
+        final List<String> params = params(n.getParameters());
 
-        methods.add(new EntryPoint(internal, type.getPackageName(), type.getTypeName(), signature));
+        methods.add(new EntryPoint(internal, type.getPackageName(), type.getTypeName(), 
+                fqc.determineFqc(n.getType()), n.getName(), params));
 
     }
 
@@ -74,10 +75,9 @@ public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
     public void visit(ConstructorDeclaration n, ScopeType type) {
         final boolean internal = isNotPublic(n.getModifiers());
         
-        final String params = params(n.getParameters());
-        final String signature = "" + n.getName() + "(" + params + ")";
+        final List<String> params = params(n.getParameters());
 
-        methods.add(new EntryPoint(internal, type.getPackageName(), type.getTypeName(), signature));
+        methods.add(new EntryPoint(internal, type.getPackageName(), type.getTypeName(), "", n.getName(), params));
 
     }
 
@@ -88,8 +88,7 @@ public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
 
 
 
-    private String params(final List<Parameter> params) {
-        return params == null ? "" : params.stream().map(this::map)
-                .reduce("", (s, p) -> s + (s.equals("") ? "" : ",") + p);
+    private List<String> params(final List<Parameter> params) {
+        return params == null ? new ArrayList<>() : params.stream().map(this::map).collect(Collectors.toList());
     }
 }

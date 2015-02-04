@@ -16,6 +16,8 @@
  */
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
+import java.util.List;
+
 /**
  * A public method of a type.
  * 
@@ -24,23 +26,41 @@ package nl.tjonahen.java.codereview.javaparsing.visitor;
 public class EntryPoint {
     private final boolean internal;
     private final String packageName;
-    private final String typeName;
-    private final String signature;
+    private final String type;
+    private final String returnType;
+    private final String name;
+    private final List<String> params;
 
-    public EntryPoint(final boolean internal, final String packageName, final String typeName, final String signature) {
+    /**
+     * 
+     * @param internal indicator if the method is private or not
+     * @param packageName packageName of the containing class
+     * @param type typeName aka class name
+     * @param returnType return type name
+     * @param name name of the method
+     * @param params list of parameter types
+     */
+    public EntryPoint(final boolean internal, 
+                        final String packageName, 
+                        final String type, 
+                        final String returnType,
+                        final String name, 
+                        final List<String> params) {
         this.internal = internal;
         this.packageName = packageName;
-        this.typeName = typeName;
-        this.signature = signature;
+        this.type = type;
+        this.returnType = returnType;
+        this.name = name;
+        this.params = params;
     }
 
 
-    public String getSignature() {
-        return signature;
+    public String getName() {
+        return name;
     }
 
-    public String getTypeName() {
-        return typeName;
+    public String getType() {
+        return type;
     }
 
     public String getPackageName() {
@@ -49,6 +69,14 @@ public class EntryPoint {
 
     public boolean isInternal() {
         return internal;
+    }
+
+    public List<String> getParams() {
+        return params;
+    }
+
+    public String getReturnType() {
+        return returnType;
     }
     
     

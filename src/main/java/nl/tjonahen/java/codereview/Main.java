@@ -38,6 +38,12 @@ public class Main {
     private static final int WORKING_FOLDER_IDX = 0;
     
     public static void main(String... aArgs) throws FileNotFoundException, ParseException {
+        final Main main = new Main();
+        
+        main.check(aArgs);
+    }
+    
+    private void check(String... aArgs)  throws FileNotFoundException, ParseException {
         final Find find = new Find(new File(aArgs[WORKING_FOLDER_IDX]));
         
         
@@ -49,7 +55,7 @@ public class Main {
             ExtractEntryPoints extractPublicMethods = new ExtractEntryPoints();
             extractPublicMethods.extract(cu)
                         .stream()
-                        .map(p -> "ENTRYPOINT " + p.getPackageName()+"."+p.getTypeName()+"::"+p.getSignature())
+                        .map(p -> "ENTRYPOINT " + p.getPackageName()+"."+p.getType()+"::"+p.getName())
                         .forEach(System.out::println);
                         
             ExtractExitPoints extractMethodCalls = new  ExtractExitPoints();
@@ -62,7 +68,7 @@ public class Main {
         }
     }
     
-    private static String printParams(List<String> params) {
+    private String printParams(List<String> params) {
         return params.stream().reduce("", (p, s) -> p + (p.equals("") ? "" : ",") + s );
     }
 }
