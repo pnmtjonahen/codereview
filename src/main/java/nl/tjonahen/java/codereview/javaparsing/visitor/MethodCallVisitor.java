@@ -21,6 +21,7 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
@@ -59,7 +60,20 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
             }
         }
         return new ScopeVariable(fqc.determineFqc(paramType), p.getId().getName());
-    }    
+    }  
+    
+    private ScopeVariable mapFieldDeclaration(final FieldDeclaration n, final VariableDeclarator v) {
+        final Type type = n.getType();
+        String paramType = type.toString();
+        if (type instanceof ReferenceType) {
+            ReferenceType refType = (ReferenceType) type;
+            if (refType.getType() instanceof ClassOrInterfaceType) {
+                ClassOrInterfaceType coiType = (ClassOrInterfaceType) refType.getType();
+                paramType = coiType.getName();
+            }
+        }
+        return new ScopeVariable(fqc.determineFqc(paramType), v.getId().getName());
+    }
 
     @Override
     public void visit(ClassOrInterfaceDeclaration n, CallScopeType arg) {
@@ -71,7 +85,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
     public void visit(final FieldDeclaration n, CallScopeType arg) {
         n.getVariables()
                 .stream()
-                .map(v -> new ScopeVariable(fqc.determineFqc(n.getType().toString()), v.getId().getName()))
+                .map(v -> mapFieldDeclaration(n, v))
                 .collect(Collectors.toList())
                     .forEach(sv -> scopeStack.push(sv));
     }

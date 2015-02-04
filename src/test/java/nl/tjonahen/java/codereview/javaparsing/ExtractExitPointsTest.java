@@ -133,10 +133,10 @@ public class ExtractExitPointsTest {
         final CompilationUnit cu = JavaParser.parse(getSource(""
                 + "import java.util.List;"
                 + "public class Test { "
+                + " private List<String> param = new ArrayList<String>();"
                 + " public Test(List<String> p) { "
                 + "     if (p != null && !p.isEmpty()) { "
-                + "     List<String> param = new ArrayList<String>();"
-                + "     return param.toUpperCase(); "
+                + "         this.param.toUpperCase(); "
                 + "     }"
                 + " }"
                 + "}"));
@@ -436,6 +436,32 @@ public class ExtractExitPointsTest {
 
     }
 
+    /**
+     * Test of extract method, of class ExtractMethodCalls.
+     */
+    @Test
+    public void testExtractThisCall() throws ParseException {
+
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                + "package nl.tjonahen.sample.test; "
+                + "import nl.tjonahen.dummy.IBM; "
+                + "public class Test { "
+                + " public Test() {}"
+                + " public void ibm(IBM p) { "
+                + "     this.format(\"%s\", \"dummy\"); "
+                + " }"
+                + "}"));
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        assertEquals(1, extract.size());
+        assertEquals("this", extract.get(0).getType());
+        assertEquals("format", extract.get(0).getName());
+        assertEquals("String", extract.get(0).getParams().get(0));
+        assertEquals("String", extract.get(0).getParams().get(1));
+        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
+        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
+        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+    }
 
     private InputStream getSource(String source) {
         return new ByteArrayInputStream(source.getBytes());

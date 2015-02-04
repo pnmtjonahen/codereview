@@ -16,10 +16,12 @@
  */
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
+import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SuperExpr;
+import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
@@ -59,7 +61,7 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
     public void visit(ObjectCreationExpr n, CallScopeType arg) {
         if (n.getType().getScope() != null && n.getType().getScope() instanceof ClassOrInterfaceType) {
             // nested type
-            final ClassOrInterfaceType parentType = (ClassOrInterfaceType) n.getType().getScope();
+            final ClassOrInterfaceType parentType = n.getType().getScope();
             type = fqc.determineFqc(parentType.getName()) + "." + n.getType().getName();
             
         } else {
@@ -87,5 +89,16 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
         name = "super";
     }
 
+    @Override
+    public void visit(ThisExpr n, CallScopeType arg) {
+        name = "this";
+    }
+
+    @Override
+    public void visit(FieldAccessExpr n, CallScopeType arg) {
+        name = n.getField();
+    }
+
+    
     
 }
