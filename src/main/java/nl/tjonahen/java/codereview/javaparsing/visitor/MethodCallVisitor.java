@@ -124,7 +124,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
         final List<ScopeVariable> scopeVar = n.getParameters() == null ? new ArrayList<>() : 
                                 n.getParameters()
                                         .stream()
-                                        .map(p -> new ScopeVariable(fqc.determineFqc(p.getType().toString()), p.getId().getName()))
+                                        .map(this::map)
                                         .collect(Collectors.toList());
         final String marker = arg.getPackageName() + "." + arg.getTypeName() + "." + n.getName() + "(" + params + ")";
 

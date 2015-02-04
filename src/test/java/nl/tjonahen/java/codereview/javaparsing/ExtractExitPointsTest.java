@@ -102,28 +102,55 @@ public class ExtractExitPointsTest {
     }
 
     @Test
-    public void testExtractWithGenerics() throws ParseException {
+    public void testExtractWithGenericsInMethod() throws ParseException {
 
         final CompilationUnit cu = JavaParser.parse(getSource(""
                 + "import java.util.List;"
                 + "public class Test { "
                 + " public Test() {}"
                 + " public List<String> ibm(List<String> p) { "
+                + "     if (p != null && !p.isEmpty()) { "
                 + "     List<String> param = new ArrayList<String>();"
-                + "     return param.toUpperCase() + p.isEmpty(); "
+                + "     return param.toUpperCase(); "
+                + "     }"
                 + " }"
                 + "}"));
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(2, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
-        assertEquals("toUpperCase", extract.get(0).getName());
+        assertEquals("isEmpty", extract.get(0).getName());
         assertEquals("java.util.List", extract.get(1).getType());
-        assertEquals("isEmpty", extract.get(1).getName());
+        assertEquals("toUpperCase", extract.get(1).getName());
 
         assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+    }
+    @Test
+    public void testExtractWithGenericsInConstructor() throws ParseException {
+
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                + "import java.util.List;"
+                + "public class Test { "
+                + " public Test(List<String> p) { "
+                + "     if (p != null && !p.isEmpty()) { "
+                + "     List<String> param = new ArrayList<String>();"
+                + "     return param.toUpperCase(); "
+                + "     }"
+                + " }"
+                + "}"));
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        assertEquals(2, extract.size());
+        assertEquals("java.util.List", extract.get(0).getType());
+        assertEquals("isEmpty", extract.get(0).getName());
+        assertEquals("java.util.List", extract.get(1).getType());
+        assertEquals("toUpperCase", extract.get(1).getName());
+
+        assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
+        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
+        assertEquals("Test", extract.get(0).getCallScopeType().getMethodName());
     }
 
     /**
@@ -395,7 +422,7 @@ public class ExtractExitPointsTest {
                 + ""
                 + "public class Test extends AbstractTest { "
                 + " public Test(String code) {"
-                + "     this(code);" 
+                + "     this(code);"
                 + " }"
                 + " public List<IBM> ibm(final List<IBM> p) { "
                 + "     return super.ibm(p);"
@@ -403,14 +430,13 @@ public class ExtractExitPointsTest {
                 + "}"));
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
         assertEquals(1, extract.size());
-        assertEquals("super",extract.get(0).getType());
+        assertEquals("super", extract.get(0).getType());
         assertEquals("ibm", extract.get(0).getName());
         assertEquals("List", extract.get(0).getParams().get(0));
-        
-        
-        
+
     }
-            
+
+
     private InputStream getSource(String source) {
         return new ByteArrayInputStream(source.getBytes());
     }
