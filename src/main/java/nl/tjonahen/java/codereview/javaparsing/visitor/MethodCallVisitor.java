@@ -77,7 +77,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     @Override
     public void visit(ClassOrInterfaceDeclaration n, CallScopeType arg) {
-        super.visit(n, new CallScopeType(arg.getPackageName(), n.getName()));
+        super.visit(n, new CallScopeType(arg.getExitPointMatching(), arg.getPackageName(), n.getName()));
 
     }
 
@@ -116,7 +116,8 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
         final MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
 
         methodBodyVisitor
-                    .visit(n, new CallScopeType(arg.getPackageName(), arg.getTypeName(), n.getName()));
+                    .visit(n, new CallScopeType(arg.getExitPointMatching(), 
+                                            arg.getPackageName(), arg.getTypeName(), n.getName()));
 
         
         methods.addAll(methodBodyVisitor.getMethods());
@@ -149,7 +150,8 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
         final MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
 
         methodBodyVisitor
-                .visit(n, new CallScopeType(arg.getPackageName(), arg.getTypeName(), n.getName()));
+                .visit(n, new CallScopeType(arg.getExitPointMatching(), 
+                                                arg.getPackageName(), arg.getTypeName(), n.getName()));
         methods.addAll(methodBodyVisitor.getMethods());
 
         ScopeVariable el = scopeStack.pop();

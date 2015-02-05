@@ -22,6 +22,7 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.CallScopeType;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ImportDeclarationVisitor;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCallVisitor;
+import nl.tjonahen.java.codereview.matching.ExitPointMatching;
 
 /**
  *
@@ -29,7 +30,7 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCallVisitor;
  */
 public class ExtractExitPoints {
 
-    public List<ExitPoint> extract(final CompilationUnit cu) {
+    public List<ExitPoint> extract(final CompilationUnit cu, final ExitPointMatching exitPointMatching) {
         final ImportDeclarationVisitor importDeclarationVisitor = new ImportDeclarationVisitor();
         importDeclarationVisitor.visit(cu, null);
 
@@ -37,7 +38,7 @@ public class ExtractExitPoints {
         final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
         if (cu.getTypes() != null) {
             cu.getTypes().stream().forEach((td) -> {
-                td.accept(methodCallVisitor, new CallScopeType(packageName));
+                td.accept(methodCallVisitor, new CallScopeType(exitPointMatching, packageName));
             });
         }
         return methodCallVisitor.getMethods();

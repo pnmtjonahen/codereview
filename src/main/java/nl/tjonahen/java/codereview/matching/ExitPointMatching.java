@@ -66,29 +66,27 @@ public class ExitPointMatching {
      * @param ep ExitPoint
      * @return EntryPoint or null if none found.
      */
-    public EntryPoint match(final ExitPoint ep) {
+    public MatchPoint match(final ExitPoint ep) {
         if (!methodNameMapping.containsKey(ep.getType())) {
-            System.out.println(ep.getType() + " Type Not Found..");
-            return null;
+            return new MatchPoint(ep.getType() + " Type Not Found..");
         }
         List<EntryPoint> names = methodNameMapping.get(ep.getType())
                 .stream()
                 .filter(p -> p.getName().equals(ep.getName()))
                 .collect(Collectors.toList());
         if (names.isEmpty()) {
-            System.out.println(ep + " No such method..");
-            return null;
+            return new MatchPoint(ep + " No such method..");
         }
         List<EntryPoint> posibleMethods = names.stream()
                 .filter(p -> filter(p.getParams(), ep.getParams()))
                 .collect(Collectors.toList());
         if (posibleMethods.isEmpty()) {
-            System.out.println(ep + " No such method..");
-            names.forEach(p -> {
-                System.out.println(p);
-            });
-            return null;
+//            names.forEach(p -> {
+//                System.out.println(p);
+//            });
+            return new MatchPoint(ep + " No such method..");
+
         }
-        return names.get(0);
+        return new MatchPoint(names.get(0));
     }
 }

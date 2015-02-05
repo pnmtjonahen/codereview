@@ -122,6 +122,13 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
         methodBodyVisitor.visit(n, arg);
         
         methods.addAll(methodBodyVisitor.getMethods());
+        
+        final ExitPoint ep = methodBodyVisitor.getMethods().get(0);
+        
+        final EntryPoint entryP = arg.getExitPointMatching().match(ep).getEntryPoint();
+        if (entryP != null) {
+            add(entryP.getReturnType());
+        }
     }
 
     @Override

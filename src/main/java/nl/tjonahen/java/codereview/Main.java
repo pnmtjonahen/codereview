@@ -28,54 +28,49 @@ import java.util.List;
 import nl.tjonahen.java.codereview.files.Find;
 import nl.tjonahen.java.codereview.matching.ExitPointMatching;
 
-
-
 /**
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class Main {
-    
+
     private static final int WORKING_FOLDER_IDX = 0;
     private static final int FILTER_IDX = 1;
-    
+
     public static void main(String... aArgs) throws FileNotFoundException, ParseException {
         final Main main = new Main();
-        
+
         main.check(aArgs);
     }
-    
-    private void check(String... aArgs)  throws FileNotFoundException, ParseException {
+
+    private void check(String... aArgs) throws FileNotFoundException, ParseException {
         final Find find = new Find(new File(aArgs[WORKING_FOLDER_IDX]));
         final ExitPointMatching exitPointMatching = new ExitPointMatching();
         for (File file : find.find()) {
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
-            
+
             ExtractEntryPoints extractPublicMethods = new ExtractEntryPoints();
             exitPointMatching.addAll(extractPublicMethods.extract(cu));
-                        
-            
+
         }
         for (File file : find.find()) {
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
-            
-                        
-            ExtractExitPoints extractMethodCalls = new  ExtractExitPoints();
-            extractMethodCalls.extract(cu)
+
+            ExtractExitPoints extractMethodCalls = new ExtractExitPoints();
+            extractMethodCalls.extract(cu, exitPointMatching)
                     .stream()
                     .filter(c -> c.getType() != null)
                     .filter(c -> c.getType().startsWith(aArgs[FILTER_IDX]))
-                    .filter(c -> exitPointMatching.match(c) == null)
-                    .map(c -> "EXITPOINT " + c.getCallScopeType().getTypeName() + " => " + c.getType()+"::"+c.getName() + "(" + printParams(c.getParams()) + ")")
+                    .filter(c -> exitPointMatching.match(c).getEntryPoint() == null)
+                    .map(c -> "EXITPOINT " + c.getCallScopeType().getTypeName() + " => " + c.getType() + "::" 
+                                + c.getName() + "(" + printParams(c.getParams()) + ")")
                     .forEach(System.out::println);
-            
-            
+
         }
-        
-        
+
     }
-    
+
     private String printParams(List<String> params) {
-        return params.stream().reduce("", (p, s) -> p + (p.equals("") ? "" : ",") + s );
+        return params.stream().reduce("", (p, s) -> p + (p.equals("") ? "" : ",") + s);
     }
 }

@@ -24,8 +24,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
+import nl.tjonahen.java.codereview.matching.ExitPointMatching;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -50,7 +53,7 @@ public class ExtractExitPointsTest {
             in.close();
         }
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(104, extract.size());
 
     }
@@ -69,7 +72,7 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
         assertEquals("toUpperCase", extract.get(0).getName());
@@ -92,7 +95,7 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
         assertEquals("toUpperCase", extract.get(0).getName());
@@ -116,7 +119,7 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(2, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
         assertEquals("isEmpty", extract.get(0).getName());
@@ -141,7 +144,7 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(2, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
         assertEquals("isEmpty", extract.get(0).getName());
@@ -174,7 +177,7 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(3, extract.size());
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
         assertEquals("calculate", extract.get(0).getName());
@@ -223,7 +226,7 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(7, extract.size());
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
         assertEquals("process", extract.get(0).getName());
@@ -261,7 +264,7 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getType());
         assertEquals("format", extract.get(0).getName());
@@ -291,7 +294,7 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(4, extract.size());
         assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
@@ -340,7 +343,7 @@ public class ExtractExitPointsTest {
                 + ""
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(6, extract.size());
         assertEquals("nl.tjonahen.dummy.view.Step.Builder", extract.get(0).getType());
         assertEquals("setVisible", extract.get(0).getName());
@@ -365,7 +368,7 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
         assertEquals("isEmpty", extract.get(0).getName());
@@ -408,7 +411,7 @@ public class ExtractExitPointsTest {
                 + "        return creditCardArrangements;"
                 + "    }"
                 + "}"));
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(4, extract.size());
         assertEquals("", extract.get(0).getType());
         assertEquals("thisIsTheSameArrangement", extract.get(0).getName());
@@ -428,7 +431,7 @@ public class ExtractExitPointsTest {
                 + "     return super.ibm(p);"
                 + " }"
                 + "}"));
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
         assertEquals("super", extract.get(0).getType());
         assertEquals("ibm", extract.get(0).getName());
@@ -452,7 +455,7 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
         assertEquals("this", extract.get(0).getType());
         assertEquals("format", extract.get(0).getName());
@@ -460,6 +463,34 @@ public class ExtractExitPointsTest {
         assertEquals("nl.tjonahen.sample.test.Test", extract.get(0).getParams().get(1));
         assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
+        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+    }
+    /**
+     * Test of extract method, of class ExtractMethodCalls.
+     */
+    @Test
+    public void testExtractFindReturnType() throws ParseException {
+
+        final CompilationUnit cu = JavaParser.parse(getSource(""
+                + "package nl.tjonahen.sample.test; "
+                + "import nl.tjonahen.sample.test.TestB; "
+                + "public class TestA { "
+                + " public void ibm(TestB testB) { "
+                + "     this.format(testB.ibm()); "
+                + " }"
+                + "}"));
+        
+        List<EntryPoint> points = new ArrayList<>();
+        points.add(new EntryPoint(true, "nl.tjonahen.sample.test", "TestB", "String", "ibm", new ArrayList<>()));
+        final ExitPointMatching exitPointMatching = new ExitPointMatching();
+        exitPointMatching.addAll(points);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, exitPointMatching);
+        assertEquals(2, extract.size());
+        assertEquals("this", extract.get(1).getType());
+        assertEquals("format", extract.get(1).getName());
+        assertEquals("String", extract.get(1).getParams().get(0));
+        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
+        assertEquals("TestA", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
     }
 

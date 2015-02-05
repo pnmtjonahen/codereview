@@ -90,7 +90,7 @@ public class ExitPointMatchingTest {
                 + "  }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         return extract;
     }
 
