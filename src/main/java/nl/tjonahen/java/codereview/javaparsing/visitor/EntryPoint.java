@@ -78,6 +78,11 @@ public class EntryPoint {
     public String getReturnType() {
         return returnType;
     }
+
+    @Override
+    public String toString() {
+        return "EntryPoint{" + "internal=" + internal + ", packageName=" + packageName + ", type=" + type + ", returnType=" + returnType + ", name=" + name + ", params=" + params + '}';
+    }
     
     
 }

@@ -17,7 +17,6 @@
 package nl.tjonahen.java.codereview;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -33,7 +32,7 @@ public class MainTest {
      */
     @Test
     public void testMain() throws Exception {
-        String[] aArgs = {"./src"};
+        String[] aArgs = {"./src", "nl.tjonahen"};
         Main.main(aArgs);
     }
     

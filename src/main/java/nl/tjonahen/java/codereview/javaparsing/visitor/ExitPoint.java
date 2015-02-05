@@ -52,4 +52,12 @@ public class ExitPoint {
     public List<String> getParams() {
         return params;
     }
+
+    @Override
+    public String toString() {
+        return "ExitPoint{" + "type=" + type + ", name=" + name + ", params=" + params + '}';
+    }
+    
+    
+    
 }

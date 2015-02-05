@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 
@@ -47,7 +48,6 @@ public class ExitPointMatching {
         eps.forEach(this::add);
     }
 
-    
     private boolean filter(List<String> entryParams, List<String> exitParams) {
         if (entryParams.size() != exitParams.size()) {
             return false;
@@ -59,6 +59,7 @@ public class ExitPointMatching {
         }
         return true;
     }
+
     /**
      * matches a exit point to an entry point. (aka connecting the dots)
      *
@@ -67,12 +68,27 @@ public class ExitPointMatching {
      */
     public EntryPoint match(final ExitPoint ep) {
         if (!methodNameMapping.containsKey(ep.getType())) {
+            System.out.println(ep.getType() + " Type Not Found..");
             return null;
         }
-        return methodNameMapping.get(ep.getType())
+        List<EntryPoint> names = methodNameMapping.get(ep.getType())
                 .stream()
+                .filter(p -> p.getName().equals(ep.getName()))
+                .collect(Collectors.toList());
+        if (names.isEmpty()) {
+            System.out.println(ep + " No such method..");
+            return null;
+        }
+        List<EntryPoint> posibleMethods = names.stream()
                 .filter(p -> filter(p.getParams(), ep.getParams()))
-                .findFirst()
-                    .orElse(null);
+                .collect(Collectors.toList());
+        if (posibleMethods.isEmpty()) {
+            System.out.println(ep + " No such method..");
+            names.forEach(p -> {
+                System.out.println(p);
+            });
+            return null;
+        }
+        return names.get(0);
     }
 }
