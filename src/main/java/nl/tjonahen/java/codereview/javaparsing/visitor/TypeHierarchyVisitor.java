@@ -16,7 +16,9 @@
  */
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
+import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class TypeHierarchyVisitor extends VoidVisitorAdapter<String>{
     public TypeHierarchyVisitor(final FQCMap fqc) {
         this.fqc = fqc;
         this.typeHierarchy = new ArrayList<>();
+        
     }
 
     public List<TypeHierarchy> getTypeHierarchy() {
@@ -52,7 +55,28 @@ public class TypeHierarchyVisitor extends VoidVisitorAdapter<String>{
     }
 
     @Override
+    public void visit(EnumDeclaration n, String arg) {
+        this.currentType = new TypeHierarchy(arg + "." + n.getName());
+        this.typeHierarchy.add(currentType);
+        super.visit(n, arg+"."+n.getName()); 
+    }
+
+    @Override
+    public void visit(AnnotationDeclaration n, String arg) {
+        this.currentType = new TypeHierarchy(arg + "." + n.getName());
+        this.typeHierarchy.add(currentType);
+        super.visit(n, arg+"."+n.getName()); 
+    }
+
+    
+    
+    @Override
     public void visit(ClassOrInterfaceType n, String arg) {
+        if (this.currentType == null) {
+            System.out.println("Adding " + arg);
+            this.currentType = new TypeHierarchy(arg);
+            this.typeHierarchy.add(currentType);
+        }
         currentType.addIsAType(fqc.determineFqc(n.getName()));
         super.visit(n, arg); 
     }

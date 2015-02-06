@@ -13,7 +13,7 @@ import java.io.InputStream;
 public class DumpAST {
 
     public static void main(String[] args) throws Exception {
-        CompilationUnit cu = getHierarchie();
+        CompilationUnit cu = getStringString();
         final DumpASTVisitor dumpASTVisitor = new DumpASTVisitor();
         dumpASTVisitor.visit(cu, null);
         System.out.println(dumpASTVisitor.getSource());
@@ -107,36 +107,69 @@ public class DumpAST {
                 + " }"
                 + "}"));
     }
+
     private static CompilationUnit getInlineDeclare() throws ParseException {
 
-        return JavaParser.parse(getSource(""+
-                "public class Test { "+
-"    private List<Arrangement> getCreditCardArrangementsOfCurrentAccount(String currentAgreementNumber,\n" +
-"                                                                        List<Arrangement> paymentAccountArrangementList)\n" +
-"    {\n" +
-"        List<Arrangement> creditCardArrangements = new ArrayList<Arrangement>();\n" +
-"\n" +
-"        for (Arrangement arrangement : paymentAccountArrangementList) {\n" +
-"            if (thisIsTheSameArrangement(arrangement, currentAgreementNumber)) {\n" +
-"                for (Arrangement subArrangement : arrangement.getSubArrangements()) {\n" +
-"                    if (isCreditCardArrangement(subArrangement)) {\n" +
-"                        creditCardArrangements.add(subArrangement);\n" +
-"                    }\n" +
-"                }\n" +
-"            }\n" +
-"        }\n" +
-"        return creditCardArrangements;\n" +
-"    }"    
+        return JavaParser.parse(getSource(""
+                + "public class Test { "
+                + "    private List<Arrangement> getCreditCardArrangementsOfCurrentAccount(String currentAgreementNumber,\n"
+                + "                                                                        List<Arrangement> paymentAccountArrangementList)\n"
+                + "    {\n"
+                + "        List<Arrangement> creditCardArrangements = new ArrayList<Arrangement>();\n"
+                + "\n"
+                + "        for (Arrangement arrangement : paymentAccountArrangementList) {\n"
+                + "            if (thisIsTheSameArrangement(arrangement, currentAgreementNumber)) {\n"
+                + "                for (Arrangement subArrangement : arrangement.getSubArrangements()) {\n"
+                + "                    if (isCreditCardArrangement(subArrangement)) {\n"
+                + "                        creditCardArrangements.add(subArrangement);\n"
+                + "                    }\n"
+                + "                }\n"
+                + "            }\n"
+                + "        }\n"
+                + "        return creditCardArrangements;\n"
+                + "    }"
                 + "}"));
     }
-    
+
+    private static CompilationUnit getStringString() throws ParseException {
+
+        return JavaParser.parse(getSource(""
+                + "public class Test { "
+                + "    public void testExtractPublic() throws ParseException {\n"
+                + "        // creates an input stream for the file to be parsed\n"
+                + "\n"
+                + "        final CompilationUnit cu = new CompilationUnitFactory().get(\"\"\n"
+                + "                + \"public class Test { \"\n"
+                + "                + \" public String ibm(String p) { \"\n"
+                + "                + \"     return p.toUpperCase(); \"\n"
+                + "                + \"  }\"\n"
+                + "                + \" protected String ibm2(String p) { \"\n"
+                + "                + \"     return p.toUpperCase(); \"\n"
+                + "                + \"  }\"\n"
+                + "                + \" public static String ibmS(String p) { \"\n"
+                + "                + \"     return p.toUpperCase(); \"\n"
+                + "                + \"  }\"\n"
+                + "                + \" String ibmPL(String p) { \"\n"
+                + "                + \"     return p.toUpperCase(); \"\n"
+                + "                + \"  }\"\n"
+                + "                + \"}\");\n"
+                + "\n"
+                + "        final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);\n"
+                + "        assertEquals(4, extract.size());\n"
+                + "\n"
+                + "        extract.stream().forEach(p -> System.out.println(p.getType() + \"::\" + p.getName()));\n"
+                + "\n"
+                + "    }"
+                + "}"));
+    }
+
     private static CompilationUnit getHierarchie() throws ParseException {
 
-        return JavaParser.parse(getSource(""+
-                "public class Test extends Test2 implements ITest { "
+        return JavaParser.parse(getSource(""
+                + "public class Test extends Test2 implements ITest { "
                 + "}"));
     }
-    
+
     private static InputStream getSource(String source) {
         return new ByteArrayInputStream(source.getBytes());
     }

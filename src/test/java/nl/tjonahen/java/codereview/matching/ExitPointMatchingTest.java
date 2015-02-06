@@ -27,8 +27,9 @@ import nl.tjonahen.java.codereview.javaparsing.ExtractExitPoints;
 import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -42,7 +43,7 @@ public class ExitPointMatchingTest {
      */
     @Test
     public void testMatch() throws ParseException {
-        ExitPointMatching epm = new ExitPointMatching();
+        ExitPointMatching epm = new ExitPointMatching(new TypeHierarchyMatching());
 
         epm.addAll(getEntryPoints());
         final List<ExitPoint> exitPoints = getExitPoints();
@@ -50,9 +51,15 @@ public class ExitPointMatchingTest {
         
         assertNotNull(epm.match(exitPoints.get(0)).getEntryPoint());
         assertEquals("No such method..", epm.match(exitPoints.get(1)).getReason());
+        assertTrue(epm.match(exitPoints.get(1)).getPosibleMethods().isEmpty());
         assertEquals("No such method..", epm.match(exitPoints.get(2)).getReason());
+        assertFalse(epm.match(exitPoints.get(2)).getPosibleMethods().isEmpty());
+        assertEquals(1, epm.match(exitPoints.get(2)).getPosibleMethods().size());
+        
         assertEquals("Type Not Found..", epm.match(exitPoints.get(3)).getReason());
+        assertTrue(epm.match(exitPoints.get(3)).getPosibleMethods().isEmpty());
         assertEquals("No such method..", epm.match(exitPoints.get(4)).getReason());
+        assertTrue(epm.match(exitPoints.get(4)).getPosibleMethods().isEmpty());
 
     }
 
@@ -94,7 +101,7 @@ public class ExitPointMatchingTest {
                 + "  }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
         return extract;
     }
 

@@ -17,7 +17,6 @@
 package nl.tjonahen.java.codereview.matching;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,13 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 public class ExitPointMatching {
 
     private final Map<String, List<EntryPoint>> methodNameMapping = new HashMap<>();
+    private final TypeHierarchyMatching hierarchyMatching;
 
+    public ExitPointMatching(TypeHierarchyMatching hierarchyMatching) {
+        this.hierarchyMatching = hierarchyMatching;
+    }
+    
+    
     private void add(EntryPoint p) {
         final String key = p.getPackageName() + "." + p.getType();
         if (methodNameMapping.containsKey(key)) {
@@ -44,20 +49,33 @@ public class ExitPointMatching {
         }
     }
 
-    public void addAll(Collection<EntryPoint> eps) {
+    public void addAll(List<EntryPoint> eps) {
         eps.forEach(this::add);
     }
 
     private boolean filter(List<String> entryParams, List<String> exitParams) {
-        if (entryParams.size() != exitParams.size()) {
-            return false;
-        }
         for (int i = 0; i < entryParams.size(); i++) {
-            if (!entryParams.get(i).equals(exitParams.get(i))) {
+            if (!hasCorrectParamTypes(entryParams.get(i), exitParams.get(i))) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean hasCorrectParamTypes(String entryType, String exitType) {
+        if (entryType.equals(exitType)) {
+            return true;
+        }
+        
+        if (!hierarchyMatching.getSubstitutions(exitType).isEmpty()) {
+            for (String pType : hierarchyMatching.getSubstitutions(exitType)) {
+                if (entryType.equals(pType)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
     /**
@@ -70,23 +88,19 @@ public class ExitPointMatching {
         if (!methodNameMapping.containsKey(ep.getType())) {
             return new MatchPoint("Type Not Found..");
         }
-        List<EntryPoint> names = methodNameMapping.get(ep.getType())
+        final List<EntryPoint> posibleMethods = methodNameMapping.get(ep.getType())
                 .stream()
                 .filter(p -> p.getName().equals(ep.getName()))
-                .collect(Collectors.toList());
-        if (names.isEmpty()) {
-            return new MatchPoint("No such method..");
-        }
-        List<EntryPoint> posibleMethods = names.stream()
-                .filter(p -> filter(p.getParams(), ep.getParams()))
+                .filter(p -> p.getParams().size() == ep.getParams().size())
                 .collect(Collectors.toList());
         if (posibleMethods.isEmpty()) {
-//            names.forEach(p -> {
-//                System.out.println(p);
-//            });
             return new MatchPoint("No such method..");
-
         }
-        return new MatchPoint(names.get(0));
+        return posibleMethods.stream()
+                .filter(p -> filter(p.getParams(), ep.getParams()))
+                .map(p -> new MatchPoint(p))
+                .findFirst()
+                    .orElse(new MatchPoint("No such method..", posibleMethods));
+
     }
 }

@@ -16,6 +16,8 @@
  */
 package nl.tjonahen.java.codereview.matching;
 
+import java.util.ArrayList;
+import java.util.List;
 import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 
 /**
@@ -25,15 +27,23 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 public class MatchPoint {
     private final EntryPoint entryPoint;
     private final String reason;
+    private final List<EntryPoint> posibleMethods;
     
-    public MatchPoint(EntryPoint entryPoint) {
+    public MatchPoint(final EntryPoint entryPoint) {
         this.entryPoint = entryPoint;
         this.reason = "";
+        this.posibleMethods = new ArrayList<>();
     }
 
-    public MatchPoint(String reason) {
+    public MatchPoint(final String reason) {
         this.entryPoint = null;
         this.reason = reason;
+        this.posibleMethods = new ArrayList<>();
+    }
+    public MatchPoint(final String reason, final List<EntryPoint> posibleMethods) {
+        this.entryPoint = null;
+        this.reason = reason;
+        this.posibleMethods = posibleMethods;
     }
 
     public EntryPoint getEntryPoint() {
@@ -43,7 +53,9 @@ public class MatchPoint {
     public String getReason() {
         return reason;
     }
-    
-    
+
+    public List<EntryPoint> getPosibleMethods() {
+        return posibleMethods;
+    }
     
 }

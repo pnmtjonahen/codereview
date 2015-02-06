@@ -16,6 +16,7 @@
  */
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
+import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.CharLiteralExpr;
 import com.github.javaparser.ast.expr.DoubleLiteralExpr;
@@ -70,6 +71,16 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
         add("String");
     }
 
+    @Override
+    public void visit(BinaryExpr n, CallScopeType arg) {
+        if (n.getLeft() instanceof StringLiteralExpr || n.getRight() instanceof StringLiteralExpr) {
+            add("String");
+        } else {
+            super.visit(n, arg);
+        }
+    }
+
+    
     @Override
     public void visit(NullLiteralExpr n, CallScopeType arg) {
         add("Object");

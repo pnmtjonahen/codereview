@@ -26,7 +26,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 import nl.tjonahen.java.codereview.files.Find;
+import nl.tjonahen.java.codereview.javaparsing.ExtractTypeHierarchy;
 import nl.tjonahen.java.codereview.matching.ExitPointMatching;
+import nl.tjonahen.java.codereview.matching.TypeHierarchyMatching;
 
 /**
  *
@@ -45,25 +47,29 @@ public class Main {
 
     private void check(String... aArgs) throws FileNotFoundException, ParseException {
         final Find find = new Find(new File(aArgs[WORKING_FOLDER_IDX]));
-        final ExitPointMatching exitPointMatching = new ExitPointMatching();
+
+        final TypeHierarchyMatching hierarchyMatching = new TypeHierarchyMatching();
+        final ExitPointMatching exitPointMatching = new ExitPointMatching(hierarchyMatching);
+        final ExtractEntryPoints extractPublicMethods = new ExtractEntryPoints();
+        final ExtractTypeHierarchy extractTypeHierarchy = new ExtractTypeHierarchy();
+
         for (File file : find.find()) {
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
-
-            ExtractEntryPoints extractPublicMethods = new ExtractEntryPoints();
             exitPointMatching.addAll(extractPublicMethods.extract(cu));
-
+            hierarchyMatching.addAll(extractTypeHierarchy.extract(cu));
         }
+        
+        final ExtractExitPoints extractMethodCalls = new ExtractExitPoints();
         for (File file : find.find()) {
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
 
-            ExtractExitPoints extractMethodCalls = new ExtractExitPoints();
             extractMethodCalls.extract(cu, exitPointMatching)
                     .stream()
                     .filter(c -> c.getType() != null)
                     .filter(c -> c.getType().startsWith(aArgs[FILTER_IDX]))
                     .filter(c -> exitPointMatching.match(c).getEntryPoint() == null)
-                    .map(c -> "EXITPOINT " + c.getCallScopeType().getTypeName() + " => " + c.getType() + "::" 
-                                + c.getName() + "(" + printParams(c.getParams()) + ")")
+                    .map(c -> "EXITPOINT " + c.getCallScopeType().getTypeName() + " => " + c.getType() + "::"
+                            + c.getName() + "(" + printParams(c.getParams()) + ")")
                     .forEach(System.out::println);
 
         }
