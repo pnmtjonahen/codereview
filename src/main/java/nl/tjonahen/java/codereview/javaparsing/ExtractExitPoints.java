@@ -37,9 +37,8 @@ public class ExtractExitPoints {
         final MethodCallVisitor methodCallVisitor = new MethodCallVisitor(importDeclarationVisitor.getFqc());
         final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
         if (cu.getTypes() != null) {
-            cu.getTypes().stream().forEach((td) -> {
-                td.accept(methodCallVisitor, new CallScopeType(exitPointMatching, packageName));
-            });
+            cu.getTypes().stream().forEach(td -> 
+                    td.accept(methodCallVisitor, new CallScopeType(exitPointMatching, packageName)));
         }
         return methodCallVisitor.getMethods();
 

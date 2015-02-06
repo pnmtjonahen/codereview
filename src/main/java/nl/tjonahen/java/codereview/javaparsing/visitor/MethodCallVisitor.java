@@ -26,9 +26,10 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 /**
@@ -37,17 +38,18 @@ import java.util.stream.Collectors;
  */
 public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
 
-    private final ArrayList<ExitPoint> methods = new ArrayList<>();
+    private final List<ExitPoint> methods = new ArrayList<>();
     private final FQCMap fqc;
-    private final Stack<ScopeVariable> scopeStack = new Stack<>();
-
-    public ArrayList<ExitPoint> getMethods() {
-        return methods;
-    }
+    private final Deque<ScopeVariable> scopeStack = new ArrayDeque<>();
 
     public MethodCallVisitor(final FQCMap fqc) {
         this.fqc = fqc;
     }
+
+    public List<ExitPoint> getMethods() {
+        return methods;
+    }
+
     private ScopeVariable map(final Parameter p) {
         
         final Type type = p.getType();

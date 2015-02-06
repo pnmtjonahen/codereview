@@ -30,8 +30,7 @@ public class ExitPoint {
     private final List<String> params;
 
     public ExitPoint(final CallScopeType callScopeType, final String type, 
-            final String name, final List<String> params) 
-    {
+            final String name, final List<String> params) {
         this.callScopeType = callScopeType;
         this.type = type;
         this.name = name;

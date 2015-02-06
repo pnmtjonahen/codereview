@@ -30,8 +30,8 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 
 /**
  *
@@ -39,20 +39,20 @@ import java.util.Stack;
  */
 public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
 
-    private final Stack<ScopeVariable> scopeStack;
+    private final Deque<ScopeVariable> scopeStack;
     private final FQCMap fqc;
-    private final ArrayList<ExitPoint> methods = new ArrayList<>();
+    private final List<ExitPoint> methods = new ArrayList<>();
 
 
     private final List<String> params;
 
-    public ParameterVisitor(final FQCMap fqc, final Stack<ScopeVariable> scopeStack) {
+    public ParameterVisitor(final FQCMap fqc, final Deque<ScopeVariable> scopeStack) {
         this.scopeStack = scopeStack;
         this.fqc = fqc;
         this.params = new ArrayList<>();
     }
 
-    public ArrayList<ExitPoint> getMethods() {
+    public List<ExitPoint> getMethods() {
         return methods;
     }
 

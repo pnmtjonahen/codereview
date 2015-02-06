@@ -38,14 +38,14 @@ public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
     private final ArrayList<EntryPoint> methods = new ArrayList<>();
     private final FQCMap fqc;
 
-    public ArrayList<EntryPoint> getMethods() {
-        return methods;
-    }
-
     public DeclaringMethodVisitor(final FQCMap fqc) {
         this.fqc = fqc;
     }
     
+    public ArrayList<EntryPoint> getMethods() {
+        return methods;
+    }
+
     @Override
     public void visit(ClassOrInterfaceDeclaration n, ScopeType type) {
         super.visit(n, new ScopeType(type.getPackageName() 

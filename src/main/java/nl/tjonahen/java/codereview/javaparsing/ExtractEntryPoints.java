@@ -37,9 +37,8 @@ public class ExtractEntryPoints {
         final DeclaringMethodVisitor publicMethodVisitor = new DeclaringMethodVisitor(importDeclarationVisitor.getFqc());
         final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
         if (cu.getTypes() != null) {
-            cu.getTypes().stream().forEach((td) -> {
-                td.accept(publicMethodVisitor, new ScopeType(packageName, null));
-            });
+            cu.getTypes().stream().forEach(td -> 
+                    td.accept(publicMethodVisitor, new ScopeType(packageName, null)) );
         }
         return publicMethodVisitor.getMethods();
     }

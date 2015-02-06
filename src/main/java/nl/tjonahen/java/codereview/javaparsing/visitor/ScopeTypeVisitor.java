@@ -25,7 +25,8 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.util.ArrayList;
-import java.util.Stack;
+import java.util.Deque;
+import java.util.List;
 
 /**
  *
@@ -33,18 +34,18 @@ import java.util.Stack;
  */
 public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
 
-    private final Stack<ScopeVariable> scopeStack;
+    private final Deque<ScopeVariable> scopeStack;
     private final FQCMap fqc;
-    private final ArrayList<ExitPoint> methods = new ArrayList<>();
+    private final List<ExitPoint> methods = new ArrayList<>();
     private String name;
     private String type;
 
-    public ScopeTypeVisitor(final FQCMap fqc, final Stack<ScopeVariable> scopeStack) {
+    public ScopeTypeVisitor(final FQCMap fqc, final Deque<ScopeVariable> scopeStack) {
         this.scopeStack = scopeStack;
         this.fqc = fqc;
     }
 
-    public ArrayList<ExitPoint> getMethods() {
+    public List<ExitPoint> getMethods() {
         return methods;
     }
 
@@ -78,7 +79,6 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
     public void visit(MethodCallExpr n, CallScopeType arg) {
         MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
 
-//        n.accept(methodBodyVisitor, arg);
         methodBodyVisitor.visit(n, arg);
 
         methods.addAll(methodBodyVisitor.getMethods());

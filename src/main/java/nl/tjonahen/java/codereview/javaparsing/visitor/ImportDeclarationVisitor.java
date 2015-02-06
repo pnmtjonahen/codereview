@@ -29,6 +29,7 @@ import java.util.List;
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class ImportDeclarationVisitor extends VoidVisitorAdapter<List<String>> {
+    private static final int TYPE_OFFSET = 3;
 
     private final FQCMap fqc = new FQCMap();
 
@@ -47,11 +48,8 @@ public class ImportDeclarationVisitor extends VoidVisitorAdapter<List<String>> {
             final String method = arrayList.get(arrayList.size() - 1);
             final String type = importStmt.substring(0, importStmt.lastIndexOf("."));
             fqc.put(method, type);
-            final String baseType = arrayList.get(arrayList.size() - 3);
+            final String baseType = arrayList.get(arrayList.size() - TYPE_OFFSET);
             fqc.put(baseType, type);
-            
-//        } else if (n.isAsterisk()) {
-//            //
         } else {
             final String type = arrayList.get(arrayList.size() - 1);
             fqc.put(type, importStmt);
