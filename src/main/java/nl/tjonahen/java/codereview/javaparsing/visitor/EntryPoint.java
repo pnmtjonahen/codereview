@@ -19,7 +19,7 @@ package nl.tjonahen.java.codereview.javaparsing.visitor;
 import java.util.List;
 
 /**
- * A public method of a type.
+ * Represents the possible incoming method calls.
  * 
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
@@ -78,11 +78,5 @@ public class EntryPoint {
     public String getReturnType() {
         return returnType;
     }
-
-    @Override
-    public String toString() {
-        return "EntryPoint{" + "internal=" + internal + ", packageName=" + packageName + ", type=" + type + ", returnType=" + returnType + ", name=" + name + ", params=" + params + '}';
-    }
-    
     
 }

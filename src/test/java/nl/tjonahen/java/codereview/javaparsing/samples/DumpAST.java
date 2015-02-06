@@ -13,7 +13,7 @@ import java.io.InputStream;
 public class DumpAST {
 
     public static void main(String[] args) throws Exception {
-        CompilationUnit cu = getInlineDeclare();
+        CompilationUnit cu = getHierarchie();
         final DumpASTVisitor dumpASTVisitor = new DumpASTVisitor();
         dumpASTVisitor.visit(cu, null);
         System.out.println(dumpASTVisitor.getSource());
@@ -129,6 +129,14 @@ public class DumpAST {
 "    }"    
                 + "}"));
     }
+    
+    private static CompilationUnit getHierarchie() throws ParseException {
+
+        return JavaParser.parse(getSource(""+
+                "public class Test extends Test2 implements ITest { "
+                + "}"));
+    }
+    
     private static InputStream getSource(String source) {
         return new ByteArrayInputStream(source.getBytes());
     }

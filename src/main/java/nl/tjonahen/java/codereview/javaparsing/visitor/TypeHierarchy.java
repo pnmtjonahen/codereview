@@ -16,42 +16,34 @@
  */
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents outgoing method calls.
+ *  Represents the extends and implements relation.
  * 
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class ExitPoint {
-    private final CallScopeType callScopeType;
+public class TypeHierarchy {
     private final String type;
-    private final String name;
-    private final List<String> params;
+    private final List<String> isAType;
 
-    public ExitPoint(final CallScopeType callScopeType, final String type, 
-            final String name, final List<String> params) 
-    {
-        this.callScopeType = callScopeType;
+    public TypeHierarchy(String type) {
         this.type = type;
-        this.name = name;
-        this.params = params;
-    }
-
-    public CallScopeType getCallScopeType() {
-        return callScopeType;
+        this.isAType = new ArrayList<>();
     }
 
     public String getType() {
         return type;
     }
 
-    public String getName() {
-        return name;
+    public List<String> getIsAType() {
+        return isAType;
     }
-
-    public List<String> getParams() {
-        return params;
+    
+    public void addIsAType(String aType) {
+        isAType.add(aType);
     }
+    
     
 }

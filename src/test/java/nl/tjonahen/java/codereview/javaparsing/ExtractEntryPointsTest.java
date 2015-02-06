@@ -20,12 +20,11 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
+import nl.tjonahen.java.codereview.CompilationUnitFactory;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -34,9 +33,10 @@ import org.junit.Test;
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class ExtractEntryPointsTest {
-    
+
     public ExtractEntryPointsTest() {
     }
+
     /**
      * Test of extract method, of class ExtractPublicMethods.
      */
@@ -53,194 +53,193 @@ public class ExtractEntryPointsTest {
         } finally {
             in.close();
         }
-        
+
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(25, extract.size());
-        
+
         assertEquals(1, extract.stream().filter(p -> p.isInternal()).count());
         assertEquals(24, extract.stream().filter(p -> !p.isInternal()).count());
-        
-        extract.stream().forEach( p ->  System.out.println(p.getType() + "::" + p.getName()));
-        
+
+        extract.stream().forEach(p -> System.out.println(p.getType() + "::" + p.getName()));
+
     }
 
     /**
      * Test of extract method, of class ExtractPublicMethods.
-     * 
+     *
      */
     @Test
     public void testExtractPublic() throws ParseException {
         // creates an input stream for the file to be parsed
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "public class Test { "
-                                + " public String ibm(String p) { "
-                                + "     return p.toUpperCase(); "
-                                +"  }"
-                                + " protected String ibm2(String p) { "
-                                + "     return p.toUpperCase(); "
-                                +"  }"
-                                + " public static String ibmS(String p) { "
-                                + "     return p.toUpperCase(); "
-                                +"  }"
-                                + " String ibmPL(String p) { "
-                                + "     return p.toUpperCase(); "
-                                +"  }"
-                                + "}"));
-        
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
+                + "public class Test { "
+                + " public String ibm(String p) { "
+                + "     return p.toUpperCase(); "
+                + "  }"
+                + " protected String ibm2(String p) { "
+                + "     return p.toUpperCase(); "
+                + "  }"
+                + " public static String ibmS(String p) { "
+                + "     return p.toUpperCase(); "
+                + "  }"
+                + " String ibmPL(String p) { "
+                + "     return p.toUpperCase(); "
+                + "  }"
+                + "}");
+
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(4, extract.size());
-        
-        extract.stream().forEach( p ->  System.out.println(p.getType() + "::" + p.getName()));
-        
+
+        extract.stream().forEach(p -> System.out.println(p.getType() + "::" + p.getName()));
+
     }
+
     /**
      * Test of extract method, of class ExtractPublicMethods.
-     * 
+     *
      */
     @Test
     public void testExtractNoPublic() throws ParseException {
         // creates an input stream for the file to be parsed
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "public class Test { "
-                                + " private Test() {}"
-                                + " private String ibm(String p) { "
-                                + "     return p.toUpperCase(); "
-                                +"  }"
-                                + "}"));
-        
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
+                + "public class Test { "
+                + " private Test() {}"
+                + " private String ibm(String p) { "
+                + "     return p.toUpperCase(); "
+                + "  }"
+                + "}");
+
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(2, extract.size());
-        
+
         assertEquals(2, extract.stream().filter(p -> p.isInternal()).count());
         assertEquals(0, extract.stream().filter(p -> !p.isInternal()).count());
-        
-        
+
     }
+
     /**
      * Test of extract method, of class ExtractPublicMethods.
      */
     @Test
-    public void testExtractSimplePublic() throws ParseException  {
+    public void testExtractSimplePublic() throws ParseException {
         // creates an input stream for the file to be parsed
 
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
+                + "public class Test { "
+                + " public Test() {}"
+                + " public String ibm(String p) { "
+                + "     return p.toUpperCase(); "
+                + " }"
+                + "}");
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "public class Test { "
-                                + " public Test() {}"
-                                + " public String ibm(String p) { "
-                                + "     return p.toUpperCase(); "
-                                + " }"
-                                + "}"));
-        
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(2, extract.size());
         assertEquals("String", extract.get(1).getReturnType());
         assertEquals("ibm", extract.get(1).getName());
         assertEquals("String", extract.get(1).getParams().get(0));
-        
+
     }
+
     /**
      * Test of extract method, of class ExtractPublicMethods.
      */
     @Test
-    public void testExtractWithTypeInfo() throws ParseException  {
+    public void testExtractWithTypeInfo() throws ParseException {
         // creates an input stream for the file to be parsed
 
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
+                + "import nl.tjonahen.sample.IBM;"
+                + "public class Test { "
+                + " public String ibm(IBM p) { "
+                + "     return p.toUpperCase(); "
+                + " }"
+                + "}");
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "import nl.tjonahen.sample.IBM;"
-                                + "public class Test { "
-                                + " public String ibm(IBM p) { "
-                                + "     return p.toUpperCase(); "
-                                + " }"
-                                + "}"));
-        
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("String", extract.get(0).getReturnType());
         assertEquals("ibm", extract.get(0).getName());
         assertEquals("nl.tjonahen.sample.IBM", extract.get(0).getParams().get(0));
-        
+
     }
+
     /**
      * Test of extract method, of class ExtractPublicMethods.
      */
     @Test
-    public void testExtractWithGenericType() throws ParseException  {
+    public void testExtractWithGenericType() throws ParseException {
         // creates an input stream for the file to be parsed
 
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
+                + "import java.util.List;"
+                + "import nl.tjonahen.sample.IBM;"
+                + "public class Test { "
+                + " public Boolean ibm(final List<IBM> p) { "
+                + "     return p.isEmpty(); "
+                + " }"
+                + "}");
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "import java.util.List;"
-                                + "import nl.tjonahen.sample.IBM;"
-                                + "public class Test { "
-                                + " public Boolean ibm(final List<IBM> p) { "
-                                + "     return p.isEmpty(); "
-                                + " }"
-                                + "}"));
-        
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("Boolean", extract.get(0).getReturnType());
         assertEquals("ibm", extract.get(0).getName());
         assertEquals("java.util.List", extract.get(0).getParams().get(0));
-        
+
     }
+
     /**
      * Test of extract method, of class ExtractPublicMethods.
      */
     @Test
-    public void testExtractWithGenericTypeAndGenericReturnType() throws ParseException  {
+    public void testExtractWithGenericTypeAndGenericReturnType() throws ParseException {
         // creates an input stream for the file to be parsed
 
+        final CompilationUnit cu = new CompilationUnitFactory().get("" + "import java.util.List;"
+                + "import nl.tjonahen.sample.IBM;"
+                + "public class Test { "
+                + " public List<IBM> ibm(final List<IBM> p) { "
+                + "     return p.isEmpty(); "
+                + " }"
+                + "}");
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "import java.util.List;"
-                                + "import nl.tjonahen.sample.IBM;"
-                                + "public class Test { "
-                                + " public List<IBM> ibm(final List<IBM> p) { "
-                                + "     return p.isEmpty(); "
-                                + " }"
-                                + "}"));
-        
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("java.util.List", extract.get(0).getReturnType());
         assertEquals("ibm", extract.get(0).getName());
         assertEquals("java.util.List", extract.get(0).getParams().get(0));
-        
+
     }
+
     /**
      * Test of extract method, of class ExtractPublicMethods.
      */
     @Test
-    public void testExtractWithTypes() throws ParseException  {
+    public void testExtractWithTypes() throws ParseException {
         // creates an input stream for the file to be parsed
 
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
+                + "package nl.tjonahen.sampleapp;"
+                + "import java.util.List;"
+                + "import nl.tjonahen.sample.IBM;"
+                + "public class Test { "
+                + " public Boolean ibm(final List<IBM> p) { "
+                + "     return p.isEmpty(); "
+                + " }"
+                + " public static class TestNested { "
+                + "     public Boolean ibm(final List<IBM> p) { "
+                + "         return p.isEmpty(); "
+                + "     }"
+                + " }"
+                + "}"
+                + "public class TestTwo { "
+                + " public Boolean ibm(final List<IBM> p) { "
+                + "     return p.isEmpty(); "
+                + " }"
+                + "}"
+        );
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "package nl.tjonahen.sampleapp;"
-                                + "import java.util.List;"
-                                + "import nl.tjonahen.sample.IBM;"
-                                + "public class Test { "
-                                + " public Boolean ibm(final List<IBM> p) { "
-                                + "     return p.isEmpty(); "
-                                + " }"
-                                + " public static class TestNested { "
-                                + "     public Boolean ibm(final List<IBM> p) { "
-                                + "         return p.isEmpty(); "
-                                + "     }"
-                                + " }"
-                                + "}"
-                                + "public class TestTwo { "
-                                + " public Boolean ibm(final List<IBM> p) { "
-                                + "     return p.isEmpty(); "
-                                + " }"
-                                + "}"
-        ));
-        
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(3, extract.size());
         assertEquals("ibm", extract.get(0).getName());
@@ -252,62 +251,57 @@ public class ExtractEntryPointsTest {
         assertEquals("ibm", extract.get(2).getName());
         assertEquals("nl.tjonahen.sampleapp", extract.get(2).getPackageName());
         assertEquals("TestTwo", extract.get(2).getType());
-        
+
     }
+
     /**
      * Test of extract method, of class ExtractPublicMethods.
      */
     @Test
-    public void testExtractLambda() throws ParseException  {
+    public void testExtractLambda() throws ParseException {
         // creates an input stream for the file to be parsed
 
+        final CompilationUnit cu = new CompilationUnitFactory().get("" + "public class Test { "
+                + " public Test() {}"
+                + " public String ibm(String p) { "
+                + " ExtractPublicMethods extractPublicMethods = new ExtractPublicMethods();"
+                + " extractPublicMethods.extract(cu)"
+                + "             .stream()"
+                + "             .map(p -> \"ENTRYPOINT \" + p.getPackageName()+\".\"+p.getTypeName()+\"::\"+p.getSignature())"
+                + "             .forEach(System.out::println);"
+                + " }"
+                + "}");
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "public class Test { "
-                                + " public Test() {}"
-                                + " public String ibm(String p) { "
-                                + " ExtractPublicMethods extractPublicMethods = new ExtractPublicMethods();"
-                                + " extractPublicMethods.extract(cu)"
-                                + "             .stream()"
-                                + "             .map(p -> \"ENTRYPOINT \" + p.getPackageName()+\".\"+p.getTypeName()+\"::\"+p.getSignature())"
-                                + "             .forEach(System.out::println);"
-                                + " }"
-                                + "}"));
-        
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(2, extract.size());
         assertEquals("String", extract.get(1).getReturnType());
         assertEquals("ibm", extract.get(1).getName());
         assertEquals("String", extract.get(1).getParams().get(0));
-        
-        
+
     }
+
     /**
      * Test of extract method, of class ExtractPublicMethods.
      */
     @Test
-    public void testExtractWithStaticImport() throws ParseException  {
+    public void testExtractWithStaticImport() throws ParseException {
         // creates an input stream for the file to be parsed
 
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
+                + "import static java.util.List.isEmpty;"
+                + "import nl.tjonahen.sample.IBM;"
+                + "public class Test { "
+                + " public List<IBM> ibm(final List<IBM> p) { "
+                + "     return isEmpty(); "
+                + " }"
+                + "}");
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
-                                + "import static java.util.List.isEmpty;"
-                                + "import nl.tjonahen.sample.IBM;"
-                                + "public class Test { "
-                                + " public List<IBM> ibm(final List<IBM> p) { "
-                                + "     return isEmpty(); "
-                                + " }"
-                                + "}"));
-        
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(1, extract.size());
         assertEquals("java.util.List", extract.get(0).getReturnType());
         assertEquals("ibm", extract.get(0).getName());
         assertEquals("java.util.List", extract.get(0).getParams().get(0));
-        
+
     }
-    
-    private InputStream getSource(String source) {
-        return new ByteArrayInputStream(source.getBytes());
-    }
+
 }

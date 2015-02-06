@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import nl.tjonahen.java.codereview.CompilationUnitFactory;
 import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 import nl.tjonahen.java.codereview.matching.ExitPointMatching;
@@ -64,13 +65,13 @@ public class ExtractExitPointsTest {
     @Test
     public void testExtractSimple() throws ParseException {
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "public class Test { "
                 + " public Test() {}"
                 + " public String ibm(String p) { "
                 + "     return p.toUpperCase(); "
                 + " }"
-                + "}"));
+                + "}");
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
@@ -87,13 +88,13 @@ public class ExtractExitPointsTest {
     @Test
     public void testExtractPublicCallAssignment() throws ParseException {
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "public class Test { "
                 + " public Test() {}"
                 + " public void ibm(String p) { "
                 + "     String value = p.toUpperCase(); "
                 + " }"
-                + "}"));
+                + "}");
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
@@ -107,7 +108,7 @@ public class ExtractExitPointsTest {
     @Test
     public void testExtractWithGenericsInMethod() throws ParseException {
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "import java.util.List;"
                 + "public class Test { "
                 + " public Test() {}"
@@ -117,7 +118,7 @@ public class ExtractExitPointsTest {
                 + "     return param.toUpperCase(); "
                 + "     }"
                 + " }"
-                + "}"));
+                + "}");
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(2, extract.size());
@@ -133,7 +134,7 @@ public class ExtractExitPointsTest {
     @Test
     public void testExtractWithGenericsInConstructor() throws ParseException {
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "import java.util.List;"
                 + "public class Test { "
                 + " private List<String> param = new ArrayList<String>();"
@@ -142,7 +143,7 @@ public class ExtractExitPointsTest {
                 + "         this.param.toUpperCase(); "
                 + "     }"
                 + " }"
-                + "}"));
+                + "}");
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(2, extract.size());
@@ -162,7 +163,7 @@ public class ExtractExitPointsTest {
     @Test
     public void testExtractWithParams() throws ParseException {
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "package nl.tjonahen.sample.test; "
                 + "import nl.tjonahen.dummy.IBM; "
                 + "public class Test { "
@@ -175,7 +176,7 @@ public class ExtractExitPointsTest {
                 + "     String var = null;"
                 + "     return p.process(p, var, intValue); "
                 + " }"
-                + "}"));
+                + "}");
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(3, extract.size());
@@ -210,7 +211,7 @@ public class ExtractExitPointsTest {
     @Test
     public void testExtractWithLiterals() throws ParseException {
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "package nl.tjonahen.sample.test; "
                 + "import nl.tjonahen.dummy.IBM; "
                 + "public class Test { "
@@ -224,7 +225,7 @@ public class ExtractExitPointsTest {
                 + "     p.process('a'); "
                 + "     p.process(null); "
                 + " }"
-                + "}"));
+                + "}");
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(7, extract.size());
@@ -254,7 +255,7 @@ public class ExtractExitPointsTest {
     @Test
     public void testExtractWithStaticCall() throws ParseException {
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "package nl.tjonahen.sample.test; "
                 + "import nl.tjonahen.dummy.IBM; "
                 + "public class Test { "
@@ -262,7 +263,7 @@ public class ExtractExitPointsTest {
                 + " public void ibm(IBM p) { "
                 + "     String.format(\"%s\", \"dummy\"); "
                 + " }"
-                + "}"));
+                + "}");
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
@@ -278,7 +279,7 @@ public class ExtractExitPointsTest {
     @Test
     public void testExtractWithNested() throws ParseException {
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "package nl.tjonahen.sample.test; "
                 + "import nl.tjonahen.dummy.IBM; "
                 + "import nl.tjonahen.dummy.Header; "
@@ -292,7 +293,7 @@ public class ExtractExitPointsTest {
                 + "     String servicePrefix = \"prefix\";"
                 + "     header.setMessageId(new StringBuffer(servicePrefix).append(sdf.format(new Date())).toString());"
                 + " }"
-                + "}"));
+                + "}");
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(4, extract.size());
@@ -317,7 +318,7 @@ public class ExtractExitPointsTest {
     @Test
     public void testExtractTrainWreck() throws ParseException {
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "package nl.tjonahen.sample.test; "
                 + "import nl.tjonahen.dummy.IBM; "
                 + "import nl.tjonahen.dummy.Header; "
@@ -341,7 +342,7 @@ public class ExtractExitPointsTest {
                 + "            new Step().calculate();"
                 + "    }"
                 + ""
-                + "}"));
+                + "}");
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(6, extract.size());
@@ -359,14 +360,14 @@ public class ExtractExitPointsTest {
     public void testExtractWithStaticImport() throws ParseException {
         // creates an input stream for the file to be parsed
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "import static java.util.List.isEmpty;"
                 + "import nl.tjonahen.sample.IBM;"
                 + "public class Test { "
                 + " public List<IBM> ibm(final List<IBM> p) { "
                 + "     return isEmpty(); "
                 + " }"
-                + "}"));
+                + "}");
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
@@ -378,7 +379,7 @@ public class ExtractExitPointsTest {
 
     @Test
     public void testInlineDeclaredVar() throws ParseException {
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "package nl.tjonahen.dummy;"
                 + "import nl.tjonahen.dummy.CreditCardArrangement;"
                 + "import nl.tjonahen.dummy.CreditCard;"
@@ -410,7 +411,7 @@ public class ExtractExitPointsTest {
                 + "        }"
                 + "        return creditCardArrangements;"
                 + "    }"
-                + "}"));
+                + "}");
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(4, extract.size());
         assertEquals("", extract.get(0).getType());
@@ -420,7 +421,7 @@ public class ExtractExitPointsTest {
 
     @Test
     public void testExtendsImplements() throws ParseException {
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "package nl.tjonahen.dummy;"
                 + ""
                 + "public class Test extends AbstractTest { "
@@ -430,7 +431,7 @@ public class ExtractExitPointsTest {
                 + " public List<IBM> ibm(final List<IBM> p) { "
                 + "     return super.ibm(p);"
                 + " }"
-                + "}"));
+                + "}");
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
         assertEquals("super", extract.get(0).getType());
@@ -445,7 +446,7 @@ public class ExtractExitPointsTest {
     @Test
     public void testExtractThisCall() throws ParseException {
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "package nl.tjonahen.sample.test; "
                 + "import nl.tjonahen.dummy.IBM; "
                 + "public class Test { "
@@ -453,7 +454,7 @@ public class ExtractExitPointsTest {
                 + " public void ibm(IBM p) { "
                 + "     this.format(\"%s\", this); "
                 + " }"
-                + "}"));
+                + "}");
 
         final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching());
         assertEquals(1, extract.size());
@@ -471,14 +472,14 @@ public class ExtractExitPointsTest {
     @Test
     public void testExtractFindReturnType() throws ParseException {
 
-        final CompilationUnit cu = JavaParser.parse(getSource(""
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
                 + "package nl.tjonahen.sample.test; "
                 + "import nl.tjonahen.sample.test.TestB; "
                 + "public class TestA { "
                 + " public void ibm(TestB testB) { "
                 + "     this.format(testB.ibm()); "
                 + " }"
-                + "}"));
+                + "}");
         
         List<EntryPoint> points = new ArrayList<>();
         points.add(new EntryPoint(true, "nl.tjonahen.sample.test", "TestB", "String", "ibm", new ArrayList<>()));
@@ -494,7 +495,4 @@ public class ExtractExitPointsTest {
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
     }
 
-    private InputStream getSource(String source) {
-        return new ByteArrayInputStream(source.getBytes());
-    }
 }

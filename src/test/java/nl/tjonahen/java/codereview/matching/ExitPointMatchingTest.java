@@ -46,12 +46,13 @@ public class ExitPointMatchingTest {
 
         epm.addAll(getEntryPoints());
         final List<ExitPoint> exitPoints = getExitPoints();
-        assertEquals(4, exitPoints.size());
+        assertEquals(5, exitPoints.size());
         
-        assertNotNull(epm.match(exitPoints.get(0)));
-        assertNull(epm.match(exitPoints.get(1)));
-        assertNull(epm.match(exitPoints.get(2)));
-        assertNull(epm.match(exitPoints.get(3)));
+        assertNotNull(epm.match(exitPoints.get(0)).getEntryPoint());
+        assertEquals("No such method..", epm.match(exitPoints.get(1)).getReason());
+        assertEquals("No such method..", epm.match(exitPoints.get(2)).getReason());
+        assertEquals("Type Not Found..", epm.match(exitPoints.get(3)).getReason());
+        assertEquals("No such method..", epm.match(exitPoints.get(4)).getReason());
 
     }
 
@@ -87,6 +88,9 @@ public class ExitPointMatchingTest {
                 + "  }"
                 + " private String ibmB4(TestC p) { "
                 + "     return p.ibmC(this, \"a String\"); "
+                + "  }"
+                + " private String ibmB(TestA p) { "
+                + "     return p.ibmNot(this); "
                 + "  }"
                 + "}"));
 
