@@ -72,11 +72,6 @@ public class TypeHierarchyVisitor extends VoidVisitorAdapter<String>{
     
     @Override
     public void visit(ClassOrInterfaceType n, String arg) {
-        if (this.currentType == null) {
-            System.out.println("Adding " + arg);
-            this.currentType = new TypeHierarchy(arg);
-            this.typeHierarchy.add(currentType);
-        }
         currentType.addIsAType(fqc.determineFqc(n.getName()));
         super.visit(n, arg); 
     }

@@ -123,7 +123,7 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     @Override
     public void visit(ObjectCreationExpr n, CallScopeType arg) {
-        add(n.getType().getName());
+        add(fqc.determineFqc(n.getType().getName()));
     }
 
     @Override

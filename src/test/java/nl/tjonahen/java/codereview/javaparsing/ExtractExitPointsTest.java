@@ -304,7 +304,7 @@ public class ExtractExitPointsTest {
 
         assertEquals("java.text.SimpleDateFormat", extract.get(0).getType());
         assertEquals("format", extract.get(0).getName());
-        assertEquals("Date", extract.get(0).getParams().get(0));
+        assertEquals("java.util.Date", extract.get(0).getParams().get(0));
 
         assertEquals("StringBuffer", extract.get(1).getType());
         assertEquals("append", extract.get(1).getName());

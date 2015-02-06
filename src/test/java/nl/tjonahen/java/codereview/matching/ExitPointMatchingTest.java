@@ -26,6 +26,7 @@ import nl.tjonahen.java.codereview.javaparsing.ExtractEntryPoints;
 import nl.tjonahen.java.codereview.javaparsing.ExtractExitPoints;
 import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
+import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -43,23 +44,30 @@ public class ExitPointMatchingTest {
      */
     @Test
     public void testMatch() throws ParseException {
-        ExitPointMatching epm = new ExitPointMatching(new TypeHierarchyMatching());
+        final TypeHierarchyMatching typeHierarchyMatching = new TypeHierarchyMatching();
+        final TypeHierarchy typeHierarchy = new TypeHierarchy("java.util.ArrayList");
+        typeHierarchy.addIsAType("java.util.Collection");
+        typeHierarchyMatching.add(typeHierarchy);
+        ExitPointMatching epm = new ExitPointMatching(typeHierarchyMatching);
 
         epm.addAll(getEntryPoints());
         final List<ExitPoint> exitPoints = getExitPoints();
-        assertEquals(5, exitPoints.size());
-        
+        assertEquals(6, exitPoints.size());
+
         assertNotNull(epm.match(exitPoints.get(0)).getEntryPoint());
+
         assertEquals("No such method..", epm.match(exitPoints.get(1)).getReason());
         assertTrue(epm.match(exitPoints.get(1)).getPosibleMethods().isEmpty());
         assertEquals("No such method..", epm.match(exitPoints.get(2)).getReason());
         assertFalse(epm.match(exitPoints.get(2)).getPosibleMethods().isEmpty());
         assertEquals(1, epm.match(exitPoints.get(2)).getPosibleMethods().size());
-        
+
         assertEquals("Type Not Found..", epm.match(exitPoints.get(3)).getReason());
         assertTrue(epm.match(exitPoints.get(3)).getPosibleMethods().isEmpty());
         assertEquals("No such method..", epm.match(exitPoints.get(4)).getReason());
         assertTrue(epm.match(exitPoints.get(4)).getPosibleMethods().isEmpty());
+
+        assertNotNull(epm.match(exitPoints.get(5)).getEntryPoint());
 
     }
 
@@ -67,10 +75,13 @@ public class ExitPointMatchingTest {
         final CompilationUnit cu = JavaParser.parse(getSource(""
                 + "package nl.tjonahen;"
                 + "import nl.tjonahen.TestB;"
+                + "import java.util.Collection;"
                 + "public class TestA { "
                 + " public String ibmA(String a, TestB b) { "
                 + " }"
                 + " public String ibmA(TestB b) { "
+                + " }"
+                + " public String ibmA(Collection<String> b) { "
                 + " }"
                 + "}"));
 
@@ -83,6 +94,7 @@ public class ExitPointMatchingTest {
                 + "package nl.tjonahen;"
                 + "import nl.tjonahen.TestA;"
                 + "import nl.tjonahen.TestC;"
+                + "import java.util.ArrayList;"
                 + "public class TestB { "
                 + " private String ibmB(TestA p) { "
                 + "     return p.ibmA(this); "
@@ -98,6 +110,9 @@ public class ExitPointMatchingTest {
                 + "  }"
                 + " private String ibmB(TestA p) { "
                 + "     return p.ibmNot(this); "
+                + "  }"
+                + " private String ibmB(TestA p) { "
+                + "     return p.ibmA(new ArrayList<String>()); "
                 + "  }"
                 + "}"));
 

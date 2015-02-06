@@ -23,6 +23,7 @@ import nl.tjonahen.java.codereview.CompilationUnitFactory;
 import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -53,4 +54,32 @@ public class ExtractTypeHierarchyTest {
         assertEquals("Test2", hierarchys.get(0).getIsAType().get(0));
         assertEquals("ITest", hierarchys.get(0).getIsAType().get(1));
     }
+    
+    @Test
+    public void testExtractEnum() throws ParseException {
+        final CompilationUnit cu = new CompilationUnitFactory().get("" 
+                + "public enum Currency {PENNY(1), NICKLE(5), DIME(10), QUARTER(25)} "
+                + "");
+        final ExtractTypeHierarchy extractTypeHierarchy = new ExtractTypeHierarchy();
+        
+        final List<TypeHierarchy> hierarchys = extractTypeHierarchy.extract(cu);
+        
+        assertNotNull(hierarchys);
+        assertEquals(1, hierarchys.size());
+        assertTrue(hierarchys.get(0).getIsAType().isEmpty());
+    }
+        @Test
+    public void testExtractAnnotation() throws ParseException {
+        final CompilationUnit cu = new CompilationUnitFactory().get("" 
+                + "public @interface Test { "
+                + "}");
+        final ExtractTypeHierarchy extractTypeHierarchy = new ExtractTypeHierarchy();
+        
+        final List<TypeHierarchy> hierarchys = extractTypeHierarchy.extract(cu);
+        
+        assertNotNull(hierarchys);
+        assertEquals(1, hierarchys.size());
+        assertTrue(hierarchys.get(0).getIsAType().isEmpty());
+    }
+
 }
