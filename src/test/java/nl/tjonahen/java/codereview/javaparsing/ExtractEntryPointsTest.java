@@ -136,9 +136,9 @@ public class ExtractEntryPointsTest {
 
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(2, extract.size());
-        assertEquals("String", extract.get(1).getReturnType());
+        assertEquals("java.lang.String", extract.get(1).getReturnType());
         assertEquals("ibm", extract.get(1).getName());
-        assertEquals("String", extract.get(1).getParams().get(0));
+        assertEquals("java.lang.String", extract.get(1).getParams().get(0));
 
     }
 
@@ -159,7 +159,7 @@ public class ExtractEntryPointsTest {
 
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(1, extract.size());
-        assertEquals("String", extract.get(0).getReturnType());
+        assertEquals("java.lang.String", extract.get(0).getReturnType());
         assertEquals("ibm", extract.get(0).getName());
         assertEquals("nl.tjonahen.sample.IBM", extract.get(0).getParams().get(0));
 
@@ -183,7 +183,7 @@ public class ExtractEntryPointsTest {
 
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(1, extract.size());
-        assertEquals("Boolean", extract.get(0).getReturnType());
+        assertEquals("java.lang.Boolean", extract.get(0).getReturnType());
         assertEquals("ibm", extract.get(0).getName());
         assertEquals("java.util.List", extract.get(0).getParams().get(0));
 
@@ -274,9 +274,9 @@ public class ExtractEntryPointsTest {
 
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
         assertEquals(2, extract.size());
-        assertEquals("String", extract.get(1).getReturnType());
+        assertEquals("java.lang.String", extract.get(1).getReturnType());
         assertEquals("ibm", extract.get(1).getName());
-        assertEquals("String", extract.get(1).getParams().get(0));
+        assertEquals("java.lang.String", extract.get(1).getParams().get(0));
 
     }
 

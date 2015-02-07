@@ -33,6 +33,7 @@ public class ImportDeclarationVisitor extends VoidVisitorAdapter<List<String>> {
 
     private final FQCMap fqc = new FQCMap();
 
+    
     public FQCMap getFqc() {
         return fqc;
     }

@@ -27,10 +27,21 @@ import java.util.Map;
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class FQCMap {
+public final class FQCMap {
 
     private final Map<String, String> fqc = new HashMap<>();
 
+    public FQCMap() {
+        this.put("String", "java.lang.String");
+        this.put("Long", "java.lang.Long");
+        this.put("Integer", "java.lang.Integer");
+        this.put("Double", "java.lang.Double");
+        this.put("Char", "java.lang.Char");
+        this.put("Boolean", "java.lang.Boolean");
+        this.put("Object", "java.lang.Object");
+    }
+
+    
     public void put(String key, String value) {
         fqc.put(key, value);
     }

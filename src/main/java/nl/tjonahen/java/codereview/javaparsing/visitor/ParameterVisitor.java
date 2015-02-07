@@ -68,13 +68,13 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     @Override
     public void visit(StringLiteralExpr n, CallScopeType arg) {
-        add("String");
+        add("java.lang.String");
     }
 
     @Override
     public void visit(BinaryExpr n, CallScopeType arg) {
         if (n.getLeft() instanceof StringLiteralExpr || n.getRight() instanceof StringLiteralExpr) {
-            add("String");
+            add("java.lang.String");
         } else {
             super.visit(n, arg);
         }
@@ -83,7 +83,7 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
     
     @Override
     public void visit(NullLiteralExpr n, CallScopeType arg) {
-        add("Object");
+        add("java.lang.Object");
     }
 
     @Override
@@ -98,32 +98,37 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     @Override
     public void visit(LongLiteralExpr n, CallScopeType arg) {
-        add("Long");
+        add("java.lang.Long");
     }
 
     @Override
     public void visit(IntegerLiteralExpr n, CallScopeType arg) {
-        add("Integer");
+        add("java.lang.Integer");
     }
 
     @Override
     public void visit(DoubleLiteralExpr n, CallScopeType arg) {
-        add("Double");
+        add("java.lang.Double");
     }
 
     @Override
     public void visit(CharLiteralExpr n, CallScopeType arg) {
-        add("Char");
+        add("java.lang.Char");
     }
 
     @Override
     public void visit(BooleanLiteralExpr n, CallScopeType arg) {
-        add("Boolean");
+        add("java.lang.Boolean");
     }
 
     @Override
     public void visit(ObjectCreationExpr n, CallScopeType arg) {
-        add(fqc.determineFqc(n.getType().getName()));
+        final String determineFqc = fqc.determineFqc(n.getType().getName());
+        if (determineFqc.equals(n.getType().getName())) {
+            add(arg.getPackageName() + "." + determineFqc);
+        } else {
+            add(determineFqc);
+        }
     }
 
     @Override

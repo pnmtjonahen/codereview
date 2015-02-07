@@ -39,9 +39,7 @@ public class TypeHierarchyMatching {
         if (typeHierarchyMapping.containsKey(type)) {
             return typeHierarchyMapping.get(type);
         }
-        final List<String> val = new ArrayList<>();
-        val.add("Object");
-        return val;
+        return new ArrayList<>();
     }
     
     

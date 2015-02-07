@@ -36,8 +36,7 @@ public class ExitPointMatching {
     public ExitPointMatching(TypeHierarchyMatching hierarchyMatching) {
         this.hierarchyMatching = hierarchyMatching;
     }
-    
-    
+
     private void add(EntryPoint p) {
         final String key = p.getPackageName() + "." + p.getType();
         if (methodNameMapping.containsKey(key)) {
@@ -66,15 +65,17 @@ public class ExitPointMatching {
         if (entryType.equals(exitType)) {
             return true;
         }
-        
+
         if (!hierarchyMatching.getSubstitutions(exitType).isEmpty()) {
             for (String pType : hierarchyMatching.getSubstitutions(exitType)) {
                 if (entryType.equals(pType)) {
                     return true;
                 }
             }
+        } else {
+            return entryType.equals("Object");
         }
-        
+
         return false;
     }
 
@@ -85,22 +86,35 @@ public class ExitPointMatching {
      * @return EntryPoint or null if none found.
      */
     public MatchPoint match(final ExitPoint ep) {
-        if (!methodNameMapping.containsKey(ep.getType())) {
+        MatchPoint mp = match(ep.getType(), ep);
+
+        return mp;
+    }
+
+    private MatchPoint match(final String type, final ExitPoint ep) {
+        if (!methodNameMapping.containsKey(type)) {
             return new MatchPoint("Type Not Found..");
         }
-        final List<EntryPoint> posibleMethods = methodNameMapping.get(ep.getType())
+        final List<EntryPoint> posibleMethods = methodNameMapping.get(type)
                 .stream()
                 .filter(p -> p.getName().equals(ep.getName()))
                 .filter(p -> p.getParams().size() == ep.getParams().size())
                 .collect(Collectors.toList());
         if (posibleMethods.isEmpty()) {
+            for (String pType : hierarchyMatching.getSubstitutions(type)) {
+                MatchPoint mp = match(pType, ep);
+                if (mp.getEntryPoint()!= null) {
+                    return mp;
+                }
+            }
             return new MatchPoint("No such method..");
         }
         return posibleMethods.stream()
                 .filter(p -> filter(p.getParams(), ep.getParams()))
                 .map(p -> new MatchPoint(p))
                 .findFirst()
-                    .orElse(new MatchPoint("No such method..", posibleMethods));
+                .orElse(new MatchPoint("No such method..", posibleMethods));
 
     }
+
 }
