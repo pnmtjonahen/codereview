@@ -20,6 +20,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import java.util.List;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ImportDeclarationVisitor;
 import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchy;
+import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchyScope;
 import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchyVisitor;
 
 /**
@@ -35,7 +36,7 @@ public class ExtractTypeHierarchy {
 
         TypeHierarchyVisitor hierarchyVisitor = new TypeHierarchyVisitor(importDeclarationVisitor.getFqc());
         
-        hierarchyVisitor.visit(cu, packageName);
+        hierarchyVisitor.visit(cu, new TypeHierarchyScope(packageName));
         
         return hierarchyVisitor.getTypeHierarchy();
     }

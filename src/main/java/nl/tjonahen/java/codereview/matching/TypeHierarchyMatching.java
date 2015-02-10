@@ -19,7 +19,9 @@ package nl.tjonahen.java.codereview.matching;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchy;
 
 /**
@@ -36,11 +38,26 @@ public class TypeHierarchyMatching {
         list.forEach(this::add);
     }
     public List<String> getSubstitutions(final String type) {
-        if (typeHierarchyMapping.containsKey(type)) {
-            return typeHierarchyMapping.get(type);
+        if (type != null && typeHierarchyMapping.containsKey(type)) {
+            Set<String> types = new TreeSet<>(typeHierarchyMapping.get(type));
+            Set<String> collected = new TreeSet<>();
+            types.stream().forEach(t -> collected.addAll(getSubstitutions(types, t)) );
+            return new ArrayList<>(collected);
         }
         return new ArrayList<>();
     }
     
+    private Set<String> getSubstitutions(Set<String> collected, final String type) {
+        Set<String> current = new TreeSet<>(collected);
+        if (typeHierarchyMapping.containsKey(type)) {
+            for (String t: typeHierarchyMapping.get(type)) {
+                if (!current.contains(t)) {
+                    current.add(t);
+                    current = getSubstitutions(current,t);
+                }
+            }
+        }    
+        return current;
+    }
     
 }

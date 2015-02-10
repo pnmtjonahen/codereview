@@ -40,6 +40,7 @@ public class Main {
     private static final int FILTER_IDX = 1;
 
     public static void main(String... aArgs) throws FileNotFoundException, ParseException {
+        
         final Main main = new Main();
 
         main.check(aArgs);
@@ -54,6 +55,7 @@ public class Main {
         final ExtractTypeHierarchy extractTypeHierarchy = new ExtractTypeHierarchy();
 
         for (File file : find.find()) {
+            Context.instance().set(file.getAbsolutePath());
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
             exitPointMatching.addAll(extractPublicMethods.extract(cu));
             hierarchyMatching.addAll(extractTypeHierarchy.extract(cu));
@@ -61,6 +63,7 @@ public class Main {
         
         final ExtractExitPoints extractMethodCalls = new ExtractExitPoints();
         for (File file : find.find()) {
+            Context.instance().set(file.getAbsolutePath());
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
 
             extractMethodCalls.extract(cu, exitPointMatching)
@@ -69,7 +72,7 @@ public class Main {
                     .filter(c -> c.getType().startsWith(aArgs[FILTER_IDX]))
                     .filter(c -> exitPointMatching.match(c).getEntryPoint() == null)
                     .map(c -> "EXITPOINT " + c.getCallScopeType().getTypeName() + " => " + c.getType() + "::"
-                            + c.getName() + "(" + printParams(c.getParams()) + ")")
+                            + c.getName() + "(" + printParams(c.getParams()) + ")" + " source " + file.getAbsolutePath())
                     .forEach(System.out::println);
 
         }

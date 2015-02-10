@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
+public class ScopeTypeVisitor extends VoidVisitorAdapter<CallContext> {
 
     private final Deque<ScopeVariable> scopeStack;
     private final FQCMap fqc;
@@ -59,7 +59,7 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
     
 
     @Override
-    public void visit(ObjectCreationExpr n, CallScopeType arg) {
+    public void visit(ObjectCreationExpr n, CallContext arg) {
         if (n.getType().getScope() != null && n.getType().getScope() instanceof ClassOrInterfaceType) {
             // nested type
             final ClassOrInterfaceType parentType = n.getType().getScope();
@@ -71,12 +71,12 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
     }
 
     @Override
-    public void visit(NameExpr n, CallScopeType arg) {
+    public void visit(NameExpr n, CallContext arg) {
         name = fqc.determineFqc(n.getName());
     }
 
     @Override
-    public void visit(MethodCallExpr n, CallScopeType arg) {
+    public void visit(MethodCallExpr n, CallContext arg) {
         MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
 
         methodBodyVisitor.visit(n, arg);
@@ -85,17 +85,17 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallScopeType> {
     }
 
     @Override
-    public void visit(SuperExpr n, CallScopeType arg) {
+    public void visit(SuperExpr n, CallContext arg) {
         name = "super";
     }
 
     @Override
-    public void visit(ThisExpr n, CallScopeType arg) {
+    public void visit(ThisExpr n, CallContext arg) {
         name = "this";
     }
 
     @Override
-    public void visit(FieldAccessExpr n, CallScopeType arg) {
+    public void visit(FieldAccessExpr n, CallContext arg) {
         name = n.getField();
     }
 

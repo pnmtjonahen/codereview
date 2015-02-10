@@ -37,7 +37,7 @@ import java.util.List;
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
+public class ParameterVisitor extends VoidVisitorAdapter<CallContext> {
 
     private final Deque<ScopeVariable> scopeStack;
     private final FQCMap fqc;
@@ -67,12 +67,12 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
     }
 
     @Override
-    public void visit(StringLiteralExpr n, CallScopeType arg) {
+    public void visit(StringLiteralExpr n, CallContext arg) {
         add("java.lang.String");
     }
 
     @Override
-    public void visit(BinaryExpr n, CallScopeType arg) {
+    public void visit(BinaryExpr n, CallContext arg) {
         if (n.getLeft() instanceof StringLiteralExpr || n.getRight() instanceof StringLiteralExpr) {
             add("java.lang.String");
         } else {
@@ -82,12 +82,12 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
 
     
     @Override
-    public void visit(NullLiteralExpr n, CallScopeType arg) {
+    public void visit(NullLiteralExpr n, CallContext arg) {
         add("java.lang.Object");
     }
 
     @Override
-    public void visit(NameExpr n, CallScopeType arg) {
+    public void visit(NameExpr n, CallContext arg) {
         add(scopeStack
                 .stream()
                 .filter(v -> v.getName().equals(n.getName()))
@@ -97,42 +97,43 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
 
 
     @Override
-    public void visit(LongLiteralExpr n, CallScopeType arg) {
+    public void visit(LongLiteralExpr n, CallContext arg) {
         add("java.lang.Long");
     }
 
     @Override
-    public void visit(IntegerLiteralExpr n, CallScopeType arg) {
+    public void visit(IntegerLiteralExpr n, CallContext arg) {
         add("java.lang.Integer");
     }
 
     @Override
-    public void visit(DoubleLiteralExpr n, CallScopeType arg) {
+    public void visit(DoubleLiteralExpr n, CallContext arg) {
         add("java.lang.Double");
     }
 
     @Override
-    public void visit(CharLiteralExpr n, CallScopeType arg) {
+    public void visit(CharLiteralExpr n, CallContext arg) {
         add("java.lang.Char");
     }
 
     @Override
-    public void visit(BooleanLiteralExpr n, CallScopeType arg) {
+    public void visit(BooleanLiteralExpr n, CallContext arg) {
         add("java.lang.Boolean");
     }
 
     @Override
-    public void visit(ObjectCreationExpr n, CallScopeType arg) {
+    public void visit(ObjectCreationExpr n, CallContext arg) {
         final String determineFqc = fqc.determineFqc(n.getType().getName());
-        if (determineFqc.equals(n.getType().getName())) {
-            add(arg.getPackageName() + "." + determineFqc);
-        } else {
+//        if (determineFqc.equals(n.getType().getName())) {
+//            add(arg.getPackageName() + "." + determineFqc);
+//            fqc.put(n.getType().getName(), arg.getPackageName() + "." + determineFqc);
+//        } else {
             add(determineFqc);
-        }
+//        }
     }
 
     @Override
-    public void visit(MethodCallExpr n, CallScopeType arg) {
+    public void visit(MethodCallExpr n, CallContext arg) {
         MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
         
         methodBodyVisitor.visit(n, arg);
@@ -148,7 +149,7 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallScopeType> {
     }
 
     @Override
-    public void visit(ThisExpr n, CallScopeType arg) {
+    public void visit(ThisExpr n, CallContext arg) {
         add(arg.getPackageName() + "." + arg.getTypeName());
     }
     

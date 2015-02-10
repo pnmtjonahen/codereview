@@ -13,7 +13,7 @@ import java.io.InputStream;
 public class DumpAST {
 
     public static void main(String[] args) throws Exception {
-        CompilationUnit cu = getStringString();
+        CompilationUnit cu = getHierarchie();
         final DumpASTVisitor dumpASTVisitor = new DumpASTVisitor();
         dumpASTVisitor.visit(cu, null);
         System.out.println(dumpASTVisitor.getSource());

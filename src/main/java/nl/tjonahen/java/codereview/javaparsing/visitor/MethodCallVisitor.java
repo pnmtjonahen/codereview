@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
+public class MethodCallVisitor extends VoidVisitorAdapter<CallContext> {
 
     private final List<ExitPoint> methods = new ArrayList<>();
     private final FQCMap fqc;
@@ -78,13 +78,19 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
     }
 
     @Override
-    public void visit(ClassOrInterfaceDeclaration n, CallScopeType arg) {
-        super.visit(n, new CallScopeType(arg.getExitPointMatching(), arg.getPackageName(), n.getName()));
+    public void visit(ClassOrInterfaceDeclaration n, CallContext arg) {
+        final String name;
+        if (arg.getTypeName() != null && !arg.getTypeName().isEmpty()) {
+            name = arg.getPackageName() + "." + arg.getTypeName();
+        } else {
+            name = arg.getPackageName();
+        }
+        super.visit(n, new CallContext(arg.getExitPointMatching(), name, n.getName()));
 
     }
 
     @Override
-    public void visit(final FieldDeclaration n, CallScopeType arg) {
+    public void visit(final FieldDeclaration n, CallContext arg) {
         n.getVariables()
                 .stream()
                 .map(v -> mapFieldDeclaration(n, v))
@@ -93,7 +99,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
     }
     
     @Override
-    public void visit(MethodDeclaration n, CallScopeType arg) {
+    public void visit(MethodDeclaration n, CallContext arg) {
 
         final String params = n.getParameters() == null ? "" : 
                                 n.getParameters()
@@ -118,7 +124,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
         final MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
 
         methodBodyVisitor
-                    .visit(n, new CallScopeType(arg.getExitPointMatching(), 
+                    .visit(n, new CallContext(arg.getExitPointMatching(), 
                                             arg.getPackageName(), arg.getTypeName(), n.getName()));
 
         
@@ -132,7 +138,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
 
 
     @Override
-    public void visit(ConstructorDeclaration n, CallScopeType arg) {
+    public void visit(ConstructorDeclaration n, CallContext arg) {
         String params = n.getParameters() == null ? "" : 
                                 n.getParameters()
                                         .stream()
@@ -152,7 +158,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallScopeType> {
         final MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
 
         methodBodyVisitor
-                .visit(n, new CallScopeType(arg.getExitPointMatching(), 
+                .visit(n, new CallContext(arg.getExitPointMatching(), 
                                                 arg.getPackageName(), arg.getTypeName(), n.getName()));
         methods.addAll(methodBodyVisitor.getMethods());
 

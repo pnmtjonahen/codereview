@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
+public class MethodBodyVisitor extends VoidVisitorAdapter<CallContext> {
 
     private final List<ExitPoint> methods = new ArrayList<>();
     private final FQCMap fqc;
@@ -48,7 +48,7 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
     }
 
     @Override
-    public void visit(MethodCallExpr n, CallScopeType arg) {
+    public void visit(MethodCallExpr n, CallContext arg) {
         final Expression scope = n.getScope();
         String param = "";
         String paramType = null;
@@ -90,7 +90,7 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallScopeType> {
     }
 
     @Override
-    public void visit(final VariableDeclarationExpr n, final CallScopeType arg) {
+    public void visit(final VariableDeclarationExpr n, final CallContext arg) {
         n.getVars().forEach(v -> scopeStack.push(new ScopeVariable(fqc.determineFqc(n.getType()), v.getId().getName())));
         super.visit(n, arg);
     }

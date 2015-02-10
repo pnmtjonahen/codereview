@@ -232,6 +232,9 @@ public class ExtractEntryPointsTest {
                 + "         return p.isEmpty(); "
                 + "     }"
                 + " }"
+                + " public void callNested(TestNested tn) {"
+                + "     tn.ibm(new List<IBM>());"
+                + " }"
                 + "}"
                 + "public class TestTwo { "
                 + " public Boolean ibm(final List<IBM> p) { "
@@ -241,16 +244,21 @@ public class ExtractEntryPointsTest {
         );
 
         final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
-        assertEquals(3, extract.size());
+        assertEquals(4, extract.size());
         assertEquals("ibm", extract.get(0).getName());
         assertEquals("nl.tjonahen.sampleapp", extract.get(0).getPackageName());
         assertEquals("Test", extract.get(0).getType());
         assertEquals("ibm", extract.get(1).getName());
         assertEquals("nl.tjonahen.sampleapp.Test", extract.get(1).getPackageName());
         assertEquals("TestNested", extract.get(1).getType());
-        assertEquals("ibm", extract.get(2).getName());
+        
+        assertEquals("callNested", extract.get(2).getName());
         assertEquals("nl.tjonahen.sampleapp", extract.get(2).getPackageName());
-        assertEquals("TestTwo", extract.get(2).getType());
+        assertEquals("Test", extract.get(2).getType());
+
+        assertEquals("ibm", extract.get(3).getName());
+        assertEquals("nl.tjonahen.sampleapp", extract.get(3).getPackageName());
+        assertEquals("TestTwo", extract.get(3).getType());
 
     }
 

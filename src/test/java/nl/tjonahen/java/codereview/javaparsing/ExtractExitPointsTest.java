@@ -520,5 +520,37 @@ public class ExtractExitPointsTest {
         assertEquals("TestA", extract.get(0).getCallScopeType().getTypeName());
         assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
     }
+    
+    /**
+     * Test of extract method, of class ExtractPublicMethods.
+     */
+    @Test
+    public void testExtractWithTypes() throws ParseException {
+        // creates an input stream for the file to be parsed
+
+        final CompilationUnit cu = new CompilationUnitFactory().get(""
+                + "package nl.tjonahen.sampleapp;"
+                + "import java.util.List;"
+                + "import nl.tjonahen.sample.IBM;"
+                + "public class Test { "
+                + " public static class TestNested { "
+                + "     public Boolean ibm(final List<IBM> p) { "
+                + "         return true; "
+                + "     }"
+                + " }"
+                + " public void callNested(TestNested tn) {"
+                + "     tn.ibm(new List<IBM>());"
+                + " }"
+                + "}"
+        );
+
+        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        assertEquals(1, extract.size());
+        
+        assertEquals("ibm", extract.get(0).getName());
+        assertEquals("TestNested", extract.get(0).getType());
+        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
+    }
+    
 
 }

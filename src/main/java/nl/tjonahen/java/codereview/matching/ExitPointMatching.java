@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import nl.tjonahen.java.codereview.Context;
 import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 
@@ -32,6 +33,7 @@ public class ExitPointMatching {
 
     private final Map<String, List<EntryPoint>> methodNameMapping = new HashMap<>();
     private final TypeHierarchyMatching hierarchyMatching;
+    private int count;
 
     public ExitPointMatching(TypeHierarchyMatching hierarchyMatching) {
         this.hierarchyMatching = hierarchyMatching;
@@ -86,9 +88,23 @@ public class ExitPointMatching {
      * @return EntryPoint or null if none found.
      */
     public MatchPoint match(final ExitPoint ep) {
-        MatchPoint mp = match(ep.getType(), ep);
-
-        return mp;
+        try {
+            count = 0;
+            MatchPoint mp = match(ep.getType(), ep);
+            if (mp.getEntryPoint() == null) {
+                final List<String> substitutions = hierarchyMatching.getSubstitutions(ep.getType());
+                for (String pType : substitutions) {
+                    mp = match(pType, ep);
+                    if (mp.getEntryPoint() != null) {
+                        return mp;
+                    }
+                }
+            }
+            return mp;
+        } catch (StackOverflowError ex) {
+            System.out.println("Stack error " + Context.instance().get());
+            throw ex;
+        }
     }
 
     private MatchPoint match(final String type, final ExitPoint ep) {
@@ -101,12 +117,6 @@ public class ExitPointMatching {
                 .filter(p -> p.getParams().size() == ep.getParams().size())
                 .collect(Collectors.toList());
         if (posibleMethods.isEmpty()) {
-            for (String pType : hierarchyMatching.getSubstitutions(type)) {
-                MatchPoint mp = match(pType, ep);
-                if (mp.getEntryPoint()!= null) {
-                    return mp;
-                }
-            }
             return new MatchPoint("No such method..");
         }
         return posibleMethods.stream()

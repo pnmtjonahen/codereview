@@ -41,6 +41,7 @@ public class ExtractTypeHierarchyTest {
     @Test
     public void testExtract() throws ParseException {
         final CompilationUnit cu = new CompilationUnitFactory().get("" 
+                + "package nl.tjonahen.sample;"
                 + "public class Test extends Test2 implements ITest { "
                 + "}");
         final ExtractTypeHierarchy extractTypeHierarchy = new ExtractTypeHierarchy();
@@ -50,9 +51,33 @@ public class ExtractTypeHierarchyTest {
         assertNotNull(hierarchys);
         assertEquals(1, hierarchys.size());
         assertEquals(2, hierarchys.get(0).getIsAType().size());
-        assertEquals("default.Test", hierarchys.get(0).getType());
-        assertEquals("Test2", hierarchys.get(0).getIsAType().get(0));
-        assertEquals("ITest", hierarchys.get(0).getIsAType().get(1));
+        assertEquals("nl.tjonahen.sample.Test", hierarchys.get(0).getType());
+        assertEquals("nl.tjonahen.sample.ITest", hierarchys.get(0).getIsAType().get(0));
+        assertEquals("nl.tjonahen.sample.Test2", hierarchys.get(0).getIsAType().get(1));
+    }
+    /**
+     * Test of extract method, of class ExtractTypeHierarchy.
+     */
+    @Test
+    public void testExtractTypeOnly() throws ParseException {
+        final CompilationUnit cu = new CompilationUnitFactory().get("" 
+                + "package nl.tjonahen.sample;"
+                + "public class Test extends Test2 implements ITest { "
+                + "  public void testMA() {"
+                + "       method(new ArrayList());"
+                + "  }"
+                + ""
+                + "}");
+        final ExtractTypeHierarchy extractTypeHierarchy = new ExtractTypeHierarchy();
+        
+        final List<TypeHierarchy> hierarchys = extractTypeHierarchy.extract(cu);
+        
+        assertNotNull(hierarchys);
+        assertEquals(1, hierarchys.size());
+        assertEquals(2, hierarchys.get(0).getIsAType().size());
+        assertEquals("nl.tjonahen.sample.Test", hierarchys.get(0).getType());
+        assertEquals("nl.tjonahen.sample.ITest", hierarchys.get(0).getIsAType().get(0));
+        assertEquals("nl.tjonahen.sample.Test2", hierarchys.get(0).getIsAType().get(1));
     }
     
     @Test

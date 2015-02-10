@@ -18,7 +18,7 @@ package nl.tjonahen.java.codereview.javaparsing;
 
 import com.github.javaparser.ast.CompilationUnit;
 import java.util.List;
-import nl.tjonahen.java.codereview.javaparsing.visitor.CallScopeType;
+import nl.tjonahen.java.codereview.javaparsing.visitor.CallContext;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ImportDeclarationVisitor;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCallVisitor;
@@ -38,7 +38,7 @@ public class ExtractExitPoints {
         final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
         if (cu.getTypes() != null) {
             cu.getTypes().stream().forEach(td -> 
-                    td.accept(methodCallVisitor, new CallScopeType(exitPointMatching, packageName)));
+                    td.accept(methodCallVisitor, new CallContext(exitPointMatching, packageName)));
         }
         return methodCallVisitor.getMethods();
 

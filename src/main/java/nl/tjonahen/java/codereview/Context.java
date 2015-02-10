@@ -14,38 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.tjonahen.java.codereview.javaparsing.visitor;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+package nl.tjonahen.java.codereview;
 
 /**
- * Represents the extends and implements relation.
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class TypeHierarchy {
+public class Context {
 
-    private final String type;
-    private final Set<String> isAType;
-
-    public TypeHierarchy(String type) {
-        this.type = type;
-        this.isAType = new TreeSet<>();
+    private static Context instance = null;
+    public static final Context instance() {
+        if (instance == null) {
+            instance = new Context();
+        }
+        return instance;
     }
-
-    public String getType() {
-        return type;
+    
+    private ThreadLocal<String> myThreadLocal = new ThreadLocal<>();
+    
+    
+    public void set(String value) {
+        myThreadLocal.set(value);
     }
-
-    public List<String> getIsAType() {
-        return new ArrayList<>(isAType);
+    
+    public String get() {
+        return myThreadLocal.get();
     }
-
-    public void addIsAType(String aType) {
-        isAType.add(aType);
-    }
-
+    
 }

@@ -16,34 +16,20 @@
  */
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
-import nl.tjonahen.java.codereview.matching.ExitPointMatching;
-
 /**
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class CallScopeType {
+public class TypeHierarchyScope {
 
     private final String packageName;
-    private final String typeName;
-    private final String methodName;
-    private final ExitPointMatching exitPointMatching;
+    private String typeName;
 
-    public CallScopeType(final ExitPointMatching exitPointMatching, final String packageName, final String typeName, final String methodName) {
+    public TypeHierarchyScope(String packageName) {
         this.packageName = packageName;
-        this.typeName = typeName;
-        this.methodName = methodName;
-        this.exitPointMatching = exitPointMatching;
     }
 
-    public CallScopeType(final ExitPointMatching exitPointMatching, final String packageName) {
-        this(exitPointMatching, packageName, "", "");
-    }
-
-    public CallScopeType(final ExitPointMatching exitPointMatching, final String packageName, final String typeName) {
-        this(exitPointMatching, packageName, typeName, "");
-    }
-
+    
     public String getPackageName() {
         return packageName;
     }
@@ -52,13 +38,9 @@ public class CallScopeType {
         return typeName;
     }
 
-    public String getMethodName() {
-        return methodName;
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
-
-    public ExitPointMatching getExitPointMatching() {
-        return exitPointMatching;
-    }
-
+    
     
 }
