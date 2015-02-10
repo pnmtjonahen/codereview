@@ -60,11 +60,8 @@ public class ScopeTypeVisitor extends VoidVisitorAdapter<CallContext> {
 
     @Override
     public void visit(ObjectCreationExpr n, CallContext arg) {
-        if (n.getType().getScope() != null && n.getType().getScope() instanceof ClassOrInterfaceType) {
-            // nested type
-            final ClassOrInterfaceType parentType = n.getType().getScope();
-            type = fqc.determineFqc(parentType.getName()) + "." + n.getType().getName();
-            
+        if (n.getType().getScope() != null) {
+            type = fqc.determineFqc(n.getType().getScope().getName()) + "." + n.getType().getName();
         } else {
             type = fqc.determineFqc(n.getType().getName());
         }
