@@ -49,11 +49,12 @@ public class ExtractTypeHierarchyTest {
         final List<TypeHierarchy> hierarchys = extractTypeHierarchy.extract(cu);
         
         assertNotNull(hierarchys);
-        assertEquals(1, hierarchys.size());
-        assertEquals(2, hierarchys.get(0).getIsAType().size());
+        assertEquals(2, hierarchys.size());
+        assertEquals(3, hierarchys.get(0).getIsAType().size());
         assertEquals("nl.tjonahen.sample.Test", hierarchys.get(0).getType());
-        assertEquals("ITest", hierarchys.get(0).getIsAType().get(0));
-        assertEquals("Test2", hierarchys.get(0).getIsAType().get(1));
+        assertEquals("java.lang.Object", hierarchys.get(0).getIsAType().get(0));
+        assertEquals("nl.tjonahen.sample.ITest", hierarchys.get(0).getIsAType().get(1));
+        assertEquals("nl.tjonahen.sample.Test2", hierarchys.get(0).getIsAType().get(2));
     }
     /**
      * Test of extract method, of class ExtractTypeHierarchy.
@@ -73,11 +74,12 @@ public class ExtractTypeHierarchyTest {
         final List<TypeHierarchy> hierarchys = extractTypeHierarchy.extract(cu);
         
         assertNotNull(hierarchys);
-        assertEquals(1, hierarchys.size());
-        assertEquals(2, hierarchys.get(0).getIsAType().size());
+        assertEquals(2, hierarchys.size());
+        assertEquals(3, hierarchys.get(0).getIsAType().size());
         assertEquals("nl.tjonahen.sample.Test", hierarchys.get(0).getType());
-        assertEquals("ITest", hierarchys.get(0).getIsAType().get(0));
-        assertEquals("Test2", hierarchys.get(0).getIsAType().get(1));
+        assertEquals("java.lang.Object", hierarchys.get(0).getIsAType().get(0));
+        assertEquals("nl.tjonahen.sample.ITest", hierarchys.get(0).getIsAType().get(1));
+        assertEquals("nl.tjonahen.sample.Test2", hierarchys.get(0).getIsAType().get(2));
     }
     
     @Test
@@ -90,7 +92,7 @@ public class ExtractTypeHierarchyTest {
         final List<TypeHierarchy> hierarchys = extractTypeHierarchy.extract(cu);
         
         assertNotNull(hierarchys);
-        assertEquals(1, hierarchys.size());
+        assertEquals(2, hierarchys.size());
         assertTrue(hierarchys.get(0).getIsAType().isEmpty());
     }
         @Test
@@ -103,7 +105,7 @@ public class ExtractTypeHierarchyTest {
         final List<TypeHierarchy> hierarchys = extractTypeHierarchy.extract(cu);
         
         assertNotNull(hierarchys);
-        assertEquals(1, hierarchys.size());
+        assertEquals(2, hierarchys.size());
         assertTrue(hierarchys.get(0).getIsAType().isEmpty());
     }
 

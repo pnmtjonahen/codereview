@@ -17,6 +17,10 @@
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
 import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.AnnotationDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.QualifiedNameExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -24,15 +28,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Visitor to get the imported classes, creates the FQCMap.
+ * Visitor to get the classes aka types defined within the source tree. 
+ * Either imported classes, or classes declared in the source. creates the FQCMap.
  * 
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class ImportDeclarationVisitor extends VoidVisitorAdapter<List<String>> {
+public class TypeDefiningVisitor extends VoidVisitorAdapter<List<String>> {
     private static final int TYPE_OFFSET = 3;
 
     private final FQCMap fqc = new FQCMap();
+    private final String packageName;
 
+    public TypeDefiningVisitor(final String packageName) {
+        this.packageName = packageName;
+    }
+    
+    
     
     public FQCMap getFqc() {
         return fqc;
@@ -77,4 +88,28 @@ public class ImportDeclarationVisitor extends VoidVisitorAdapter<List<String>> {
 
     }
 
+    @Override
+    public void visit(ClassOrInterfaceDeclaration n, final List<String> arg) {
+        fqc.put(n.getName(), packageName + "." + n.getName());
+        n.getChildrenNodes().forEach(c -> getNestedTypeDefinitions(c, packageName + "." + n.getName(), arg));
+    }
+
+    @Override
+    public void visit(EnumDeclaration n, final List<String> arg) {
+        fqc.put(n.getName(), packageName + "." + n.getName());
+        n.getChildrenNodes().forEach(c -> getNestedTypeDefinitions(c, packageName + "." + n.getName(), arg));
+    }
+
+    @Override
+    public void visit(AnnotationDeclaration n, final List<String> arg) {
+        fqc.put(n.getName(), packageName + "." + n.getName());
+        n.getChildrenNodes().forEach(c -> getNestedTypeDefinitions(c, packageName + "." + n.getName(), arg));
+    }
+
+    private void getNestedTypeDefinitions(Node n, String newPackageName, final List<String> arg) {
+        final TypeDefiningVisitor definingVisitor = new TypeDefiningVisitor(newPackageName);
+        n.accept(definingVisitor, arg);
+        fqc.add(definingVisitor.getFqc());
+    }
+    
 }

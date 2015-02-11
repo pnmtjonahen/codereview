@@ -123,4 +123,38 @@ public class ExitPointMatchingTest {
     private InputStream getSource(String source) {
         return new ByteArrayInputStream(source.getBytes());
     }
+
+    @Test
+    public void testNestedMethodCall() throws ParseException {
+        final String source = "package nl.tjonahen.saple;"
+                + "public class Test {"
+                + "public static class NestedA {"
+                + "     public void IBMC() {"
+                + "     }"
+                + "}"
+                + "public static class NestedB {"
+                + "     public void IBMD(NestedA n) {"
+                + "     }"
+                + "}"
+                + "public void IBMA(NestedA n) {"
+                + "     n.IBMC();"
+                + "     new NestedB().IBMD(n);"
+                + "}"
+                + "}";
+        final List<EntryPoint> extractEntry = new ExtractEntryPoints().extract(JavaParser.parse(getSource(source)));
+        assertEquals(3, extractEntry.size());
+
+        final List<ExitPoint> extractExit = new ExtractExitPoints().extract(JavaParser.parse(getSource(source)),
+                new ExitPointMatching(new TypeHierarchyMatching()));
+        assertEquals(2, extractExit.size());
+        final TypeHierarchyMatching typeHierarchyMatching = new TypeHierarchyMatching();
+
+        final ExitPointMatching epm = new ExitPointMatching(typeHierarchyMatching);
+
+        epm.addAll(extractEntry);
+
+        assertNotNull(epm.match(extractExit.get(0)).getEntryPoint());
+        assertNotNull(epm.match(extractExit.get(1)).getEntryPoint());
+
+    }
 }

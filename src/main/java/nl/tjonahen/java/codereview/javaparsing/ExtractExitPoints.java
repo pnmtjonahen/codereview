@@ -19,7 +19,7 @@ package nl.tjonahen.java.codereview.javaparsing;
 import com.github.javaparser.ast.CompilationUnit;
 import java.util.List;
 import nl.tjonahen.java.codereview.javaparsing.visitor.CallContext;
-import nl.tjonahen.java.codereview.javaparsing.visitor.ImportDeclarationVisitor;
+import nl.tjonahen.java.codereview.javaparsing.visitor.TypeDefiningVisitor;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.MethodCallVisitor;
 import nl.tjonahen.java.codereview.matching.ExitPointMatching;
@@ -31,11 +31,11 @@ import nl.tjonahen.java.codereview.matching.ExitPointMatching;
 public class ExtractExitPoints {
 
     public List<ExitPoint> extract(final CompilationUnit cu, final ExitPointMatching exitPointMatching) {
-        final ImportDeclarationVisitor importDeclarationVisitor = new ImportDeclarationVisitor();
-        importDeclarationVisitor.visit(cu, null);
+        final String packageName = cu.getPackage() == null ? "default" : cu.getPackage().getName().toString();
+        final TypeDefiningVisitor typeDefinintVisitor = new TypeDefiningVisitor(packageName);
+        typeDefinintVisitor.visit(cu, null);
 
-        final MethodCallVisitor methodCallVisitor = new MethodCallVisitor(importDeclarationVisitor.getFqc());
-        final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
+        final MethodCallVisitor methodCallVisitor = new MethodCallVisitor(typeDefinintVisitor.getFqc());
         if (cu.getTypes() != null) {
             cu.getTypes().stream().forEach(td -> 
                     td.accept(methodCallVisitor, new CallContext(exitPointMatching, packageName)));

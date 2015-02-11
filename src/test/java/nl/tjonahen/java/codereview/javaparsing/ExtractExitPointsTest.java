@@ -19,11 +19,9 @@ package nl.tjonahen.java.codereview.javaparsing;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import nl.tjonahen.java.codereview.CompilationUnitFactory;
@@ -548,7 +546,7 @@ public class ExtractExitPointsTest {
         assertEquals(1, extract.size());
         
         assertEquals("ibm", extract.get(0).getName());
-        assertEquals("TestNested", extract.get(0).getType());
+        assertEquals("nl.tjonahen.sampleapp.Test.TestNested", extract.get(0).getType());
         assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
     }
     

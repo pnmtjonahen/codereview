@@ -255,6 +255,7 @@ public class ExtractEntryPointsTest {
         assertEquals("callNested", extract.get(2).getName());
         assertEquals("nl.tjonahen.sampleapp", extract.get(2).getPackageName());
         assertEquals("Test", extract.get(2).getType());
+        assertEquals("nl.tjonahen.sampleapp.Test.TestNested", extract.get(2).getParams().get(0));
 
         assertEquals("ibm", extract.get(3).getName());
         assertEquals("nl.tjonahen.sampleapp", extract.get(3).getPackageName());

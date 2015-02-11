@@ -23,6 +23,8 @@ package nl.tjonahen.java.codereview;
 public class Context {
 
     private static Context instance = null;
+    private ThreadLocal<String> myThreadLocal = new ThreadLocal<>();
+
     public static final Context instance() {
         if (instance == null) {
             instance = new Context();
@@ -30,7 +32,6 @@ public class Context {
         return instance;
     }
     
-    private ThreadLocal<String> myThreadLocal = new ThreadLocal<>();
     
     
     public void set(String value) {

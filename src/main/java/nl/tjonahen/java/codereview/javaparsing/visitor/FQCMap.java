@@ -76,4 +76,8 @@ public final class FQCMap {
         }
         return determineFqc(paramType);
     }
+
+    void add(final FQCMap newFqc) {
+        fqc.putAll(newFqc.fqc);
+    }
 }

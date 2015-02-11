@@ -18,7 +18,7 @@ package nl.tjonahen.java.codereview.javaparsing;
 
 import com.github.javaparser.ast.CompilationUnit;
 import java.util.List;
-import nl.tjonahen.java.codereview.javaparsing.visitor.ImportDeclarationVisitor;
+import nl.tjonahen.java.codereview.javaparsing.visitor.TypeDefiningVisitor;
 import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchy;
 import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchyScope;
 import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchyVisitor;
@@ -30,14 +30,21 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchyVisitor;
 public class ExtractTypeHierarchy {
     public List<TypeHierarchy> extract(final CompilationUnit cu) {
         
-        final ImportDeclarationVisitor importDeclarationVisitor = new ImportDeclarationVisitor();
-        importDeclarationVisitor.visit(cu, null);
-        final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
+        final String packageName = cu.getPackage() == null ? "default" : cu.getPackage().getName().toString();
+        final TypeDefiningVisitor typeDefiningVisitor = new TypeDefiningVisitor(packageName);
+        typeDefiningVisitor.visit(cu, null);
 
-        TypeHierarchyVisitor hierarchyVisitor = new TypeHierarchyVisitor(importDeclarationVisitor.getFqc());
+        TypeHierarchyVisitor hierarchyVisitor = new TypeHierarchyVisitor(typeDefiningVisitor.getFqc());
         
         hierarchyVisitor.visit(cu, new TypeHierarchyScope(packageName));
-        
-        return hierarchyVisitor.getTypeHierarchy();
+        final List<TypeHierarchy> typeHierarchy = hierarchyVisitor.getTypeHierarchy();
+        addDefault(typeHierarchy);
+        return typeHierarchy;
+    }
+
+    private void addDefault(List<TypeHierarchy> typeHierarchy) {
+        TypeHierarchy string = new TypeHierarchy("java.lang.String");
+        string.addIsAType("java.lang.Object");
+        typeHierarchy.add(string);
     }
 }

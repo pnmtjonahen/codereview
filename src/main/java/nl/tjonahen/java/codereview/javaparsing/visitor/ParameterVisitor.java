@@ -124,12 +124,7 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallContext> {
     @Override
     public void visit(ObjectCreationExpr n, CallContext arg) {
         final String determineFqc = fqc.determineFqc(n.getType().getName());
-//        if (determineFqc.equals(n.getType().getName())) {
-//            add(arg.getPackageName() + "." + determineFqc);
-//            fqc.put(n.getType().getName(), arg.getPackageName() + "." + determineFqc);
-//        } else {
-            add(determineFqc);
-//        }
+        add(determineFqc);
     }
 
     @Override
@@ -145,6 +140,10 @@ public class ParameterVisitor extends VoidVisitorAdapter<CallContext> {
         final EntryPoint entryP = arg.getExitPointMatching().match(ep).getEntryPoint();
         if (entryP != null) {
             add(entryP.getReturnType());
+        } else {
+            // no entrypoint found so the method call is outside our current source scope (aka a librarie) 
+            // lets assume it is an Object.
+            add("java.lang.Object");
         }
     }
 

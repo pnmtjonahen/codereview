@@ -118,9 +118,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallContext> {
                                 + "(" + params + ")";
 
         scopeStack.push(new ScopeVariable(marker, marker));
-        scopeVar.forEach(v -> {
-            scopeStack.push(v);
-        });
+        scopeVar.forEach(v -> scopeStack.push(v));
         final MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
 
         methodBodyVisitor
@@ -152,9 +150,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallContext> {
         final String marker = arg.getPackageName() + "." + arg.getTypeName() + "." + n.getName() + "(" + params + ")";
 
         scopeStack.push(new ScopeVariable(marker, marker));
-        scopeVar.forEach(v -> {
-            scopeStack.push(v);
-        });
+        scopeVar.forEach(v -> scopeStack.push(v));
         final MethodBodyVisitor methodBodyVisitor = new MethodBodyVisitor(fqc, scopeStack);
 
         methodBodyVisitor

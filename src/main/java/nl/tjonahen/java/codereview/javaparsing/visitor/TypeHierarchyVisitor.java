@@ -50,6 +50,8 @@ public class TypeHierarchyVisitor extends VoidVisitorAdapter<TypeHierarchyScope>
     @Override
     public void visit(ClassOrInterfaceDeclaration n, TypeHierarchyScope arg) {
         this.currentType = new TypeHierarchy(arg.getPackageName() + "." + n.getName());
+        
+        this.currentType.addIsAType("java.lang.Object");
         this.typeHierarchy.add(currentType);
         arg.setTypeName(n.getName());
         if (n.getExtends() != null) {
@@ -84,10 +86,10 @@ public class TypeHierarchyVisitor extends VoidVisitorAdapter<TypeHierarchyScope>
     
     private void addType(ClassOrInterfaceType n, TypeHierarchyScope arg) {
         String determineFqc = fqc.determineFqc(n.getName());
-//        if (determineFqc.equals(n.getName())) {
-//            determineFqc = arg.getPackageName() + "." + n.getName();
-//            fqc.put(n.getName(), determineFqc);
-//        }
+        if (determineFqc.equals(n.getName())) {
+            determineFqc = arg.getPackageName() + "." + n.getName();
+            fqc.put(n.getName(), determineFqc);
+        }
         currentType.addIsAType(determineFqc);
     }
     

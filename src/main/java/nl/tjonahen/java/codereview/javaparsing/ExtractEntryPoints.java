@@ -18,7 +18,7 @@ package nl.tjonahen.java.codereview.javaparsing;
 
 import com.github.javaparser.ast.CompilationUnit;
 import java.util.List;
-import nl.tjonahen.java.codereview.javaparsing.visitor.ImportDeclarationVisitor;
+import nl.tjonahen.java.codereview.javaparsing.visitor.TypeDefiningVisitor;
 import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.DeclaringMethodVisitor;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ScopeType;
@@ -31,11 +31,12 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.ScopeType;
 public class ExtractEntryPoints {
 
     public List<EntryPoint> extract(final CompilationUnit cu) {
-        final ImportDeclarationVisitor importDeclarationVisitor = new ImportDeclarationVisitor();
-        importDeclarationVisitor.visit(cu, null);
+        final String packageName = cu.getPackage() == null ? "default" : cu.getPackage().getName().toString();
 
-        final DeclaringMethodVisitor publicMethodVisitor = new DeclaringMethodVisitor(importDeclarationVisitor.getFqc());
-        final String packageName = (cu.getPackage() == null ? "default" : cu.getPackage().getName().toString());
+        final TypeDefiningVisitor typeDefiningVisitor = new TypeDefiningVisitor(packageName);
+        typeDefiningVisitor.visit(cu, null);
+
+        final DeclaringMethodVisitor publicMethodVisitor = new DeclaringMethodVisitor(typeDefiningVisitor.getFqc());
         if (cu.getTypes() != null) {
             cu.getTypes().stream().forEach(td -> 
                     td.accept(publicMethodVisitor, new ScopeType(packageName, null)) );
