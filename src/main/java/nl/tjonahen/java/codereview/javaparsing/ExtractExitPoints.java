@@ -30,7 +30,7 @@ import nl.tjonahen.java.codereview.matching.ExitPointMatching;
  */
 public class ExtractExitPoints {
 
-    public List<ExitPoint> extract(final CompilationUnit cu, final ExitPointMatching exitPointMatching) {
+    public List<ExitPoint> extract(final String source, final CompilationUnit cu, final ExitPointMatching exitPointMatching) {
         final String packageName = cu.getPackage() == null ? "default" : cu.getPackage().getName().toString();
         final TypeDefiningVisitor typeDefinintVisitor = new TypeDefiningVisitor(packageName);
         typeDefinintVisitor.visit(cu, null);
@@ -38,7 +38,7 @@ public class ExtractExitPoints {
         final MethodCallVisitor methodCallVisitor = new MethodCallVisitor(typeDefinintVisitor.getFqc());
         if (cu.getTypes() != null) {
             cu.getTypes().stream().forEach(td -> 
-                    td.accept(methodCallVisitor, new CallContext(exitPointMatching, packageName)));
+                    td.accept(methodCallVisitor, new CallContext(exitPointMatching, source, packageName, "", "")));
         }
         return methodCallVisitor.getMethods();
 

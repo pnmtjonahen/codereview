@@ -85,7 +85,7 @@ public class ExitPointMatchingTest {
                 + " }"
                 + "}"));
 
-        final List<EntryPoint> extract = new ExtractEntryPoints().extract(cu);
+        final List<EntryPoint> extract = new ExtractEntryPoints().extract("test.java", cu);
         return extract;
     }
 
@@ -116,7 +116,7 @@ public class ExitPointMatchingTest {
                 + "  }"
                 + "}"));
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         return extract;
     }
 
@@ -141,10 +141,10 @@ public class ExitPointMatchingTest {
                 + "     new NestedB().IBMD(n);"
                 + "}"
                 + "}";
-        final List<EntryPoint> extractEntry = new ExtractEntryPoints().extract(JavaParser.parse(getSource(source)));
+        final List<EntryPoint> extractEntry = new ExtractEntryPoints().extract("test.java", JavaParser.parse(getSource(source)));
         assertEquals(3, extractEntry.size());
 
-        final List<ExitPoint> extractExit = new ExtractExitPoints().extract(JavaParser.parse(getSource(source)),
+        final List<ExitPoint> extractExit = new ExtractExitPoints().extract("test.java", JavaParser.parse(getSource(source)),
                 new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(2, extractExit.size());
         final TypeHierarchyMatching typeHierarchyMatching = new TypeHierarchyMatching();

@@ -24,21 +24,21 @@ import java.util.List;
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class ExitPoint {
-    private final CallContext callScopeType;
+    private final SourceLocation sourceLocation;
     private final String type;
     private final String name;
     private final List<String> params;
 
-    public ExitPoint(final CallContext callScopeType, final String type, 
+    public ExitPoint(final SourceLocation sourceLocation, final String type, 
             final String name, final List<String> params) {
-        this.callScopeType = callScopeType;
+        this.sourceLocation = sourceLocation;
         this.type = type;
         this.name = name;
         this.params = params;
     }
 
-    public CallContext getCallScopeType() {
-        return callScopeType;
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
 
     public String getType() {

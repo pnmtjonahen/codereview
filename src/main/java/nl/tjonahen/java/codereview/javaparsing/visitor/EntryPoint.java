@@ -30,17 +30,20 @@ public class EntryPoint {
     private final String returnType;
     private final String name;
     private final List<String> params;
-
+    private final SourceLocation sourceLocation;
     /**
      * 
+     * @param sourceLocation -
      * @param internal indicator if the method is private or not
      * @param packageName packageName of the containing class
      * @param type typeName aka class name
      * @param returnType return type name
      * @param name name of the method
      * @param params list of parameter types
+     * 
      */
-    public EntryPoint(final boolean internal, 
+    public EntryPoint(  final SourceLocation sourceLocation,
+                        final boolean internal, 
                         final String packageName, 
                         final String type, 
                         final String returnType,
@@ -52,6 +55,7 @@ public class EntryPoint {
         this.returnType = returnType;
         this.name = name;
         this.params = params;
+        this.sourceLocation = sourceLocation;
     }
 
 
@@ -77,6 +81,10 @@ public class EntryPoint {
 
     public String getReturnType() {
         return returnType;
+    }
+
+    public SourceLocation getSourceLocation() {
+        return sourceLocation;
     }
     
 }

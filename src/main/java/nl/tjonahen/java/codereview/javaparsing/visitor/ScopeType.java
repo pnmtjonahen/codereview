@@ -21,10 +21,12 @@ package nl.tjonahen.java.codereview.javaparsing.visitor;
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
 public class ScopeType {
+    private final String sourceName;
     private final String packageName;
     private final String typeName;
 
-    public ScopeType(String packageName, String typeName) {
+    public ScopeType(String sourceName, String packageName, String typeName) {
+        this.sourceName = sourceName;
         this.packageName = packageName;
         this.typeName = typeName;
     }
@@ -37,5 +39,10 @@ public class ScopeType {
         return typeName;
     }
 
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    
     
 }

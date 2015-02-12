@@ -48,7 +48,8 @@ public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
 
     @Override
     public void visit(ClassOrInterfaceDeclaration n, ScopeType type) {
-        super.visit(n, new ScopeType(type.getPackageName() 
+        super.visit(n, new ScopeType(type.getSourceName(), 
+                                     type.getPackageName() 
                                 + (type.getTypeName() == null ? "" : "." + type.getTypeName())
                         , n.getName()));
     }
@@ -60,7 +61,8 @@ public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
         
         final List<String> params = params(n.getParameters());
 
-        methods.add(new EntryPoint(internal, type.getPackageName(), type.getTypeName(), 
+        methods.add(new EntryPoint(new SourceLocation(type.getSourceName(), n)
+                                    , internal, type.getPackageName(), type.getTypeName(), 
                 fqc.determineFqc(n.getType()), n.getName(), params));
 
     }
@@ -77,7 +79,8 @@ public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
         
         final List<String> params = params(n.getParameters());
 
-        methods.add(new EntryPoint(internal, type.getPackageName(), type.getTypeName(), "", n.getName(), params));
+        methods.add(new EntryPoint(new SourceLocation(type.getSourceName(), n),
+                internal, type.getPackageName(), type.getTypeName(), "", n.getName(), params));
 
     }
 

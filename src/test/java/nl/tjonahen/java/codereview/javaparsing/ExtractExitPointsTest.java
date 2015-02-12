@@ -27,6 +27,7 @@ import java.util.List;
 import nl.tjonahen.java.codereview.CompilationUnitFactory;
 import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
+import nl.tjonahen.java.codereview.javaparsing.visitor.SourceLocation;
 import nl.tjonahen.java.codereview.matching.ExitPointMatching;
 import nl.tjonahen.java.codereview.matching.TypeHierarchyMatching;
 import static org.junit.Assert.assertEquals;
@@ -53,7 +54,7 @@ public class ExtractExitPointsTest {
             in.close();
         }
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(104, extract.size());
 
     }
@@ -72,13 +73,13 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}");
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(1, extract.size());
         assertEquals("java.lang.String", extract.get(0).getType());
         assertEquals("toUpperCase", extract.get(0).getName());
-        assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
-        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
-        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+//        assertEquals("default", extract.get(0).getSourceLocation().getPackageName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getTypeName());
+//        assertEquals("ibm", extract.get(0).getSourceLocation().getMethodName());
     }
 
     /**
@@ -95,13 +96,13 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}");
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(1, extract.size());
         assertEquals("java.lang.String", extract.get(0).getType());
         assertEquals("toUpperCase", extract.get(0).getName());
-        assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
-        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
-        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+//        assertEquals("default", extract.get(0).getSourceLocation().getPackageName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getTypeName());
+//        assertEquals("ibm", extract.get(0).getSourceLocation().getMethodName());
     }
 
     @Test
@@ -119,16 +120,16 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}");
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(2, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
         assertEquals("isEmpty", extract.get(0).getName());
         assertEquals("java.util.List", extract.get(1).getType());
         assertEquals("toUpperCase", extract.get(1).getName());
 
-        assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
-        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
-        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+//        assertEquals("default", extract.get(0).getSourceLocation().getPackageName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getTypeName());
+//        assertEquals("ibm", extract.get(0).getSourceLocation().getMethodName());
     }
     @Test
     public void testExtractWithGenericsInConstructor() throws ParseException {
@@ -144,16 +145,16 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}");
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(2, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
         assertEquals("isEmpty", extract.get(0).getName());
         assertEquals("java.util.List", extract.get(1).getType());
         assertEquals("toUpperCase", extract.get(1).getName());
 
-        assertEquals("default", extract.get(0).getCallScopeType().getPackageName());
-        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
-        assertEquals("Test", extract.get(0).getCallScopeType().getMethodName());
+//        assertEquals("default", extract.get(0).getSourceLocation().getPackageName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getTypeName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getMethodName());
     }
 
     /**
@@ -177,19 +178,19 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}");
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(3, extract.size());
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
         assertEquals("calculate", extract.get(0).getName());
-        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
-        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
-        assertEquals("Test", extract.get(0).getCallScopeType().getMethodName());
+//        assertEquals("nl.tjonahen.sample.test", extract.get(0).getSourceLocation().getPackageName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getTypeName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getMethodName());
 
         assertEquals("", extract.get(1).getType());
         assertEquals("run", extract.get(1).getName());
-        assertEquals("nl.tjonahen.sample.test", extract.get(1).getCallScopeType().getPackageName());
-        assertEquals("Test", extract.get(1).getCallScopeType().getTypeName());
-        assertEquals("Test", extract.get(1).getCallScopeType().getMethodName());
+//        assertEquals("nl.tjonahen.sample.test", extract.get(1).getSourceLocation().getPackageName());
+//        assertEquals("Test", extract.get(1).getSourceLocation().getTypeName());
+//        assertEquals("Test", extract.get(1).getSourceLocation().getMethodName());
 
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(2).getType());
         assertEquals("process", extract.get(2).getName());
@@ -198,9 +199,9 @@ public class ExtractExitPointsTest {
         assertEquals("java.lang.String", extract.get(2).getParams().get(1));
         assertEquals("int", extract.get(2).getParams().get(2));
 
-        assertEquals("nl.tjonahen.sample.test", extract.get(2).getCallScopeType().getPackageName());
-        assertEquals("Test", extract.get(2).getCallScopeType().getTypeName());
-        assertEquals("ibm", extract.get(2).getCallScopeType().getMethodName());
+//        assertEquals("nl.tjonahen.sample.test", extract.get(2).getSourceLocation().getPackageName());
+//        assertEquals("Test", extract.get(2).getSourceLocation().getTypeName());
+//        assertEquals("ibm", extract.get(2).getSourceLocation().getMethodName());
 
     }
 
@@ -226,14 +227,14 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}");
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(7, extract.size());
         assertEquals("nl.tjonahen.dummy.IBM", extract.get(0).getType());
         assertEquals("process", extract.get(0).getName());
         assertEquals("java.lang.String", extract.get(0).getParams().get(0));
-        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
-        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
-        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+//        assertEquals("nl.tjonahen.sample.test", extract.get(0).getSourceLocation().getPackageName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getTypeName());
+//        assertEquals("ibm", extract.get(0).getSourceLocation().getMethodName());
         assertEquals("process", extract.get(1).getName());
         assertEquals("java.lang.Integer", extract.get(1).getParams().get(0));
         assertEquals("process", extract.get(2).getName());
@@ -264,15 +265,15 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}");
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(1, extract.size());
         assertEquals("java.lang.String", extract.get(0).getType());
         assertEquals("format", extract.get(0).getName());
         assertEquals("java.lang.String", extract.get(0).getParams().get(0));
         assertEquals("java.lang.String", extract.get(0).getParams().get(1));
-        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
-        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
-        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+//        assertEquals("nl.tjonahen.sample.test", extract.get(0).getSourceLocation().getPackageName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getTypeName());
+//        assertEquals("ibm", extract.get(0).getSourceLocation().getMethodName());
     }
 
     @Test
@@ -294,11 +295,11 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}");
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(4, extract.size());
-        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
-        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
-        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+//        assertEquals("nl.tjonahen.sample.test", extract.get(0).getSourceLocation().getPackageName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getTypeName());
+//        assertEquals("ibm", extract.get(0).getSourceLocation().getMethodName());
 
         assertEquals("java.text.SimpleDateFormat", extract.get(0).getType());
         assertEquals("format", extract.get(0).getName());
@@ -343,7 +344,7 @@ public class ExtractExitPointsTest {
                 + ""
                 + "}");
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(6, extract.size());
         assertEquals("nl.tjonahen.dummy.view.Step.Builder", extract.get(0).getType());
         assertEquals("setVisible", extract.get(0).getName());
@@ -368,7 +369,7 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}");
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(1, extract.size());
         assertEquals("java.util.List", extract.get(0).getType());
         assertEquals("isEmpty", extract.get(0).getName());
@@ -411,7 +412,7 @@ public class ExtractExitPointsTest {
                 + "        return creditCardArrangements;"
                 + "    }"
                 + "}");
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(4, extract.size());
         assertEquals("", extract.get(0).getType());
         assertEquals("thisIsTheSameArrangement", extract.get(0).getName());
@@ -431,7 +432,7 @@ public class ExtractExitPointsTest {
                 + "     return super.ibm(p);"
                 + " }"
                 + "}");
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(1, extract.size());
         assertEquals("super", extract.get(0).getType());
         assertEquals("ibm", extract.get(0).getName());
@@ -455,15 +456,15 @@ public class ExtractExitPointsTest {
                 + " }"
                 + "}");
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(1, extract.size());
         assertEquals("this", extract.get(0).getType());
         assertEquals("format", extract.get(0).getName());
         assertEquals("java.lang.String", extract.get(0).getParams().get(0));
         assertEquals("nl.tjonahen.sample.test.Test", extract.get(0).getParams().get(1));
-        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
-        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
-        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+//        assertEquals("nl.tjonahen.sample.test", extract.get(0).getSourceLocation().getPackageName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getTypeName());
+//        assertEquals("ibm", extract.get(0).getSourceLocation().getMethodName());
     }
     /**
      * Test of extract method, of class ExtractMethodCalls.
@@ -481,17 +482,17 @@ public class ExtractExitPointsTest {
                 + "}");
         
         List<EntryPoint> points = new ArrayList<>();
-        points.add(new EntryPoint(true, "nl.tjonahen.sample.test", "TestB", "String", "ibm", new ArrayList<>()));
+        points.add(new EntryPoint(new SourceLocation("test.java", 0,0,0,0), true, "nl.tjonahen.sample.test", "TestB", "String", "ibm", new ArrayList<>()));
         final ExitPointMatching exitPointMatching = new ExitPointMatching(new TypeHierarchyMatching());
         exitPointMatching.addAll(points);
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, exitPointMatching);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, exitPointMatching);
         assertEquals(2, extract.size());
         assertEquals("this", extract.get(1).getType());
         assertEquals("format", extract.get(1).getName());
         assertEquals("String", extract.get(1).getParams().get(0));
-        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
-        assertEquals("TestA", extract.get(0).getCallScopeType().getTypeName());
-        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+//        assertEquals("nl.tjonahen.sample.test", extract.get(0).getSourceLocation().getPackageName());
+//        assertEquals("TestA", extract.get(0).getSourceLocation().getTypeName());
+//        assertEquals("ibm", extract.get(0).getSourceLocation().getMethodName());
     }
     /**
      * Test of extract method, of class ExtractMethodCalls.
@@ -508,15 +509,15 @@ public class ExtractExitPointsTest {
                 + "}");
         
         final ExitPointMatching exitPointMatching = new ExitPointMatching(new TypeHierarchyMatching());
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, exitPointMatching);
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, exitPointMatching);
         assertEquals(1, extract.size());
         assertEquals("this", extract.get(0).getType());
         assertEquals("format", extract.get(0).getName());
         assertEquals(1, extract.get(0).getParams().size());
         assertEquals("java.lang.String", extract.get(0).getParams().get(0));
-        assertEquals("nl.tjonahen.sample.test", extract.get(0).getCallScopeType().getPackageName());
-        assertEquals("TestA", extract.get(0).getCallScopeType().getTypeName());
-        assertEquals("ibm", extract.get(0).getCallScopeType().getMethodName());
+//        assertEquals("nl.tjonahen.sample.test", extract.get(0).getSourceLocation().getPackageName());
+//        assertEquals("TestA", extract.get(0).getSourceLocation().getTypeName());
+//        assertEquals("ibm", extract.get(0).getSourceLocation().getMethodName());
     }
     
     /**
@@ -542,12 +543,12 @@ public class ExtractExitPointsTest {
                 + "}"
         );
 
-        final List<ExitPoint> extract = new ExtractExitPoints().extract(cu, new ExitPointMatching(new TypeHierarchyMatching()));
+        final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, new ExitPointMatching(new TypeHierarchyMatching()));
         assertEquals(1, extract.size());
         
         assertEquals("ibm", extract.get(0).getName());
         assertEquals("nl.tjonahen.sampleapp.Test.TestNested", extract.get(0).getType());
-        assertEquals("Test", extract.get(0).getCallScopeType().getTypeName());
+//        assertEquals("Test", extract.get(0).getSourceLocation().getTypeName());
     }
     
 

@@ -85,7 +85,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallContext> {
         } else {
             name = arg.getPackageName();
         }
-        super.visit(n, new CallContext(arg.getExitPointMatching(), name, n.getName()));
+        super.visit(n, new CallContext(arg.getExitPointMatching(), arg.getSource(), name, n.getName(), ""));
 
     }
 
@@ -123,6 +123,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallContext> {
 
         methodBodyVisitor
                     .visit(n, new CallContext(arg.getExitPointMatching(), 
+                                            arg.getSource(), 
                                             arg.getPackageName(), arg.getTypeName(), n.getName()));
 
         
@@ -155,6 +156,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallContext> {
 
         methodBodyVisitor
                 .visit(n, new CallContext(arg.getExitPointMatching(), 
+                                                arg.getSource(), 
                                                 arg.getPackageName(), arg.getTypeName(), n.getName()));
         methods.addAll(methodBodyVisitor.getMethods());
 

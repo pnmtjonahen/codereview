@@ -30,7 +30,7 @@ import nl.tjonahen.java.codereview.javaparsing.visitor.ScopeType;
  */
 public class ExtractEntryPoints {
 
-    public List<EntryPoint> extract(final CompilationUnit cu) {
+    public List<EntryPoint> extract(final String sourceName, final CompilationUnit cu) {
         final String packageName = cu.getPackage() == null ? "default" : cu.getPackage().getName().toString();
 
         final TypeDefiningVisitor typeDefiningVisitor = new TypeDefiningVisitor(packageName);
@@ -39,7 +39,7 @@ public class ExtractEntryPoints {
         final DeclaringMethodVisitor publicMethodVisitor = new DeclaringMethodVisitor(typeDefiningVisitor.getFqc());
         if (cu.getTypes() != null) {
             cu.getTypes().stream().forEach(td -> 
-                    td.accept(publicMethodVisitor, new ScopeType(packageName, null)) );
+                    td.accept(publicMethodVisitor, new ScopeType(sourceName, packageName, null)) );
         }
         return publicMethodVisitor.getMethods();
     }

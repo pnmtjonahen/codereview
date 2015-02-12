@@ -57,7 +57,7 @@ public class Main {
         for (File file : find.find()) {
             Context.instance().set(file.getAbsolutePath());
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
-            exitPointMatching.addAll(extractPublicMethods.extract(cu));
+            exitPointMatching.addAll(extractPublicMethods.extract(file.getAbsolutePath(), cu));
             hierarchyMatching.addAll(extractTypeHierarchy.extract(cu));
         }
         
@@ -66,13 +66,13 @@ public class Main {
             Context.instance().set(file.getAbsolutePath());
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
 
-            extractMethodCalls.extract(cu, exitPointMatching)
+            extractMethodCalls.extract(file.getAbsolutePath(), cu, exitPointMatching)
                     .stream()
                     .filter(c -> c.getType() != null)
                     .filter(c -> c.getType().startsWith(aArgs[FILTER_IDX]))
                     .filter(c -> exitPointMatching.match(c).getEntryPoint() == null)
-                    .map(c -> "EXITPOINT " + c.getCallScopeType().getTypeName() + " => " + c.getType() + "::"
-                            + c.getName() + "(" + printParams(c.getParams()) + ")" + " source " + file.getAbsolutePath())
+                    .map(c -> "EXITPOINT " +  c.getType() + "::"
+                            + c.getName() + "(" + printParams(c.getParams()) + ")" + c.getSourceLocation())
                     .forEach(System.out::println);
 
         }
