@@ -82,6 +82,10 @@ public class ExtractExitPointsTest {
         assertEquals(1, extract.get(0).getSourceLocation().getBeginLine());
         assertEquals(95, extract.get(0).getSourceLocation().getEndColumn());
         assertEquals(1, extract.get(0).getSourceLocation().getEndLine());
+        
+        assertEquals("default", extract.get(0).getSourceLocation().getPackageName());
+        assertEquals("Test", extract.get(0).getSourceLocation().getTypeName());
+        assertEquals("ibm", extract.get(0).getSourceLocation().getMethodName());
     }
 
     /**
@@ -454,7 +458,7 @@ public class ExtractExitPointsTest {
                 + "}");
         
         List<EntryPoint> points = new ArrayList<>();
-        points.add(new EntryPoint(new SourceLocation("test.java", 0,0,0,0), true, "nl.tjonahen.sample.test", "TestB", "String", "ibm", new ArrayList<>()));
+        points.add(new EntryPoint(new SourceLocation("test.java", "", "", "", 0,0,0,0), true, "nl.tjonahen.sample.test", "TestB", "String", "ibm", new ArrayList<>()));
         final ExitPointMatching exitPointMatching = new ExitPointMatching(new TypeHierarchyMatching());
         exitPointMatching.addAll(points);
         final List<ExitPoint> extract = new ExtractExitPoints().extract("test.java", cu, exitPointMatching);

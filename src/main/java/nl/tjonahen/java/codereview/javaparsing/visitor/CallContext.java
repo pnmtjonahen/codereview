@@ -27,13 +27,15 @@ public class CallContext {
     private final String source;
     private final String packageName;
     private final String typeName;
+    private final String methodName;
     private final ExitPointMatching exitPointMatching;
 
     public CallContext(final ExitPointMatching exitPointMatching, 
-            final String source, final String packageName, final String typeName) {
+            final String source, final String packageName, final String typeName, final String methodName) {
         this.source = source;
         this.packageName = packageName;
         this.typeName = typeName;
+        this.methodName = methodName;
         this.exitPointMatching = exitPointMatching;
     }
 
@@ -52,6 +54,10 @@ public class CallContext {
 
     public String getSource() {
         return source;
+    }
+
+    public String getMethodName() {
+        return methodName;
     }
 
     

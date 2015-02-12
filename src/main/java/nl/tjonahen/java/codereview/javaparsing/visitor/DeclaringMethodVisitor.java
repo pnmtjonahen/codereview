@@ -61,7 +61,7 @@ public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
         
         final List<String> params = params(n.getParameters());
 
-        methods.add(new EntryPoint(new SourceLocation(type.getSourceName(), n)
+        methods.add(new EntryPoint(new SourceLocation(type.getSourceName(),"","","", n)
                                     , internal, type.getPackageName(), type.getTypeName(), 
                 fqc.determineFqc(n.getType()), n.getName(), params));
 
@@ -79,7 +79,7 @@ public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
         
         final List<String> params = params(n.getParameters());
 
-        methods.add(new EntryPoint(new SourceLocation(type.getSourceName(), n),
+        methods.add(new EntryPoint(new SourceLocation(type.getSourceName(), "", "", "", n),
                 internal, type.getPackageName(), type.getTypeName(), "", n.getName(), params));
 
     }

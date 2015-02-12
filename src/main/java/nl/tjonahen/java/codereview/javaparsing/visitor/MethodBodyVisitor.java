@@ -77,7 +77,11 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallContext> {
                 n.getArgs().forEach(p -> p.accept(parameterVisitor, arg));
                 methods.addAll(parameterVisitor.getMethods());
             }
-            methods.add(new ExitPoint(new SourceLocation(arg.getSource(), n)
+            methods.add(new ExitPoint(new SourceLocation(arg.getSource()
+                        , arg.getPackageName()
+                        , arg.getTypeName()
+                        , arg.getMethodName()
+                        , n)
                     , param, n.getName(), parameterVisitor.getParams()));
         } else {
             ParameterVisitor parameterVisitor = new ParameterVisitor(fqc, scopeStack);
@@ -85,7 +89,12 @@ public class MethodBodyVisitor extends VoidVisitorAdapter<CallContext> {
                 n.getArgs().forEach(p -> p.accept(parameterVisitor, arg));
                 methods.addAll(parameterVisitor.getMethods());
             }
-            methods.add(new ExitPoint(new SourceLocation(arg.getSource(), n), paramType, n.getName(), parameterVisitor.getParams()));
+            methods.add(new ExitPoint(new SourceLocation(arg.getSource()
+                        , arg.getPackageName()
+                        , arg.getTypeName()
+                        , arg.getMethodName()
+                        , n)
+                    , paramType, n.getName(), parameterVisitor.getParams()));
         }
 
     }

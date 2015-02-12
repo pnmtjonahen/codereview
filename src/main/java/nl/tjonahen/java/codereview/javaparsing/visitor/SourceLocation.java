@@ -24,25 +24,44 @@ import com.github.javaparser.ast.Node;
  */
 public class SourceLocation {
     private final String source;
+    
     private final int beginLine;
     private final int beginColumn;
     private final int endLine;
     private final int endColumn;
 
-    public SourceLocation(String source, int beginLine, int beginColumn, int endLine, int endColumn) {
+    private final String packageName;
+    private final String typeName;
+    private final String methodName;
+    
+    public SourceLocation(String source
+            , String packageName
+            , String typeName
+            , String methodName
+            , int beginLine, int beginColumn, int endLine, int endColumn) {
         this.source = source;
         this.beginLine = beginLine;
         this.beginColumn = beginColumn;
         this.endLine = endLine;
         this.endColumn = endColumn;
+        this.packageName = packageName;
+        this.typeName = typeName;
+        this.methodName = methodName;
     }
 
-    public SourceLocation(String source, Node n) {
+    public SourceLocation(String source
+            , String packageName
+            , String typeName
+            , String methodName
+            , Node n) {
         this.source = source;
         this.beginColumn = n.getBeginColumn();
         this.beginLine = n.getBeginLine();
         this.endColumn = n.getEndColumn();
         this.endLine = n.getEndLine();
+        this.packageName = packageName;
+        this.typeName = typeName;
+        this.methodName = methodName;
     }
 
     public String getSource() {
@@ -64,6 +83,20 @@ public class SourceLocation {
     public int getEndColumn() {
         return endColumn;
     }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+    
+    
 
     @Override
     public String toString() {
