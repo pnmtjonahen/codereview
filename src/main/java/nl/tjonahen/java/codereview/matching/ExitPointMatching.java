@@ -73,7 +73,7 @@ public class ExitPointMatching {
                 }
             }
         } else {
-            return entryType.equals("Object");
+            return "Object".equals(entryType);
         }
 
         return false;

@@ -105,7 +105,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallContext> {
                                 n.getParameters()
                                         .stream()
                                         .map(p -> p.getType().toString() + " " + p.getId().getName())
-                                        .reduce("", (s, p) -> s + (s.equals("") ? "" : ",") + p);
+                                        .reduce("", (s, p) -> s + ("".equals(s) ? "" : ",") + p);
         final List<ScopeVariable> scopeVar = n.getParameters() == null ? new ArrayList<>()
                 : n.getParameters()
                 .stream()
@@ -142,7 +142,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallContext> {
                                 n.getParameters()
                                         .stream()
                                         .map(p -> p.getType().toString() + " " + p.getId().getName())
-                                        .reduce("", (s, p) -> s + (s.equals("") ? "" : ",") + p);
+                                        .reduce("", (s, p) -> s + ("".equals(s) ? "" : ",") + p);
         final List<ScopeVariable> scopeVar = n.getParameters() == null ? new ArrayList<>() : 
                                 n.getParameters()
                                         .stream()

@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.logging.Logger;
 import nl.tjonahen.java.codereview.files.Find;
 import nl.tjonahen.java.codereview.javaparsing.ExtractTypeHierarchy;
 import nl.tjonahen.java.codereview.matching.ExitPointMatching;
@@ -46,6 +47,8 @@ public class Main {
         main.check(aArgs);
     }
 
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+    
     private void check(String... aArgs) throws FileNotFoundException, ParseException {
         final Find find = new Find(new File(aArgs[WORKING_FOLDER_IDX]));
 
@@ -71,13 +74,13 @@ public class Main {
                     .filter(c -> exitPointMatching.match(c).getEntryPoint() == null)
                     .map(c -> "EXITPOINT " +  c.getType() + "::"
                             + c.getName() + "(" + printParams(c.getParams()) + ")" + c.getSourceLocation())
-                    .forEach(System.out::println);
+                    .forEach(LOGGER::info);
 
         }
 
     }
 
     private String printParams(List<String> params) {
-        return params.stream().reduce("", (p, s) -> p + (p.equals("") ? "" : ",") + s);
+        return params.stream().reduce("", (p, s) -> p + ("".equals(p) ? "" : ",") + s);
     }
 }
