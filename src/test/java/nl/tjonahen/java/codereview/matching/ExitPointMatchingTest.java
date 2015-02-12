@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.List;
 import nl.tjonahen.java.codereview.javaparsing.ExtractEntryPoints;
 import nl.tjonahen.java.codereview.javaparsing.ExtractExitPoints;
+import nl.tjonahen.java.codereview.javaparsing.ExtractTypeHierarchy;
 import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchy;
@@ -157,4 +158,35 @@ public class ExitPointMatchingTest {
         assertNotNull(epm.match(extractExit.get(1)).getEntryPoint());
 
     }
+    @Test
+    public void testNestedInheretanceMethodCall() throws ParseException {
+        final String source = "package nl.tjonahen.saple;"
+                + "public class Test {"
+                + "public static class NestedA extends Test{"
+                + "     public void IBMC() {"
+                + ""
+                + "     }"
+                + "}"
+                + "public void IBMA(NestedA n) {"
+                + "     n.IBMC();"
+                + "}"
+                + "}";
+        final List<EntryPoint> extractEntry = new ExtractEntryPoints().extract("test.java", JavaParser.parse(getSource(source)));
+        assertEquals(2, extractEntry.size());
+        final TypeHierarchyMatching hierarchyMatching = new TypeHierarchyMatching();
+        final ExtractTypeHierarchy extractTypeHierarchy = new ExtractTypeHierarchy();
+        hierarchyMatching.addAll(extractTypeHierarchy.extract(JavaParser.parse(getSource(source))));
+        
+        final List<ExitPoint> extractExit = new ExtractExitPoints().extract("test.java", JavaParser.parse(getSource(source)),
+                new ExitPointMatching(hierarchyMatching));
+        assertEquals(1, extractExit.size());
+
+        final ExitPointMatching epm = new ExitPointMatching(hierarchyMatching);
+
+        epm.addAll(extractEntry);
+
+        assertNotNull(epm.match(extractExit.get(0)).getEntryPoint());
+
+    }
+
 }
