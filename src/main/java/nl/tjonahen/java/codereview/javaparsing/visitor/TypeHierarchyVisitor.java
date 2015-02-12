@@ -53,7 +53,6 @@ public class TypeHierarchyVisitor extends VoidVisitorAdapter<TypeHierarchyScope>
         
         this.currentType.addIsAType("java.lang.Object");
         this.typeHierarchy.add(currentType);
-//        arg.setTypeName(n.getName());
         if (n.getExtends() != null) {
             n.getExtends().forEach(c -> addType(c, arg));
         }
@@ -67,7 +66,6 @@ public class TypeHierarchyVisitor extends VoidVisitorAdapter<TypeHierarchyScope>
     public void visit(EnumDeclaration n, TypeHierarchyScope arg) {
         this.currentType = new TypeHierarchy(arg.getPackageName() + "." + n.getName());
         this.typeHierarchy.add(currentType);
-//        arg.setTypeName(n.getName());
         if (n.getImplements() != null) {
             n.getImplements().forEach(c -> addType(c, arg));
         }
@@ -78,7 +76,6 @@ public class TypeHierarchyVisitor extends VoidVisitorAdapter<TypeHierarchyScope>
     public void visit(AnnotationDeclaration n, TypeHierarchyScope arg) {
         this.currentType = new TypeHierarchy(arg.getPackageName() + "." + n.getName());
         this.typeHierarchy.add(currentType);
-//        arg.setTypeName(n.getName());
         super.visit(n, arg); 
     }
 

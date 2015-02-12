@@ -14,23 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package nl.tjonahen.java.codereview.javaparsing.visitor;
+package nl.tjonahen.java.codereview.matching;
+
+import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchy;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class TypeHierarchyScope {
-
-    private final String packageName;
-
-    public TypeHierarchyScope(String packageName) {
-        this.packageName = packageName;
-    }
-
+public class TypeHierarchyMatchingTest {
     
-    public String getPackageName() {
-        return packageName;
+
+    @Test
+    public void testMatch() {
+        TypeHierarchyMatching matching = new TypeHierarchyMatching();
+        final TypeHierarchy typeHierarchy = new TypeHierarchy("test");
+        typeHierarchy.addIsAType("test1");
+        typeHierarchy.addIsAType("test2");
+        matching.add(typeHierarchy);
+        final TypeHierarchy typeHierarchy1 = new TypeHierarchy("test2");
+        typeHierarchy1.addIsAType("object");
+        matching.add(typeHierarchy1);
+        
+        assertEquals(3, matching.getSubstitutions("test").size());
+        
     }
-   
 }
