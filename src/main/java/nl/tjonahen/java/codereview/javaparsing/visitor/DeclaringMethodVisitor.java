@@ -35,14 +35,14 @@ import java.util.stream.Collectors;
  */
 public class DeclaringMethodVisitor extends VoidVisitorAdapter<ScopeType> {
 
-    private final ArrayList<EntryPoint> methods = new ArrayList<>();
+    private final List<EntryPoint> methods = new ArrayList<>();
     private final FQCMap fqc;
 
     public DeclaringMethodVisitor(final FQCMap fqc) {
         this.fqc = fqc;
     }
     
-    public ArrayList<EntryPoint> getMethods() {
+    public List<EntryPoint> getMethods() {
         return methods;
     }
 

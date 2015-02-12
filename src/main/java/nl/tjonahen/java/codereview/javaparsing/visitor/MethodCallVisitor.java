@@ -85,7 +85,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallContext> {
         } else {
             name = arg.getPackageName();
         }
-        super.visit(n, new CallContext(arg.getExitPointMatching(), arg.getSource(), name, n.getName(), ""));
+        super.visit(n, new CallContext(arg.getExitPointMatching(), arg.getSource(), name, n.getName()));
 
     }
 
@@ -124,7 +124,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallContext> {
         methodBodyVisitor
                     .visit(n, new CallContext(arg.getExitPointMatching(), 
                                             arg.getSource(), 
-                                            arg.getPackageName(), arg.getTypeName(), n.getName()));
+                                            arg.getPackageName(), arg.getTypeName()));
 
         
         methods.addAll(methodBodyVisitor.getMethods());
@@ -157,7 +157,7 @@ public class MethodCallVisitor extends VoidVisitorAdapter<CallContext> {
         methodBodyVisitor
                 .visit(n, new CallContext(arg.getExitPointMatching(), 
                                                 arg.getSource(), 
-                                                arg.getPackageName(), arg.getTypeName(), n.getName()));
+                                                arg.getPackageName(), arg.getTypeName()));
         methods.addAll(methodBodyVisitor.getMethods());
 
         ScopeVariable el = scopeStack.pop();

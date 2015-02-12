@@ -52,7 +52,7 @@ public class TypeDefiningVisitor extends VoidVisitorAdapter<List<String>> {
     
     @Override
     public void visit(ImportDeclaration n, final List<String> arg) {
-        final ArrayList<String> arrayList = new ArrayList<>();
+        final List<String> arrayList = new ArrayList<>();
         n.getName().accept(this, arrayList);
         String importStmt = arrayList.stream().reduce("", (s, v) -> s + v);
         if (n.isStatic()) {

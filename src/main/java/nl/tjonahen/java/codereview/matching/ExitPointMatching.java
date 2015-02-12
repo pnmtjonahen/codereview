@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import nl.tjonahen.java.codereview.Context;
 import nl.tjonahen.java.codereview.javaparsing.visitor.EntryPoint;
 import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
 
@@ -33,13 +32,12 @@ public class ExitPointMatching {
 
     private final Map<String, List<EntryPoint>> methodNameMapping = new HashMap<>();
     private final TypeHierarchyMatching hierarchyMatching;
-    private int count;
 
-    public ExitPointMatching(TypeHierarchyMatching hierarchyMatching) {
+    public ExitPointMatching(final TypeHierarchyMatching hierarchyMatching) {
         this.hierarchyMatching = hierarchyMatching;
     }
 
-    private void add(EntryPoint p) {
+    private void add(final EntryPoint p) {
         final String key = p.getPackageName() + "." + p.getType();
         if (methodNameMapping.containsKey(key)) {
             methodNameMapping.get(key).add(p);
@@ -50,7 +48,7 @@ public class ExitPointMatching {
         }
     }
 
-    public void addAll(List<EntryPoint> eps) {
+    public void addAll(final List<EntryPoint> eps) {
         eps.forEach(this::add);
     }
 
@@ -88,23 +86,17 @@ public class ExitPointMatching {
      * @return EntryPoint or null if none found.
      */
     public MatchPoint match(final ExitPoint ep) {
-        try {
-            count = 0;
-            MatchPoint mp = match(ep.getType(), ep);
-            if (mp.getEntryPoint() == null) {
-                final List<String> substitutions = hierarchyMatching.getSubstitutions(ep.getType());
-                for (String pType : substitutions) {
-                    mp = match(pType, ep);
-                    if (mp.getEntryPoint() != null) {
-                        return mp;
-                    }
+        MatchPoint mp = match(ep.getType(), ep);
+        if (mp.getEntryPoint() == null) {
+            final List<String> substitutions = hierarchyMatching.getSubstitutions(ep.getType());
+            for (String pType : substitutions) {
+                mp = match(pType, ep);
+                if (mp.getEntryPoint() != null) {
+                    return mp;
                 }
             }
-            return mp;
-        } catch (StackOverflowError ex) {
-            System.out.println("Stack error " + Context.instance().get());
-            throw ex;
         }
+        return mp;
     }
 
     private MatchPoint match(final String type, final ExitPoint ep) {

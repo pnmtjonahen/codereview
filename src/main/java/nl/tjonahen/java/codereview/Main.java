@@ -55,7 +55,6 @@ public class Main {
         final ExtractTypeHierarchy extractTypeHierarchy = new ExtractTypeHierarchy();
 
         for (File file : find.find()) {
-            Context.instance().set(file.getAbsolutePath());
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
             exitPointMatching.addAll(extractPublicMethods.extract(file.getAbsolutePath(), cu));
             hierarchyMatching.addAll(extractTypeHierarchy.extract(cu));
@@ -63,7 +62,6 @@ public class Main {
         
         final ExtractExitPoints extractMethodCalls = new ExtractExitPoints();
         for (File file : find.find()) {
-            Context.instance().set(file.getAbsolutePath());
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
 
             extractMethodCalls.extract(file.getAbsolutePath(), cu, exitPointMatching)
