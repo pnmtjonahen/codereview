@@ -22,6 +22,7 @@ import java.util.List;
 import nl.tjonahen.java.codereview.CompilationUnitFactory;
 import nl.tjonahen.java.codereview.javaparsing.visitor.TypeHierarchy;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -85,7 +86,7 @@ public class ExtractTypeHierarchyTest {
     @Test
     public void testExtractEnum() throws ParseException {
         final CompilationUnit cu = new CompilationUnitFactory().get("" 
-                + "public enum Currency {PENNY(1), NICKLE(5), DIME(10), QUARTER(25)} "
+                + "public enum Currency implements Serializable {PENNY(1), NICKLE(5), DIME(10), QUARTER(25)} "
                 + "");
         final ExtractTypeHierarchy extractTypeHierarchy = new ExtractTypeHierarchy();
         
@@ -93,7 +94,7 @@ public class ExtractTypeHierarchyTest {
         
         assertNotNull(hierarchys);
         assertEquals(2, hierarchys.size());
-        assertTrue(hierarchys.get(0).getIsAType().isEmpty());
+        assertFalse(hierarchys.get(0).getIsAType().isEmpty());
     }
         @Test
     public void testExtractAnnotation() throws ParseException {

@@ -310,6 +310,11 @@ public class ExtractEntryPointsTest {
         assertEquals("java.util.List", extract.get(0).getReturnType());
         assertEquals("ibm", extract.get(0).getName());
         assertEquals("java.util.List", extract.get(0).getParams().get(0));
+        assertEquals("test.java", extract.get(0).getSourceLocation().getSource());
+        assertEquals(89, extract.get(0).getSourceLocation().getBeginColumn());
+        assertEquals(1, extract.get(0).getSourceLocation().getBeginLine());
+        assertEquals(155, extract.get(0).getSourceLocation().getEndColumn());
+        assertEquals(1, extract.get(0).getSourceLocation().getEndLine());
 
     }
 
