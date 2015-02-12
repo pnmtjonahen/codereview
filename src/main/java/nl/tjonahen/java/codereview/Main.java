@@ -39,6 +39,7 @@ public class Main {
 
     private static final int WORKING_FOLDER_IDX = 0;
     private static final int FILTER_IDX = 1;
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
     public static void main(String... aArgs) throws FileNotFoundException, ParseException {
         
@@ -47,7 +48,6 @@ public class Main {
         main.check(aArgs);
     }
 
-    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
     
     private void check(String... aArgs) throws FileNotFoundException, ParseException {
         final Find find = new Find(new File(aArgs[WORKING_FOLDER_IDX]));
