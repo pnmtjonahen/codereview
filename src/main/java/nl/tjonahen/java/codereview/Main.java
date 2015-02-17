@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import nl.tjonahen.java.codereview.files.Find;
 import nl.tjonahen.java.codereview.javaparsing.ExtractTypeHierarchy;
+import nl.tjonahen.java.codereview.javaparsing.visitor.TypeDefiningVisitor;
 import nl.tjonahen.java.codereview.matching.ExitPointMatching;
 import nl.tjonahen.java.codereview.matching.TypeHierarchyMatching;
 
@@ -42,13 +43,12 @@ public class Main {
     private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
     public static void main(String... aArgs) throws FileNotFoundException, ParseException {
-        
+
         final Main main = new Main();
 
         main.check(aArgs);
     }
 
-    
     private void check(String... aArgs) throws FileNotFoundException, ParseException {
         final Find find = new Find(new File(aArgs[WORKING_FOLDER_IDX]));
 
@@ -59,20 +59,22 @@ public class Main {
 
         for (File file : find.find()) {
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
+
             exitPointMatching.addAll(extractPublicMethods.extract(file.getAbsolutePath(), cu));
             hierarchyMatching.addAll(extractTypeHierarchy.extract(cu));
         }
-        
+
         final ExtractExitPoints extractMethodCalls = new ExtractExitPoints();
         for (File file : find.find()) {
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
 
-            extractMethodCalls.extract(file.getAbsolutePath(), cu, exitPointMatching)
+            extractMethodCalls.extract(file.getAbsolutePath(),
+                    cu, exitPointMatching)
                     .stream()
                     .filter(c -> c.getType() != null)
                     .filter(c -> c.getType().startsWith(aArgs[FILTER_IDX]))
                     .filter(c -> exitPointMatching.match(c).getEntryPoint() == null)
-                    .map(c -> "EXITPOINT " +  c.getType() + "::"
+                    .map(c -> "EXITPOINT " + c.getType() + "::"
                             + c.getName() + "(" + printParams(c.getParams()) + ")" + c.getSourceLocation())
                     .forEach(LOGGER::info);
 

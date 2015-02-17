@@ -21,6 +21,8 @@ import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 /**
  * Mapping between a simple type and the fully qualified type.
@@ -79,5 +81,10 @@ public final class FQCMap {
 
     void add(final FQCMap newFqc) {
         fqc.putAll(newFqc.fqc);
+    }
+    
+    
+    public Stream<Entry<String, String>> stream() {
+        return fqc.entrySet().stream();
     }
 }
