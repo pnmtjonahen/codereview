@@ -17,6 +17,7 @@
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents outgoing method calls.
@@ -51,6 +52,33 @@ public class ExitPoint {
 
     public List<String> getParams() {
         return params;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ExitPoint other = (ExitPoint) obj;
+        if (!Objects.equals(this.sourceLocation, other.sourceLocation)) {
+            return false;
+        }
+        if (!Objects.equals(this.type, other.type)) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return true;
     }
     
 }

@@ -109,6 +109,7 @@ public class BuildNeo4J {
                     .stream()
                     .filter(c -> c.getType() != null)
                     .filter(c -> c.getType().startsWith(args[2]))
+                    .distinct()
                     .forEach(this::addToDb);
 
         }

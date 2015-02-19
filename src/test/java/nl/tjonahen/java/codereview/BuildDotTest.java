@@ -22,19 +22,14 @@ import org.junit.Test;
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class BuildNeo4JTest {
-    
-
+public class BuildDotTest {
 
     /**
      * Test of main method, of class BuildNeo4J.
      */
     @Test
     public void testMain() throws Exception {
-        String[] args = {"target/test.db","./src", "nl.tjonahen"};
-        BuildNeo4J.main(args);
+        String[] args = {"target/test.dot", "./src", "nl.tjonahen"};
+        BuildDot.main(args);
     }
-
-
-    
 }

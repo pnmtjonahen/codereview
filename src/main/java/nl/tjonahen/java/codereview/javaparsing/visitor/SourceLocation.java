@@ -17,6 +17,7 @@
 package nl.tjonahen.java.codereview.javaparsing.visitor;
 
 import com.github.javaparser.ast.Node;
+import java.util.Objects;
 
 /**
  *
@@ -94,6 +95,33 @@ public class SourceLocation {
 
     public String getMethodName() {
         return methodName;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final SourceLocation other = (SourceLocation) obj;
+        if (!Objects.equals(this.packageName, other.packageName)) {
+            return false;
+        }
+        if (!Objects.equals(this.typeName, other.typeName)) {
+            return false;
+        }
+//        if (!Objects.equals(this.methodName, other.methodName)) {
+//            return false;
+//        }
+        return true;
     }
     
     
