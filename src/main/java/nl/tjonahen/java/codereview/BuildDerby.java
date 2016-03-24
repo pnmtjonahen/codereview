@@ -16,18 +16,23 @@
  */
 package nl.tjonahen.java.codereview;
 
-import nl.tjonahen.java.codereview.javaparsing.ExtractEntryPoints;
-import nl.tjonahen.java.codereview.javaparsing.ExtractExitPoints;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.logging.Logger;
+import java.sql.SQLException;
+import java.util.Map.Entry;
+import javax.persistence.EntityManager;
 import nl.tjonahen.java.codereview.files.Find;
+import nl.tjonahen.java.codereview.javaparsing.ExtractEntryPoints;
+import nl.tjonahen.java.codereview.javaparsing.ExtractExitPoints;
 import nl.tjonahen.java.codereview.javaparsing.ExtractTypeHierarchy;
+import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
+import nl.tjonahen.java.codereview.javaparsing.visitor.TypeDefiningVisitor;
+import nl.tjonahen.java.codereview.jpa.JpaNode;
+import nl.tjonahen.java.codereview.jpa.PersistenceManager;
 import nl.tjonahen.java.codereview.matching.ExitPointMatching;
 import nl.tjonahen.java.codereview.matching.TypeHierarchyMatching;
 
@@ -35,27 +40,44 @@ import nl.tjonahen.java.codereview.matching.TypeHierarchyMatching;
  *
  * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
  */
-public class Main {
+public class BuildDerby {
 
-    private static final int WORKING_FOLDER_IDX = 0;
-    private static final int FILTER_IDX = 1;
-    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
-    public static void main(String... aArgs) throws FileNotFoundException, ParseException {
+    private final EntityManager em;
 
-        final Main main = new Main();
-
-        main.check(aArgs);
+    public BuildDerby(EntityManager em) {
+        this.em = em;
     }
 
-    private void check(String... aArgs) throws FileNotFoundException, ParseException {
-        final Find find = new Find(new File(aArgs[WORKING_FOLDER_IDX]));
+    public static void main(String[] args) throws ClassNotFoundException, SQLException, FileNotFoundException, ParseException {
+        EntityManager em = PersistenceManager.INSTANCE.getEntityManager();
+        new BuildDerby(em).process(args);
+        em.close();
+        PersistenceManager.INSTANCE.close();
+    }
+    
+    
+    public void process(String[] args) throws FileNotFoundException, ParseException {
+
+        final Find find = new Find(new File(args[1]));
 
         final TypeHierarchyMatching hierarchyMatching = new TypeHierarchyMatching();
         final ExitPointMatching exitPointMatching = new ExitPointMatching(hierarchyMatching);
         final ExtractEntryPoints extractPublicMethods = new ExtractEntryPoints();
         final ExtractTypeHierarchy extractTypeHierarchy = new ExtractTypeHierarchy();
 
+        for (File file : find.find()) {
+            final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
+
+            final String packageName = cu.getPackage() == null ? "default" : cu.getPackage().getName().toString();
+            final TypeDefiningVisitor typeDefiningVisitor = new TypeDefiningVisitor(packageName);
+            typeDefiningVisitor.visit(cu, null);
+            typeDefiningVisitor.getFqc()
+                    .stream()
+                    .filter(e -> e.getValue().startsWith(args[2]))
+                    .forEach(this::addToDb);
+
+        }
         for (File file : find.find()) {
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
 
@@ -67,21 +89,31 @@ public class Main {
         for (File file : find.find()) {
             final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));
 
-            extractMethodCalls.extract(file.getAbsolutePath(),
-                    cu, exitPointMatching)
+            extractMethodCalls.extract(file.getAbsolutePath(), cu, exitPointMatching)
                     .stream()
                     .filter(c -> c.getType() != null)
-                    .filter(c -> c.getType().startsWith(aArgs[FILTER_IDX]))
-                    .filter(c -> exitPointMatching.match(c).getEntryPoint() == null)
-                    .map(c -> "EXITPOINT " + c.getType() + "::"
-                            + c.getName() + "(" + printParams(c.getParams()) + ")" + c.getSourceLocation())
-                    .forEach(LOGGER::info);
+                    .filter(c -> c.getType().startsWith(args[2]))
+                    .distinct()
+                    .forEach(this::addToDb);
 
         }
+    }
+
+
+    private void addToDb(Entry<String, String> e) {
+        em.getTransaction()
+                .begin();
+
+        JpaNode node = new JpaNode();
+        node.setId(e.getValue());
+        em.persist(node);
+        
+        em.getTransaction()
+                .commit();
 
     }
 
-    private String printParams(List<String> params) {
-        return params.stream().reduce("", (p, s) -> p + ("".equals(p) ? "" : ",") + s);
+    private void addToDb(ExitPoint ep) {
+        
     }
 }

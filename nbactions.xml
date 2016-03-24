@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath nl.tjonahen.java.codereview.BuildDot /home/ordina/neo4j/review.dot /home/ordina/Ordina/Klanten/Rabo/javadata/sources/project nl.rabobank.gict.mcv</exec.args>
+                <exec.args>-classpath %classpath nl.tjonahen.java.codereview.BuildDerby /home/ordina/neo4j/access.db /home/ordina/Ordina/Klanten/Rabo/javadata/sources/access nl.rabobank.gict.mcv</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath nl.tjonahen.java.codereview.BuildDot /home/ordina/neo4j/review.dot /home/ordina/Ordina/Klanten/Rabo/javadata/sources/project nl.rabobank.gict.mcv</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath nl.tjonahen.java.codereview.BuildDerby /home/ordina/neo4j/access.db /home/ordina/Ordina/Klanten/Rabo/javadata/sources/access nl.rabobank.gict.mcv</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath nl.tjonahen.java.codereview.BuildDot /home/ordina/neo4j/review.dot /home/ordina/Ordina/Klanten/Rabo/javadata/sources/project nl.rabobank.gict.mcv</exec.args>
+                <exec.args>-classpath %classpath nl.tjonahen.java.codereview.BuildDerby /home/ordina/neo4j/access.db /home/ordina/Ordina/Klanten/Rabo/javadata/sources/access nl.rabobank.gict.mcv</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

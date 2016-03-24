@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Mon Mar 02 16:38:06 CET 2015:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-014b-db23-1c2f-00000e222f08 
+on database directory /home/ordina/neo4j/access.db with class loader sun.misc.Launcher$AppClassLoader@73d16e93 
+Loaded from file:/home/ordina/.m2/repository/org/apache/derby/derby/10.11.1.1/derby-10.11.1.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_25-b17
+user.dir=/home/ordina/NetBeansProjects/codereview
+os.name=Linux
+os.arch=amd64
+os.version=3.14.23
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

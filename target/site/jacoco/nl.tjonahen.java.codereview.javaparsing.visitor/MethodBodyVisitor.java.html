@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MethodBodyVisitor.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">codereview</a> &gt; <a href="index.source.html" class="el_package">nl.tjonahen.java.codereview.javaparsing.visitor</a> &gt; <span class="el_source">MethodBodyVisitor.java</span></div><h1>MethodBodyVisitor.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Philippe Tjon - A - Hen, philippe@tjonahen.nl
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tjonahen.java.codereview.javaparsing.visitor;
+
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+
+/**
+ *
+ * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
+ */
+public class MethodBodyVisitor extends VoidVisitorAdapter&lt;CallContext&gt; {
+
+<span class="fc" id="L33">    private final List&lt;ExitPoint&gt; methods = new ArrayList&lt;&gt;();</span>
+    private final FQCMap fqc;
+    private final Deque&lt;ScopeVariable&gt; scopeStack;
+
+<span class="fc" id="L37">    public MethodBodyVisitor(final FQCMap fqc, final Deque&lt;ScopeVariable&gt; scopeStack) {</span>
+<span class="fc" id="L38">        this.scopeStack = scopeStack;</span>
+<span class="fc" id="L39">        this.fqc = fqc;</span>
+<span class="fc" id="L40">    }</span>
+
+    public List&lt;ExitPoint&gt; getMethods() {
+<span class="fc" id="L43">        return methods;</span>
+    }
+
+    private ScopeVariable findType(String name) {
+<span class="fc" id="L47">        return scopeStack.stream().filter(v -&gt; v.getName().equals(name)).findFirst().orElse(new ScopeVariable(null, null));</span>
+    }
+
+    @Override
+    public void visit(MethodCallExpr n, CallContext arg) {
+<span class="fc" id="L52">        final Expression scope = n.getScope();</span>
+<span class="fc" id="L53">        String param = &quot;&quot;;</span>
+<span class="fc" id="L54">        String paramType = null;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (scope != null) {</span>
+<span class="fc" id="L56">            final ScopeTypeVisitor scopeTypeVisitor = new ScopeTypeVisitor(fqc, scopeStack);</span>
+            
+<span class="fc" id="L58">            scope.accept(scopeTypeVisitor, arg);</span>
+<span class="fc" id="L59">            methods.addAll(scopeTypeVisitor.getMethods());</span>
+<span class="fc" id="L60">            param = scopeTypeVisitor.getName();</span>
+<span class="fc bfc" id="L61" title="All 4 branches covered.">            if (param == null &amp;&amp; scopeTypeVisitor.getType() != null) {</span>
+<span class="fc" id="L62">                paramType = scopeTypeVisitor.getType();</span>
+            } else {
+<span class="fc" id="L64">                paramType = findType(param).getType();</span>
+            }
+<span class="fc" id="L66">        } else {</span>
+            // possible static import of method
+<span class="fc" id="L68">            paramType = fqc.determineFqc(n.getName());</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            if (paramType.equals(n.getName())) {</span>
+<span class="fc" id="L70">                paramType = &quot;&quot;;</span>
+            }
+        }
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (paramType == null) {</span>
+            // static method call ??
+<span class="fc" id="L75">            final ParameterVisitor parameterVisitor = new ParameterVisitor(fqc, scopeStack);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">            if (n.getArgs() != null) {</span>
+<span class="fc" id="L77">                n.getArgs().forEach(p -&gt; p.accept(parameterVisitor, arg));</span>
+<span class="fc" id="L78">                methods.addAll(parameterVisitor.getMethods());</span>
+            }
+<span class="fc" id="L80">            methods.add(new ExitPoint(new SourceLocation(arg.getSource()</span>
+<span class="fc" id="L81">                        , arg.getPackageName()</span>
+<span class="fc" id="L82">                        , arg.getTypeName()</span>
+<span class="fc" id="L83">                        , arg.getMethodName()</span>
+                        , n)
+<span class="fc" id="L85">                    , param, n.getName(), parameterVisitor.getParams()));</span>
+<span class="fc" id="L86">        } else {</span>
+<span class="fc" id="L87">            ParameterVisitor parameterVisitor = new ParameterVisitor(fqc, scopeStack);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">            if (n.getArgs() != null) {</span>
+<span class="fc" id="L89">                n.getArgs().forEach(p -&gt; p.accept(parameterVisitor, arg));</span>
+<span class="fc" id="L90">                methods.addAll(parameterVisitor.getMethods());</span>
+            }
+<span class="fc" id="L92">            methods.add(new ExitPoint(new SourceLocation(arg.getSource()</span>
+<span class="fc" id="L93">                        , arg.getPackageName()</span>
+<span class="fc" id="L94">                        , arg.getTypeName()</span>
+<span class="fc" id="L95">                        , arg.getMethodName()</span>
+                        , n)
+<span class="fc" id="L97">                    , paramType, n.getName(), parameterVisitor.getParams()));</span>
+        }
+
+<span class="fc" id="L100">    }</span>
+
+    @Override
+    public void visit(final VariableDeclarationExpr n, final CallContext arg) {
+<span class="fc" id="L104">        n.getVars().forEach(v -&gt; scopeStack.push(new ScopeVariable(fqc.determineFqc(n.getType()), v.getId().getName())));</span>
+<span class="fc" id="L105">        super.visit(n, arg);</span>
+<span class="fc" id="L106">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

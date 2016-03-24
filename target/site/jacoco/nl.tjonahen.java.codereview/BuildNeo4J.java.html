@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BuildNeo4J.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">codereview</a> &gt; <a href="index.source.html" class="el_package">nl.tjonahen.java.codereview</a> &gt; <span class="el_source">BuildNeo4J.java</span></div><h1>BuildNeo4J.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Philippe Tjon - A - Hen, philippe@tjonahen.nl
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package nl.tjonahen.java.codereview;
+
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseException;
+import com.github.javaparser.ast.CompilationUnit;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import nl.tjonahen.java.codereview.files.Find;
+import nl.tjonahen.java.codereview.javaparsing.ExtractEntryPoints;
+import nl.tjonahen.java.codereview.javaparsing.ExtractExitPoints;
+import nl.tjonahen.java.codereview.javaparsing.ExtractTypeHierarchy;
+import nl.tjonahen.java.codereview.javaparsing.visitor.ExitPoint;
+import nl.tjonahen.java.codereview.javaparsing.visitor.TypeDefiningVisitor;
+import nl.tjonahen.java.codereview.matching.ExitPointMatching;
+import nl.tjonahen.java.codereview.matching.TypeHierarchyMatching;
+import org.neo4j.cypher.javacompat.ExecutionEngine;
+import org.neo4j.graphdb.DynamicLabel;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.Label;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.RelationshipType;
+import org.neo4j.graphdb.ResourceIterator;
+import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+
+/**
+ *
+ * @author Philippe Tjon - A - Hen, philippe@tjonahen.nl
+ */
+public class BuildNeo4J {
+
+    final GraphDatabaseService graphDb;
+    final ExecutionEngine engine;
+    final Label typeLabel;
+
+<span class="fc" id="L57">    public BuildNeo4J(String dbName) {</span>
+<span class="fc" id="L58">        graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(dbName);</span>
+<span class="fc" id="L59">        registerShutdownHook(graphDb);</span>
+
+<span class="pc" id="L61">        try (Transaction tx = graphDb.beginTx()) {</span>
+<span class="fc" id="L62">            typeLabel = DynamicLabel.label(&quot;Type&quot;);</span>
+<span class="fc" id="L63">            graphDb.schema()</span>
+<span class="fc" id="L64">                    .constraintFor(typeLabel)</span>
+<span class="fc" id="L65">                    .assertPropertyIsUnique(&quot;typename&quot;)</span>
+<span class="fc" id="L66">                    .create();</span>
+<span class="fc" id="L67">            tx.success();</span>
+<span class="pc bpc" id="L68" title="6 of 8 branches missed.">        }</span>
+<span class="fc" id="L69">        engine = new ExecutionEngine(graphDb);</span>
+<span class="fc" id="L70">    }</span>
+
+    public static void main(String[] args) throws FileNotFoundException, ParseException {
+<span class="fc" id="L73">        new BuildNeo4J(args[0]).process(args);</span>
+<span class="fc" id="L74">    }</span>
+
+    public void process(String[] args) throws FileNotFoundException, ParseException {
+
+<span class="fc" id="L78">        final Find find = new Find(new File(args[1]));</span>
+
+<span class="fc" id="L80">        final TypeHierarchyMatching hierarchyMatching = new TypeHierarchyMatching();</span>
+<span class="fc" id="L81">        final ExitPointMatching exitPointMatching = new ExitPointMatching(hierarchyMatching);</span>
+<span class="fc" id="L82">        final ExtractEntryPoints extractPublicMethods = new ExtractEntryPoints();</span>
+<span class="fc" id="L83">        final ExtractTypeHierarchy extractTypeHierarchy = new ExtractTypeHierarchy();</span>
+
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (File file : find.find()) {</span>
+<span class="fc" id="L86">            final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));</span>
+
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">            final String packageName = cu.getPackage() == null ? &quot;default&quot; : cu.getPackage().getName().toString();</span>
+<span class="fc" id="L89">            final TypeDefiningVisitor typeDefiningVisitor = new TypeDefiningVisitor(packageName);</span>
+<span class="fc" id="L90">            typeDefiningVisitor.visit(cu, null);</span>
+<span class="fc" id="L91">            typeDefiningVisitor.getFqc()</span>
+<span class="fc" id="L92">                    .stream()</span>
+<span class="fc" id="L93">                    .filter(e -&gt; e.getValue().startsWith(args[2]))</span>
+<span class="fc" id="L94">                    .forEach(this::addToDb);</span>
+
+<span class="fc" id="L96">        }</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        for (File file : find.find()) {</span>
+<span class="fc" id="L98">            final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));</span>
+
+<span class="fc" id="L100">            exitPointMatching.addAll(extractPublicMethods.extract(file.getAbsolutePath(), cu));</span>
+<span class="fc" id="L101">            hierarchyMatching.addAll(extractTypeHierarchy.extract(cu));</span>
+<span class="fc" id="L102">        }</span>
+
+<span class="fc" id="L104">        final ExtractExitPoints extractMethodCalls = new ExtractExitPoints();</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        for (File file : find.find()) {</span>
+<span class="fc" id="L106">            final CompilationUnit cu = JavaParser.parse(new FileInputStream(file));</span>
+
+<span class="fc" id="L108">            extractMethodCalls.extract(file.getAbsolutePath(), cu, exitPointMatching)</span>
+<span class="fc" id="L109">                    .stream()</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">                    .filter(c -&gt; c.getType() != null)</span>
+<span class="fc" id="L111">                    .filter(c -&gt; c.getType().startsWith(args[2]))</span>
+<span class="fc" id="L112">                    .distinct()</span>
+<span class="fc" id="L113">                    .forEach(this::addToDb);</span>
+
+<span class="fc" id="L115">        }</span>
+<span class="fc" id="L116">    }</span>
+
+    private static void registerShutdownHook(final GraphDatabaseService graphDb) {
+        // Registers a shutdown hook for the Neo4j instance so that it
+        // shuts down nicely when the VM exits (even if you &quot;Ctrl-C&quot; the
+        // running application).
+<span class="fc" id="L122">        Runtime.getRuntime().addShutdownHook(new Thread() {</span>
+            @Override
+            public void run() {
+<span class="nc" id="L125">                graphDb.shutdown();</span>
+<span class="nc" id="L126">            }</span>
+        });
+<span class="fc" id="L128">    }</span>
+
+    private void addToDb(Entry&lt;String, String&gt; e) {
+
+        
+<span class="pc" id="L133">        try (Transaction tx = graphDb.beginTx()) {</span>
+<span class="fc" id="L134">            String queryString = &quot;MERGE (n:Type {typename: {typename}}) RETURN n&quot;;</span>
+<span class="fc" id="L135">            Map&lt;String, Object&gt; parameters = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L136">            parameters.put(&quot;typename&quot;, e.getValue());</span>
+<span class="fc" id="L137">            engine.execute(queryString, parameters).columnAs(&quot;n&quot;).next();</span>
+<span class="fc" id="L138">            tx.success();</span>
+<span class="pc bpc" id="L139" title="6 of 8 branches missed.">        }</span>
+<span class="fc" id="L140">    }</span>
+
+<span class="pc" id="L142">    private static enum RelTypes implements RelationshipType {</span>
+<span class="fc" id="L143">        CALLS</span>
+    }
+
+    private void addToDb(ExitPoint ep) {
+<span class="pc" id="L147">        try (Transaction tx = graphDb.beginTx()) {</span>
+
+<span class="fc" id="L149">            String queryString = &quot;MATCH (n:Type { typename: {typename} }) RETURN n&quot;;</span>
+
+<span class="fc" id="L151">            Map&lt;String, Object&gt; parameters = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L152">            parameters.put(&quot;typename&quot;, ep.getType());</span>
+<span class="fc" id="L153">            ResourceIterator&lt;Node&gt; resultIterator = engine.execute(queryString, parameters).columnAs(&quot;n&quot;);</span>
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">            if (resultIterator.hasNext()) {</span>
+<span class="fc" id="L155">                Node secondNode = resultIterator.next();</span>
+
+<span class="fc" id="L157">                parameters = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L158">                parameters.put(&quot;typename&quot;, ep.getSourceLocation().getPackageName() + &quot;.&quot; + ep.getSourceLocation().getTypeName());</span>
+<span class="fc" id="L159">                resultIterator = engine.execute(queryString, parameters).columnAs(&quot;n&quot;);</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">                if (resultIterator.hasNext()) {</span>
+<span class="fc" id="L161">                    Node firstNode = resultIterator.next();</span>
+
+<span class="fc" id="L163">                    Relationship relationship = firstNode.createRelationshipTo(secondNode, RelTypes.CALLS);</span>
+<span class="fc" id="L164">                    relationship.setProperty(&quot;m&quot;, ep.getName());</span>
+                }
+            }
+<span class="fc" id="L167">            tx.success();</span>
+
+<span class="pc bpc" id="L169" title="6 of 8 branches missed.">        }</span>
+<span class="fc" id="L170">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>
